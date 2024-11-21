@@ -12,10 +12,24 @@ const AdminConfiguration = () => {
     password: '',
     createdBy: 'alex',
     modifiedBy: "alex",
-    ipaddress: "192.168.1.43",
+    ipaddress: "",
     status: 1,
     isdelete: 0
   });
+
+  // Fetch IP address and set in form data
+  useEffect(() => {
+    axios.get(`${api.baseUrl}/company/ipAddress`)
+      .then((response) => {
+        setFormData(prevState => ({
+          ...prevState,
+          ipaddress: response.data
+        }));
+      })
+      .catch((error) => {
+        console.error('Error fetching IP address:', error);
+      });
+  }, []);
 
   const navigate = useNavigate();
 
@@ -37,11 +51,19 @@ const AdminConfiguration = () => {
     // formDatasend.append('createdby', "alex");
     // formDatasend.append('modifiedby', "alex");
 
+    const formDataSend = {
+      ...formData,
+      createdBy: formData.name,
+      modifiedBy: formData.name,
+    }
 
-    await axios.post(`${api.baseUrl}/signup`, formData)
-      .then(res => console.log(res.data))
+
+    await axios.post(`${api.baseUrl}/signup`, formDataSend)
+      .then(res => {
+        console.log(res.data)
+        navigate('/success');
+      })
       .catch(err => console.log(err));
-       navigate('/success');
   };
 
   return (
