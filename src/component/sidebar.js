@@ -14,6 +14,7 @@ import { BsGraphUpArrow } from "react-icons/bs";
 // Pages
 import { CiSettings } from "react-icons/ci";
 import Department from "../pages/Department";
+import Designation from "../pages/Designation";
 import NewCompanyForm from "../pages/NewCompanyForm";
 
 const Sidebar = () => {
@@ -750,6 +751,15 @@ const Sidebar = () => {
       >
         <Department
           isOpen={addData[0] === "Department"}
+          onClose={() => setAddData([])}
+        />
+      </div>
+      <div
+        className="submenu-menu"
+        style={{ right: addData[0] === "Designation" ? "0" : "-100%" }}
+      >
+        <Designation
+          isOpen={addData[0] === "Designation"}
           onClose={() => setAddData([])}
         />
       </div>

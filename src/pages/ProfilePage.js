@@ -6,239 +6,200 @@ const ProfilePage = () => {
   const [profileData, setProfileData] = useState({
     firstName: "Aditi",
     middleName: "",
-    lastName: "",
+    lastName: "Sharma",
     workNumber: "8899889988",
-    mobileNumber: "",
+    mobileNumber: "9876543210",
     companyName: "Meld Techo",
     jobTitle: "Software Developer",
     language: "English",
     timeZone: "(GMT-04:00) Eastern Time (US & Canada)",
+    orgURL: "tourbom.myfreshworks.com",
+    adminRole: "Organization Admin",
   });
 
   const [formData, setFormData] = useState(profileData);
-
-  const handleEditProfileClick = () => {
-    setFormData(profileData); // Reset form data to current profile data when editing starts
-    setIsEditing(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsEditing(false);
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSave = (e) => {
-    e.preventDefault();
-    setProfileData(formData);
-    setIsEditing(false);
+  const handleSave = () => {
+    setProfileData(formData); // Save changes
+    setIsEditing(false); // Exit edit mode
+  };
+
+  const handleCancel = () => {
+    setFormData(profileData); // Revert changes
+    setIsEditing(false); // Exit edit mode
   };
 
   return (
-    <div className="min-h-screen bg-gray-200 p-4 overflow-auto mb-12">
-      {/* Custom Header */}
+    <div className="min-h-screen bg-gray-200 p-4 overflow-auto">
+      {/* Header */}
       <div className="flex justify-between items-center w-full h-16 bg-white shadow-md mb-4 px-6">
         <h1 className="text-lg font-bold">Profile</h1>
         <div className="w-4 h-4 bg-red-500 rounded-full"></div>
       </div>
 
       {/* Profile Header */}
-      <div className="bg-white shadow-md rounded-md p-6 mb-6">
-        <div className="flex items-center justify-between">
-          {/* Profile Picture and Info */}
-          <div className="flex items-center space-x-4">
-            <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center">
-              <span className="text-white text-3xl font-semibold">
-                {profileData.firstName.charAt(0)}
-              </span>
-            </div>
-            <div>
-              <h1 className="text-xl font-bold">{profileData.firstName}</h1>
-            </div>
+      <div className="bg-white shadow-md rounded-md p-6 mb-6 flex justify-between items-center">
+        <div className="flex items-center space-x-6">
+          {/* Profile Picture */}
+          <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
+            <span className="text-2xl font-bold text-gray-700">
+              {profileData.firstName.charAt(0)}
+            </span>
           </div>
-          {/* Edit Profile Button */}
-          <button
-            onClick={handleEditProfileClick}
-            className="flex items-center space-x-2 bg-gray-100 px-4 py-2 rounded-md border"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 text-gray-600"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path d="M17.414 2.586a2 2 0 00-2.828 0l-10 10a2 2 0 00-.586 1.414V17a2 2 0 002 2h2.586a2 2 0 001.414-.586l10-10a2 2 0 000-2.828l-2-2zM12.586 6l2 2L5 17H3v-2l9.586-9.586z" />
-            </svg>
-            <span>Edit Profile</span>
-          </button>
+          {/* User Info */}
+          <div>
+            <h1 className="text-lg font-semibold text-gray-800">{`${profileData.firstName} ${profileData.lastName}`}</h1>
+            <p className="text-gray-600 text-sm">aditi@domain.com</p>
+            <span className="text-xs bg-orange-100 text-orange-800 font-medium py-1 px-2 rounded inline-block mt-2">
+              {profileData.adminRole}
+            </span>
+          </div>
         </div>
+        <button
+          onClick={() => setIsEditing(true)}
+          className="px-4 py-2 bg-blue-500 text-white rounded-md"
+        >
+          Edit Profile
+        </button>
       </div>
 
-      {/* Edit Profile Modal */}
-      {isEditing && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-          <div className="bg-white p-6 rounded-md shadow-md w-2/3 max-w-2xl h-2/3">
-            <h2 className="text-lg font-bold mb-4">Edit Profile</h2>
-            {/* Profile Edit Form */}
-            <form onSubmit={handleSave} className="grid grid-cols-3 gap-4">
-              <div className="mb-4">
-                <label className="block text-sm font-bold mb-2">
-                  First Name
-                </label>
-                <input
-                  type="text"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleChange}
-                  className="w-full p-2 border rounded-md"
-                  placeholder="First Name"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-bold mb-2">
-                  Middle Name
-                </label>
-                <input
-                  type="text"
-                  name="middleName"
-                  value={formData.middleName}
-                  onChange={handleChange}
-                  className="w-full p-2 border rounded-md"
-                  placeholder="Middle Name"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-bold mb-2">
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  className="w-full p-2 border rounded-md"
-                  placeholder="Last Name"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-bold mb-2">
-                  Work Number
-                </label>
-                <input
-                  type="text"
-                  name="workNumber"
-                  value={formData.workNumber}
-                  onChange={handleChange}
-                  className="w-full p-2 border rounded-md"
-                  placeholder="Work Number"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-bold mb-2">
-                  Mobile Number
-                </label>
-                <input
-                  type="text"
-                  name="mobileNumber"
-                  value={formData.mobileNumber}
-                  onChange={handleChange}
-                  className="w-full p-2 border rounded-md"
-                  placeholder="Mobile Number"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-bold mb-2">
-                  Company Name
-                </label>
-                <input
-                  type="text"
-                  name="companyName"
-                  value={formData.companyName}
-                  onChange={handleChange}
-                  className="w-full p-2 border rounded-md"
-                  placeholder="Company Name"
-                />
-              </div>
-              <div className="mb-4 col-span-3">
-                <label className="block text-sm font-bold mb-2">
-                  Job Title
-                </label>
-                <input
-                  type="text"
-                  name="jobTitle"
-                  value={formData.jobTitle}
-                  onChange={handleChange}
-                  className="w-full p-2 border rounded-md"
-                  placeholder="Job Title"
-                />
-              </div>
-              <div className="col-span-3 flex justify-end space-x-4">
-                <button
-                  type="button"
-                  onClick={handleCloseModal}
-                  className="px-4 py-2 bg-gray-200 rounded-md"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-red-700 text-white rounded-md"
-                >
-                  Save
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Tabs */}
-      <div className="bg-white shadow-md rounded-md p-6">
-        <div className="border-b flex space-x-6 pb-3 mb-6">
-          <button className="text-black font-semibold border-b-2 border-black pb-1">
-            Profile
-          </button>
-          <button className="text-gray-500 hover:text-black">Security</button>
-        </div>
-
-        {/* Work Information */}
-        <section className="mb-6">
-          <h2 className="text-lg font-bold mb-4">Work Information</h2>
-          <div className="grid grid-cols-3 gap-6">
-            <div>
-              <p className="text-sm font-bold">First Name *</p>
+      {/* Profile Details */}
+      <div className="bg-white shadow-md rounded-md p-6 mb-6">
+        <h2 className="text-lg font-bold mb-4">Work Information</h2>
+        <div className="grid grid-cols-3 gap-6">
+          {/* First Name */}
+          <div>
+            <p className="text-sm font-bold">First Name *</p>
+            {isEditing ? (
+              <input
+                type="text"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+                className="w-full p-2 border rounded-md"
+              />
+            ) : (
               <p className="text-sm">{profileData.firstName || "-"}</p>
-            </div>
-            <div>
-              <p className="text-sm font-bold">Middle Name</p>
-              <p className="text-sm">{profileData.middleName || "-"}</p>
-            </div>
-            <div>
-              <p className="text-sm font-bold">Last Name *</p>
-              <p className="text-sm">{profileData.lastName || "-"}</p>
-            </div>
-            <div>
-              <p className="text-sm font-bold">Work Number</p>
-              <p className="text-sm">{profileData.workNumber || "-"}</p>
-            </div>
-            <div>
-              <p className="text-sm font-bold">Mobile Number</p>
-              <p className="text-sm">{profileData.mobileNumber || "-"}</p>
-            </div>
-            <div>
-              <p className="text-sm font-bold">Company Name</p>
-              <p className="text-sm">{profileData.companyName || "-"}</p>
-            </div>
-            <div>
-              <p className="text-sm font-bold">Job Title</p>
-              <p className="text-sm">{profileData.jobTitle || "-"}</p>
-            </div>
+            )}
           </div>
-        </section>
-        <hr className="mb-6" />
+          {/* Middle Name */}
+          <div>
+            <p className="text-sm font-bold">Middle Name</p>
+            {isEditing ? (
+              <input
+                type="text"
+                name="middleName"
+                value={formData.middleName}
+                onChange={handleChange}
+                className="w-full p-2 border rounded-md"
+              />
+            ) : (
+              <p className="text-sm">{profileData.middleName || "-"}</p>
+            )}
+          </div>
+          {/* Last Name */}
+          <div>
+            <p className="text-sm font-bold">Last Name *</p>
+            {isEditing ? (
+              <input
+                type="text"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+                className="w-full p-2 border rounded-md"
+              />
+            ) : (
+              <p className="text-sm">{profileData.lastName || "-"}</p>
+            )}
+          </div>
+          {/* Work Number */}
+          <div>
+            <p className="text-sm font-bold">Work Number</p>
+            {isEditing ? (
+              <input
+                type="text"
+                name="workNumber"
+                value={formData.workNumber}
+                onChange={handleChange}
+                className="w-full p-2 border rounded-md"
+              />
+            ) : (
+              <p className="text-sm">{profileData.workNumber || "-"}</p>
+            )}
+          </div>
+          {/* Mobile Number */}
+          <div>
+            <p className="text-sm font-bold">Mobile Number</p>
+            {isEditing ? (
+              <input
+                type="text"
+                name="mobileNumber"
+                value={formData.mobileNumber}
+                onChange={handleChange}
+                className="w-full p-2 border rounded-md"
+              />
+            ) : (
+              <p className="text-sm">{profileData.mobileNumber || "-"}</p>
+            )}
+          </div>
+          {/* Company Name */}
+          <div>
+            <p className="text-sm font-bold">Company Name</p>
+            {isEditing ? (
+              <input
+                type="text"
+                name="companyName"
+                value={formData.companyName}
+                onChange={handleChange}
+                className="w-full p-2 border rounded-md"
+              />
+            ) : (
+              <p className="text-sm">{profileData.companyName || "-"}</p>
+            )}
+          </div>
+          {/* Job Title */}
+          <div>
+            <p className="text-sm font-bold">Job Title</p>
+            {isEditing ? (
+              <input
+                type="text"
+                name="jobTitle"
+                value={formData.jobTitle}
+                onChange={handleChange}
+                className="w-full p-2 border rounded-md"
+              />
+            ) : (
+              <p className="text-sm">{profileData.jobTitle || "-"}</p>
+            )}
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        {isEditing && (
+          <div className="flex justify-end space-x-4 mt-6">
+            <button
+              onClick={handleCancel}
+              className="px-4 py-2 bg-gray-200 rounded-md"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              className="px-4 py-2 bg-red-700 text-white rounded-md"
+            >
+              Save
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Social Links */}
+      <div className="bg-white shadow-md rounded-md p-6 mb-10">
         {/* Other Information */}
         <section>
           <h2 className="text-lg font-bold mb-4">Other Information</h2>

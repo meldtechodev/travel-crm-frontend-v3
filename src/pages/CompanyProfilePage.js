@@ -1,5 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import NewCompanyForm from "./NewCompanyForm";
+import Department from "./Department";
+import Designation from "./Designation";
 
 const CompanyProfilePage = () => {
   const navigate = useNavigate();
@@ -8,11 +11,16 @@ const CompanyProfilePage = () => {
     navigate("/home/organization-details", { state: { type } });
   };
 
+  const [addData, setAddData] = useState([]);
+
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <>
+    <div className="min-h-screen bg-gray-200 p-6">
       <div className="flex justify-between items-center w-full h-16 bg-white shadow-md mb-6 px-6">
         <h1 className="text-lg font-bold">Company Admin Center</h1>
-        <div className="w-4 h-4 bg-red-500 rounded-full"></div>
+        <button className="border border-dashed border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-2" onClick={() => setAddData(['Company'])}>
+          Add Branch/Company
+        </button>
       </div>
 
       <div className="bg-white shadow-md rounded-md p-6 mb-6 flex items-center relative">
@@ -28,7 +36,7 @@ const CompanyProfilePage = () => {
             <span className="text-xs bg-orange-100 text-orange-800 font-medium py-1 px-2 rounded inline-block mt-2">
               ORGANIZATION ADMIN
             </span>
-            <p className="text-blue-500 text-sm mt-2 underline cursor-pointer">
+            <p className="text-blue-500 text-sm mt-2 underline cursor-pointer" onClick={()=>navigate("/home/profile-page")}>
               Edit Profile
             </p>
           </div>
@@ -67,13 +75,12 @@ const CompanyProfilePage = () => {
 
         {/* Account List */}
         <div className="flex items-center space-x-4">
-          <div className="w-10 h-10 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold text-lg">
-            T
-          </div>
-          <div>
-            <h3 className="text-gray-800 font-semibold">Tourbom</h3>
-            <p className="text-sm text-gray-500">/crm/sales</p>
-          </div>
+          <button className="border border-dashed border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-2" onClick={() => setAddData(['Department'])}>
+            Add Department
+          </button>
+          <button className="border border-dashed border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-2">
+            View Department
+          </button>
         </div>
       </div>
       {/* My Accounts Section */}
@@ -88,16 +95,43 @@ const CompanyProfilePage = () => {
 
         {/* Account List */}
         <div className="flex items-center space-x-4">
-          <div className="w-10 h-10 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold text-lg">
-            T
-          </div>
-          <div>
-            <h3 className="text-gray-800 font-semibold">Tourbom</h3>
-            <p className="text-sm text-gray-500">/crm/sales</p>
-          </div>
+        <button className="border border-dashed border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-2" onClick={() => setAddData(['Designation'])}>
+            Add Designation
+          </button>
+          <button className="border border-dashed border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-2">
+            View Designation
+          </button>
         </div>
       </div>
     </div>
+    <div
+        className="submenu-menu"
+        style={{ right: addData[0] === "Company" ? "0" : "-100%" }}
+      >
+        <NewCompanyForm
+          isOpen={addData[0] === "Company"}
+          onClose={() => setAddData([])}
+        />
+      </div>
+      <div
+        className="submenu-menu"
+        style={{ right: addData[0] === "Department" ? "0" : "-100%" }}
+      >
+        <Department
+          isOpen={addData[0] === "Department"}
+          onClose={() => setAddData([])}
+        />
+      </div>
+      <div
+        className="submenu-menu"
+        style={{ right: addData[0] === "Designation" ? "0" : "-100%" }}
+      >
+        <Designation
+          isOpen={addData[0] === "Designation"}
+          onClose={() => setAddData([])}
+        />
+      </div>
+    </>
   );
 };
 

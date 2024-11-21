@@ -4,7 +4,7 @@ const api = {
   // baseUrl: "http://localhost:8080/Motherson/crm/v1",
   // baseUrl: "https://crm-travel-server-production.up.railway.app/Motherson/crm/v1",
   // baseUrl: "https://newupdate-crm-travel.onrender.com/Motherson/crm/v1",
-  baseUrl: "http://192.168.1.42:8080/Motherson/crm/v1",
+  baseUrl: "https://travel-crm-backend-v3.onrender.com/Motherson/crm/v1",
 
 };
 
