@@ -82,21 +82,23 @@ const OrganizationDetailsPage = () => {
           You can use your organization's branding by customizing the settings
           below.
         </p>
-
         <div className="border border-gray-300 rounded-md p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8">
-          <div className="text-center sm:text-left">
+          <div className="text-center sm:text-left mb-4 sm:mb-0">
             <p className="text-gray-600 text-sm sm:text-base">
               Your current Freshworks organization account URL is:
             </p>
-            <p className="text-blue-600 font-medium mt-1 sm:mt-0 break-words">
-              https://tourbom.myfreshworks.com
+            <p className="text-blue-600 font-medium mt-1 sm:mt-0 break-words text-sm sm:text-base md:text-lg overflow-x-auto">
+              <span className="block w-full break-all">
+                https://tourbom.myfreshworks.com
+              </span>
             </p>
           </div>
-          <div className="mt-4 sm:mt-0">
-            <button className="bg-gray-200 border border-gray-300 text-gray-700 px-4 py-2 rounded text-sm mr-2">
+
+          <div className="mt-4 sm:mt-0 sm:flex sm:gap-2 sm:w-auto w-full">
+            <button className="bg-gray-200 border border-gray-300 text-gray-700 px-4 py-2 rounded text-sm mb-2 sm:mb-0 w-full sm:w-auto">
               Change Organization URL
             </button>
-            <button className="bg-red-500 text-white px-4 py-2 rounded text-sm">
+            <button className="bg-red-500 text-white px-4 py-2 rounded text-sm w-full sm:w-auto">
               Create Custom URL
             </button>
           </div>
@@ -110,9 +112,9 @@ const OrganizationDetailsPage = () => {
                 Organization Logo
               </h2>
               <div className="border rounded-md p-2 bg-gray-50">
-                <div className="flex items-center">
+                <div className="flex flex-col md:flex-row items-center">
                   {/* Logo Image Portion */}
-                  <div className="w-1/2 h-20 border rounded-md bg-gray-100 flex items-center justify-center">
+                  <div className="w-full md:w-1/2 h-20 border rounded-md bg-gray-100 flex items-center justify-center">
                     {formData.organizationLogo ? (
                       <img
                         src={URL.createObjectURL(formData.organizationLogo)}
@@ -124,7 +126,7 @@ const OrganizationDetailsPage = () => {
                     )}
                   </div>
                   {/* Upload Button */}
-                  <div className="ml-20">
+                  <div className="mt-4 md:mt-0 md:ml-4">
                     <label
                       htmlFor="organizationLogo"
                       className="text-blue-500 underline cursor-pointer"
