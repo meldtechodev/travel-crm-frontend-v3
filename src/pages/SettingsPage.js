@@ -51,30 +51,32 @@ const SettingsPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-200 mb-12">
+    <div className="w-full mb-12 bg-gray-200">
       {/* Top Navigation Bar */}
-      <div className="flex flex-wrap fixed top-10 left-20 right-0 justify-between items-center px-4 sm:px-6 py-4 bg-white border-b">
+      <div className="flex flex-wrap fixed top-10 left-16 right-0 justify-between items-center px-4 sm:px-6 py-4 bg-white border-b">
         <h1 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-0">
           Settings
         </h1>
-        <div className="flex flex-wrap items-center justify-between space-x-4 sm:space-x-8 w-full sm:w-auto">
           <nav className="flex space-x-4 sm:space-x-6 overflow-x-auto">
-            <button className="text-gray-600 pb-1 hover:text-blue-600 whitespace-nowrap">
+            <button className="text-gray-600">
               Subscription
             </button>
             <Link to="/home/company-profile">
-              <button className="text-gray-600 pb-1 hover:text-blue-600 whitespace-nowrap">
+              <button className="text-gray-600">
                 Portal Settings
               </button>
             </Link>
           </nav>
-          <FiMoreVertical className="text-gray-400 text-xl cursor-pointer" />
-        </div>
+          <FiMoreVertical className="text-gray-400 text-xl cursor-pointer" 
+          onClick={() =>
+            document.getElementById("sidebar").classList.toggle("hidden")
+          }
+          />
       </div>
-
-      <div className="flex flex-col md:flex-row mt-10">
+      <div className="bg-gray-200 m-0  h-full">
+      <div className="flex md:flex-row  mt-6 bottom-0">
         {/* Sidebar */}
-        <aside className="w-64 bg-white shadow-md p-6 hidden md:block">
+        <aside className="w-64 bg-white shadow-md p-6 hidden md:block mt-2">
           <ul className="space-y-4">
             <li className="text-blue-600 font-medium cursor-pointer">Apps</li>
             <li className="text-gray-600 cursor-pointer">All</li>
@@ -85,14 +87,6 @@ const SettingsPage = () => {
         </aside>
 
         {/* Toggle Sidebar for small screens */}
-        <button
-          className="block md:hidden bg-blue-600 text-white px-4 py-2 m-4 rounded shadow-md"
-          onClick={() =>
-            document.getElementById("sidebar").classList.toggle("hidden")
-          }
-        >
-          Menu
-        </button>
         <aside
           id="sidebar"
           className="w-64 bg-white shadow-md p-6 hidden absolute top-0 left-0 z-10 h-full md:hidden"
@@ -186,6 +180,7 @@ const SettingsPage = () => {
           </div>
         </main>
       </div>
+    </div>
     </div>
   );
 };
