@@ -94,8 +94,8 @@ const ViewDepartments = () => {
     <div className="p-4 w-full bg-gray-50 h-full">
       <h1 className="text-xl font-bold mb-6">Department</h1>
 
-      <div className="flex items-center gap-2 w-full">
-        <div className="flex items-center bg-white border border-gray-300 rounded-md px-3 py-2 w-1/5">
+      <div className="flex items-center gap-2 w-full flex-col md:flex-row">
+        <div className="flex items-center bg-white border border-gray-300 rounded-md px-3 py-2 w-full md:w-1/5">
           <FaSearch className="text-gray-500 mr-2" />
           <input
             type="text"
@@ -105,10 +105,11 @@ const ViewDepartments = () => {
         </div>
 
         {/* Filter Button */}
-        <button className="flex items-center justify-center bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600">
+        <button className="flex items-center justify-center bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mt-2 md:mt-0 md:ml-2">
           <FiFilter />
         </button>
       </div>
+
       <hr className="my-4" />
       <div className="w-full overflow-auto">
         <TableComponent columns={columns} data={currentData} />
