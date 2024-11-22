@@ -7,11 +7,13 @@ const Department = ({ isOpen, onClose }) => {
   const [user, setUser] = useState({});
   const [token, setTokens] = useState(null);
   const [ipaddress, setIpAddress] = useState("");
-  const [department, setDepartment] = useState({
-    department_name: "",
+  const [departments, setDepartments] = useState([]);
+  const [formData, setFormData] = useState({
+    departmentName: "",
+    designationName: "",
     status: true,
-    id: 1,
-  })
+    departmentId: "",
+  });
 
   async function decryptToken(encryptedToken, key, iv) {
     const dec = new TextDecoder();
@@ -60,7 +62,6 @@ const Department = ({ isOpen, onClose }) => {
     return await decryptToken(encryptedToken, key, iv);
   }
 
-  // Example usage to make an authenticated request
   useEffect(() => {
     getDecryptedToken()
       .then((token) => {
@@ -79,33 +80,26 @@ const Department = ({ isOpen, onClose }) => {
       .catch((error) =>
         console.error("Error fetching protected resource:", error)
       );
+
+    // Fetch departments
+    axios
+      .get(`${api.baseUrl}/departments/getAll`)
+      .then((response) => {
+        setDepartments(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching departments:", error);
+      });
   }, []);
-
-  //   {
-  //     "departmentName": "Sales",
-  //     "createdBy": "Nilesh",
-  //     "modifiedBy": "Nilesh",
-  //     "ipaddress": "14.11.223.21",
-  //     "status": 1,
-  //     "isdelete": 0
-
-  // }
-
-  const [formData, setFormData] = useState({
-    departmentName: "",
-    designationtName: "",
-    status: true,
-  });
-  
 
   const handleReset = () => {
     setFormData({
       departmentName: "",
+      designationName: "",
       status: true,
+      departmentId: "",
     });
   };
-
-  const current = new Date();
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -118,7 +112,7 @@ const Department = ({ isOpen, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (formData.departmentName === "") {
+    if (formData.departmentId === "" || formData.designationName === "") {
       toast.error("Please fill the fields...", {
         position: "top-center",
         autoClose: 5000,
@@ -131,50 +125,43 @@ const Department = ({ isOpen, onClose }) => {
       return;
     }
 
-    if (department && department.id) {
-        const payload = {
-            designationName: formData.departmentName,
-            createdBy: user.username,
-            modifiedBy: user.username,
-            ipaddress: ipaddress,
-            status: formData.status ? 1 : 0,
-            isdelete: 0,
-            departments: {
-              id: 1,
-              },
-          };
+    const payload = {
+      designationName: formData.designationName,
+      createdBy: user.username,
+      modifiedBy: user.username,
+      ipaddress: ipaddress,
+      status: formData.status ? 1 : 0,
+      isdelete: 0,
+      departments: {
+        id: formData.departmentId,
+      },
+    };
 
-      // console.log(payload)
-      await axios
-        .post(`${api.baseUrl}/designations/create`, payload, {
-          headers: {
-            // 'Authorization': `Bearer ${token}`,
-            Accept: "Application/json",
-            "Access-Control-Allow-Origin": "*",
-          },
-        })
-        .then((response) => {
-          toast.success("Designation saved successfully.", {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-          setFormData({
-            departmentName: "",
-            status: true,
-          });
-        })
-        .catch((error) => console.log(error));
-    }
+    await axios
+      .post(`${api.baseUrl}/designations/create`, payload, {
+        headers: {
+          Accept: "Application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+      })
+      .then((response) => {
+        toast.success("Designation saved successfully.", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        handleReset();
+      })
+      .catch((error) => console.log(error));
   };
 
   useEffect(() => {
     axios
-      .get(`${api.baseUrl}/company/ipaddress`)
+      .get(`${api.baseUrl}/company/ipAddress`)
       .then((response) => {
         setIpAddress(response.data);
       })
@@ -217,32 +204,33 @@ const Department = ({ isOpen, onClose }) => {
             <select
               id="department"
               className="mt-1 p-2 w-full border rounded"
-              name="department"
-              value={formData.department || ""}
+              name="departmentId"
+              value={formData.departmentId}
               onChange={handleInputChange}
             >
               <option value="" disabled>
                 Select Department
               </option>
-              <option value="HR">HR</option>
-              <option value="Sales">Sales</option>
-             
+              {departments.map((dept) => (
+                <option key={dept.id} value={dept.id}>
+                  {dept.departmentName}
+                </option>
+              ))}
             </select>
           </div>
         </div>
 
         <div className="flex gap-2 mb-4">
           <div className="w-full">
-            <label htmlFor="countryName" className="block text-sm font-medium">
+            <label htmlFor="designationName" className="block text-sm font-medium">
               Designation Name
             </label>
             <input
               type="text"
-              // id="countryName"
               className="mt-1 p-2 w-full border rounded"
-              placeholder="Enter Department Name..."
-              name="departmentName"
-              value={formData.departmentName}
+              placeholder="Enter Designation Name..."
+              name="designationName"
+              value={formData.designationName}
               onChange={handleInputChange}
             />
           </div>

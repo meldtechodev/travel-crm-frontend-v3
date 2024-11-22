@@ -15,7 +15,7 @@ const CompanyProfilePage = () => {
 
   return (
     <>
-    <div className="min-h-screen bg-gray-200 p-6">
+    <div className="min-h-screen bg-gray-100 p-6">
       <div className="flex justify-between items-center w-full h-16 bg-white shadow-md mb-6 px-6">
         <h1 className="text-lg font-bold">Company Admin Center</h1>
         <button className="border border-dashed border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-2" onClick={() => setAddData(['Company'])}>
@@ -78,7 +78,7 @@ const CompanyProfilePage = () => {
           <button className="border border-dashed border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-2" onClick={() => setAddData(['Department'])}>
             Add Department
           </button>
-          <button className="border border-dashed border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-2">
+          <button className="border border-dashed border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-2" onClick={() => navigate("/home/view-departments")}>
             View Department
           </button>
         </div>
@@ -98,7 +98,7 @@ const CompanyProfilePage = () => {
         <button className="border border-dashed border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-2" onClick={() => setAddData(['Designation'])}>
             Add Designation
           </button>
-          <button className="border border-dashed border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-2">
+          <button className="border border-dashed border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-2" onClick={() => navigate("/home/view-designations")}>
             View Designation
           </button>
         </div>
