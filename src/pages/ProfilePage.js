@@ -43,8 +43,8 @@ const ProfilePage = () => {
       </div>
 
       {/* Profile Header */}
-      <div className="bg-white shadow-md rounded-md p-6 mb-6 flex justify-between items-center">
-        <div className="flex items-center space-x-6">
+      <div className="bg-white shadow-md rounded-md p-6 mb-6 flex flex-col md:flex-row justify-between items-center">
+        <div className="flex items-center space-x-6 mb-4 md:mb-0">
           {/* Profile Picture */}
           <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
             <span className="text-2xl font-bold text-gray-700">
@@ -62,7 +62,7 @@ const ProfilePage = () => {
         </div>
         <button
           onClick={() => setIsEditing(true)}
-          className="px-4 py-2 bg-blue-500 text-white rounded-md"
+          className="px-4 py-2 bg-blue-500  text-white rounded-md mt-4 md:mt-0"
         >
           Edit Profile
         </button>
