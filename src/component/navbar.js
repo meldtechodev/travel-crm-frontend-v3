@@ -336,13 +336,6 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-
-      {/* Sidebar for Mobile */}
-      {isOpen && (
-        <div className="md:hidden">
-          <Sidebar />
-        </div>
-      )}
     </div>
   );
 };
