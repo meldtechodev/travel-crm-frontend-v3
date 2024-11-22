@@ -16,17 +16,17 @@ const CompanyProfilePage = () => {
   return (
     <>
       <div className="min-h-screen bg-gray-100 p-6">
-      <div className="flex flex-col md:flex-row justify-between items-center w-full h-20 bg-white shadow-md mb-6 px-6">
-  <h1 className="text-lg font-bold text-center md:text-left">
-    Company Admin Center
-  </h1>
-  <button
-    className="border border-dashed border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-4 md:mb-0 w-full md:w-auto"
-    onClick={() => setAddData(["Company"])}
-  >
-    Add Branch/Company
-  </button>
-</div>
+        <div className="flex flex-col md:flex-row justify-between items-center w-full h-20 bg-white shadow-md mb-6 px-6">
+          <h1 className="text-lg font-bold text-center md:text-left">
+            Company Admin Center
+          </h1>
+          <button
+            className="border border-dashed border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-4 md:mb-0 w-full md:w-auto"
+            onClick={() => setAddData(["Company"])}
+          >
+            Add Branch/Company
+          </button>
+        </div>
 
         <div className="bg-white shadow-md rounded-md p-6 mb-6 flex flex-col md:flex-row items-center relative">
           {/* Left Section (Profile Picture and Info) */}

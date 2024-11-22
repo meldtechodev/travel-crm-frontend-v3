@@ -38,6 +38,10 @@ const ViewDepartments = () => {
       accessor: "departmentName",
     },
     {
+        header: "Ip Address",
+        accessor: "ipAddress",
+      },
+    {
       header: "Status",
       render: ({ row }) => (
         <div className="flex items-center justify-center">

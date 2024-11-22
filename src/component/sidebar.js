@@ -571,7 +571,7 @@ const Sidebar = () => {
           </div>
         </div>
         <div className="sidebar-item group relative hover:w-full shadow-sm">
-          <hr className="w-full h-[1px] bg-gray-200 border-0 my-2" />
+  <div className="w-full h-[1px] bg-transparent my-2 shadow-[0_0_10px_2px_rgba(255,255,255,0.7)]"></div>
           <div className="sidebar-item group relative hover:w-full">
             <div
               className="sidebar-icons flex flex-col justify-center  items-center  p-2 rounded cursor-pointer"
