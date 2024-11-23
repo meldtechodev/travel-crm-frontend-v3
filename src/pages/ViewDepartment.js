@@ -8,15 +8,37 @@ import api from "../apiConfig/config";
 
 const ViewDepartments = () => {
   const [data, setData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10); // Set the number of items per page
+  const [currentPage, setCurrentPage] = useState(0);
+  const [itemsPerPage] = useState(5); // Set the number of items per page
+  const [totalPages, setTotalPages] = useState(0);
 
-  // Calculate the data to display for the current page
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentData = data.slice(startIndex, startIndex + itemsPerPage);
+  // Fetch data from the API and set the initial state
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${api.baseUrl}/departments/getall`, {
+            params: {
+              page: currentPage,
+              size: itemsPerPage,
+              sortDirection: 'desc' // Adjust sorting if necessary
+            }
+          }
+        );
+        setData(
+          response.data.content.map((dept) => ({
+            ...dept,
+            status: !!dept.status, // Ensure status is a boolean value
+          }))
+        );
+        setTotalPages(response.data.totalPages);
+      } catch (error) {
+        console.error("Error fetching departments:", error);
+      }
+    };
 
-  // Total number of pages
-  const totalPages = Math.ceil(data.length / itemsPerPage);
+    fetchData();
+  }, [currentPage, itemsPerPage]);
 
   // Toggle the status of a specific row
   const handleStatusToggle = (id) => {
@@ -38,9 +60,9 @@ const ViewDepartments = () => {
       accessor: "departmentName",
     },
     {
-        header: "Ip Address",
-        accessor: "ipAddress",
-      },
+      header: "Ip Address",
+      accessor: "ipAddress",
+    },
     {
       header: "Status",
       render: ({ row }) => (
@@ -79,21 +101,6 @@ const ViewDepartments = () => {
     },
   ];
 
-  // Fetch data from the API and set the initial state
-  useEffect(() => {
-    axios
-      .get(`${api.baseUrl}/departments/getAll`)
-      .then((response) => {
-        setData(
-          response.data.map((dept) => ({
-            ...dept,
-            status: !!dept.status, // Ensure status is a boolean value
-          }))
-        );
-      })
-      .catch((error) => console.error("Error fetching departments:", error));
-  }, []);
-
   return (
     <div className="p-4 w-full bg-gray-50 h-full">
       <h1 className="text-xl font-bold mb-6">Department</h1>
@@ -116,18 +123,17 @@ const ViewDepartments = () => {
 
       <hr className="my-4" />
       <div className="w-full overflow-auto">
-        <TableComponent columns={columns} data={currentData} />
+        <TableComponent columns={columns} data={data} />
       </div>
 
-      {/* Pagination */}
       {/* Pagination */}
       <div className="flex justify-center items-center mt-4 space-x-4">
         {/* Previous Page Button */}
         <button
           className={`text-xl text-blue-500 hover:text-blue-700 ${
-            currentPage === 1 && "opacity-50 cursor-not-allowed"
+            currentPage === 0 && "opacity-50 cursor-not-allowed"
           }`}
-          disabled={currentPage === 1}
+          disabled={currentPage === 0}
           onClick={() => setCurrentPage((prev) => prev - 1)}
         >
           <IoArrowBack />
@@ -139,11 +145,11 @@ const ViewDepartments = () => {
             <button
               key={index}
               className={`px-2 py-1 border rounded ${
-                currentPage === index + 1
+                currentPage === index
                   ? "bg-blue-500 text-white"
                   : "text-blue-500 hover:bg-blue-100"
               }`}
-              onClick={() => setCurrentPage(index + 1)}
+              onClick={() => setCurrentPage(index)}
             >
               {index + 1}
             </button>
@@ -153,9 +159,9 @@ const ViewDepartments = () => {
         {/* Next Page Button */}
         <button
           className={`text-xl text-blue-500 hover:text-blue-700 ${
-            currentPage === totalPages && "opacity-50 cursor-not-allowed"
+            currentPage === totalPages - 1 && "opacity-50 cursor-not-allowed"
           }`}
-          disabled={currentPage === totalPages}
+          disabled={currentPage === totalPages - 1}
           onClick={() => setCurrentPage((prev) => prev + 1)}
         >
           <IoArrowForward />

@@ -88,7 +88,7 @@ const ViewDesignations = () => {
       .get(`${api.baseUrl}/designations/getall`)
       .then((response) => {
         setData(
-          response.data.map((designation) => ({
+          response.data.content.map((designation) => ({
             ...designation,
             departmentName: designation.departments.departmentName,
             status: designation.status ? "Active" : "Inactive",

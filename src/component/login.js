@@ -73,7 +73,7 @@ function Login() {
 
     try {
 
-      if (values.username.length === 0 || values.password.length === 0) {
+      if (values.email.length === 0 || values.password.length === 0) {
         setErrors('Please fill in all the fields');
         toast.error("Please fill in all the fields", {
           position: "top-center",
@@ -88,8 +88,8 @@ function Login() {
         return;
       }
 
-      axios.post(`${api.baseUrl}/signin`, {
-        username: values.username,
+      axios.post(`${api.baseUrl}/login`, {
+        email: values.email,
         password: values.password
       })
         .then(async (response) => {
@@ -315,14 +315,14 @@ function Login() {
                   <div className="mb-6">
                     <label className="block text-gray-700">Username</label>
                     <Field
-                      type="text"
-                      name="username"
-                      placeholder="Enter Your Username"
+                      type="email"
+                      name="email"
+                      placeholder="Enter Your Email"
                       className="border border-gray-300 p-2 w-60 rounded"
                     // value={values.username}
                     // onChange={handleChange}
                     />
-                    <ErrorMessage name="username" component="div" className="text-red-600 text-sm" />
+                    <ErrorMessage name="email" component="div" className="text-red-600 text-sm" />
                   </div>
                   <div className="mb-6">
                     <label className="block text-gray-700">Password</label>
@@ -384,9 +384,9 @@ function Login() {
               <div className="mb-6">
                 <label className="block text-gray-700">Username</label>
                 <Field
-                  type="text"
-                  name="username"
-                  placeholder="Enter Your Username"
+                  type="email"
+                  name="email"
+                  placeholder="Enter Your Email"
                   className="border border-gray-300 p-2 w-full rounded"
                 />
               </div>
