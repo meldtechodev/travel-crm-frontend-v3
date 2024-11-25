@@ -8,8 +8,6 @@ import { toast } from "react-toastify"
 
 
 function Login() {
-  // const [username, setUsername] = useState('');
-  // const [password, setPassword] = useState('');
   const [errors, setErrors] = useState('');
   const navigate = useNavigate()
 
@@ -94,7 +92,7 @@ function Login() {
         password: values.password
       })
         .then(async (response) => {
-          const token = response.data;
+          const token = response;
           await saveEncryptedToken(token);
           toast.success("Logged In", {
             position: "top-center",
@@ -108,8 +106,8 @@ function Login() {
           navigate('/home');
         })
         .catch(error => {
-          setErrors(error.response.data.error.message);
-          toast.error(error.response.data.error.message, {
+          // setErrors(error.response.data.error.message);
+          toast.error("Invalid username or password.", {
             position: "top-center",
             autoClose: 5000,
             hideProgressBar: false,
