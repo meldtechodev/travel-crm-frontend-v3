@@ -7,8 +7,6 @@ import * as Yup from 'yup';
 import { toast } from "react-toastify"
 
 function Login() {
-  // const [username, setUsername] = useState('');
-  // const [password, setPassword] = useState('');
   const [errors, setErrors] = useState('');
   const navigate = useNavigate()
 
@@ -61,7 +59,7 @@ function Login() {
   // console.log(ApiData)
 
   const validationSchema = Yup.object().shape({
-    username: Yup.string().required('Username is required'),
+    email: Yup.string().email().required('Email is required'),
     password: Yup.string().required('Password is required')
   });
 
@@ -73,7 +71,7 @@ function Login() {
 
     try {
 
-      if (values.username.length === 0 || values.password.length === 0) {
+      if (values.email.length === 0 || values.password.length === 0) {
         setErrors('Please fill in all the fields');
         toast.error("Please fill in all the fields", {
           position: "top-center",
@@ -88,12 +86,12 @@ function Login() {
         return;
       }
 
-      axios.post(`${api.baseUrl}/signin`, {
-        username: values.username,
+      axios.post(`${api.baseUrl}/login`, {
+        email: values.email,
         password: values.password
       })
         .then(async (response) => {
-          const token = response.data.accessToken;
+          const token = response;
           await saveEncryptedToken(token);
           toast.success("Logged In", {
             position: "top-center",
@@ -107,8 +105,8 @@ function Login() {
           navigate('/home');
         })
         .catch(error => {
-          setErrors(error.response.data.error.message);
-          toast.error(error.response.data.error.message, {
+          // setErrors(error.response.data.error.message);
+          toast.error("Invalid username or password.", {
             position: "top-center",
             autoClose: 5000,
             hideProgressBar: false,
@@ -304,25 +302,33 @@ function Login() {
               <img src="/assets/images/login/logo2.jpg" alt="Motherson" className="h-12" />
             </div>
             <Formik
-              initialValues={{ username: '', password: '' }}
-              // validationSchema={validationSchema}
+              initialValues={{ email: '', password: '' }}
+              validationSchema={validationSchema}
               onSubmit={handleLogin}
             >
               {({ isSubmitting }) => (
                 <Form>
 
-                  {/* {errors ? <p className='text-red-600 text-sm mb-4'>{errors}</p> : ''} */}
+                  {errors ? (toast.error("Please Fill in Required Fields", {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                  })) : ''}
                   <div className="mb-6">
-                    <label className="block text-gray-700">Username</label>
+                    <label className="block text-gray-700">Email</label>
                     <Field
-                      type="text"
-                      name="username"
-                      placeholder="Enter Your Username"
+                      type="email"
+                      name="email"
+                      placeholder="Enter Your Email"
                       className="border border-gray-300 p-2 w-60 rounded"
                     // value={values.username}
                     // onChange={handleChange}
                     />
-                    <ErrorMessage name="username" component="div" className="text-red-600 text-sm" />
+                    <ErrorMessage name="email" component="div" className="text-red-600 text-sm" />
                   </div>
                   <div className="mb-6">
                     <label className="block text-gray-700">Password</label>
@@ -375,18 +381,26 @@ function Login() {
             <img src="/assets/images/login/logo2.jpg" alt="Motherson" className="h-12" />
           </div>
           <Formik
-            initialValues={{ username: "", password: "" }}
-            // validate={validationSchema}
+            initialValues={{ email: "", password: "" }}
+            validate={validationSchema}
             onSubmit={handleLogin}
           >
-            {({ isSubmitting, values, handleChange }) => (<Form>
-              {/* {errors ? <p className='text-red-600 text-sm mb-4'>{errors}</p> : ''} */}
+            {({ isSubmitting, values, handleChange, errors }) => (<Form>
+              {errors ? (toast.error("Please Fill in Required Fields", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+              })) : ''}
               <div className="mb-6">
-                <label className="block text-gray-700">Username</label>
+                <label className="block text-gray-700">Email</label>
                 <Field
-                  type="text"
-                  name="username"
-                  placeholder="Enter Your Username"
+                  type="email"
+                  name="email"
+                  placeholder="Enter Your Email"
                   className="border border-gray-300 p-2 w-full rounded"
                 />
               </div>
