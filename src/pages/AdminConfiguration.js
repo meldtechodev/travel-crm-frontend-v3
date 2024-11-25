@@ -41,7 +41,7 @@ const AdminConfiguration = () => {
     await axios.post(`${api.baseUrl}/signup`, formData)
       .then(res => console.log(res.data))
       .catch(err => console.log(err));
-    // navigate('/success');
+    navigate('/success');
   };
 
   return (
