@@ -93,7 +93,7 @@ function Login() {
         password: values.password
       })
         .then(async (response) => {
-          const token = response.data.accessToken;
+          const token = response.data;
           await saveEncryptedToken(token);
           toast.success("Logged In", {
             position: "top-center",
