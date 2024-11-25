@@ -9,6 +9,8 @@ import Quickstart from './component/Quickstart'
 import Dashboard from './component/Dashboard'
 import Navbar from './component/navbar'
 import Sidebar from './component/sidebar'
+import ViewDepartments from './pages/ViewDepartment'
+import ViewDesignations from './pages/ViewDesignation'
 
 const PageRoute = () => {
 
@@ -39,6 +41,14 @@ const PageRoute = () => {
             <Route
               path="/organization-details"
               element={<OrganizationDetailsPage />}
+            />
+            <Route
+              path="/view-departments"
+              element={<ViewDepartments />}
+            />
+            <Route
+              path="/view-designations"
+              element={<ViewDesignations />}
             />
             <Route path='/' />
             {/* Add other routes as needed */}

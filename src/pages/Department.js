@@ -214,7 +214,7 @@ const Department = ({ isOpen, onClose, departmentData }) => {
   return (
     <div
       className={`fixed top-0 right-0 h-full bg-gray-200 shadow-lg transform transition-transform duration-500 z-50 ${isOpen ? "translate-x-0" : "translate-x-[750px]"
-        } mt-4 sm:mt-8 md:mt-12 w-full sm:w-[calc(100%-120px)] md:w-[700px]`}
+        } mt-4 sm:mt-8 md:mt-12 w-full sm:w-[calc(100%-120px)] md:w-[700px] lg:w-[550px]`}
     >
       {/* "X" button positioned outside the form box */}
       <button

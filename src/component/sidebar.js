@@ -14,6 +14,7 @@ import { BsGraphUpArrow } from "react-icons/bs";
 // Pages
 import { CiSettings } from "react-icons/ci";
 import Department from "../pages/Department";
+import Designation from "../pages/Designation";
 import NewCompanyForm from "../pages/NewCompanyForm";
 
 const Sidebar = () => {
@@ -570,7 +571,7 @@ const Sidebar = () => {
           </div>
         </div>
         <div className="sidebar-item group relative hover:w-full shadow-sm">
-          <hr className="w-full h-[1px] bg-gray-200 border-0 my-2" />
+  <div className="w-full h-[1px] bg-transparent my-2 shadow-[0_0_10px_2px_rgba(255,255,255,0.7)]"></div>
           <div className="sidebar-item group relative hover:w-full">
             <div
               className="sidebar-icons flex flex-col justify-center  items-center  p-2 rounded cursor-pointer"
@@ -750,6 +751,15 @@ const Sidebar = () => {
       >
         <Department
           isOpen={addData[0] === "Department"}
+          onClose={() => setAddData([])}
+        />
+      </div>
+      <div
+        className="submenu-menu"
+        style={{ right: addData[0] === "Designation" ? "0" : "-100%" }}
+      >
+        <Designation
+          isOpen={addData[0] === "Designation"}
           onClose={() => setAddData([])}
         />
       </div>

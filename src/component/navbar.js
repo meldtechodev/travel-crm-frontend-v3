@@ -237,7 +237,7 @@ const Navbar = () => {
                 className="hidden md:flex items-center cursor-pointer"
                 onClick={() => setShowSearchField(!showSearchField)}
               >
-                <IoSearch className="text-[#B4B4B8] hover:text-white w-6 h-6" />
+                <IoSearch className="text-[#B4B4B8] hover:text-white text-3xl md:text-3xl cursor-pointer w-6 h-6 mt-2 ml-2" />
               </div>
               {/* <Link to='/home/department-dashboard'>
                 <p>Dashboard</p>
@@ -336,13 +336,6 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-
-      {/* Sidebar for Mobile */}
-      {isOpen && (
-        <div className="md:hidden">
-          <Sidebar />
-        </div>
-      )}
     </div>
   );
 };

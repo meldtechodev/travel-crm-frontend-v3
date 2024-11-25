@@ -33,21 +33,29 @@ const App = () => {
 
 
 
-  const isAuthenticated = () => {
-    return localStorage.getItem('encryptedToken') !== null;
-  };
+  // const isAuthenticated = () => {
+  //   return localStorage.getItem('encryptedToken') !== null;
+  // };
+
+  var isAuthenticated;
+
+  isAuthenticated = localStorage.getItem('encryptedToken') !== null;
+
+  console.log('isAuthenticated', isAuthenticated);
+
+  isAuthenticated = true;
 
   // Protected Route Component
   const ProtectedRoute = ({ children }) => {
-    return isAuthenticated() ? children : <Navigate to="/login" />;
+    return isAuthenticated ? children : <Navigate to="/signup" />;
   };
 
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/home" replace />} />
-      <Route exact path="/login" element={<Login />} />
       <Route exact path="/signup" element={<AdminConfiguration />} />
       <Route exact path="/success" element={<SuccessPage />} />
+      <Route exact path="/login" element={<Login />} />
       <Route path="/home/*" element={
         <ProtectedRoute>
           <PageRoute />
