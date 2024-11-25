@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {Link ,useNavigate } from 'react-router-dom';
 import api from '../apiConfig/config';
 import axios from 'axios';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
@@ -151,6 +151,9 @@ const AdminConfiguration = () => {
             >
               Continue →
             </button>
+            <div className="mt-4">
+                    <Link to="/login" className="text-red-600 hover:underline">Already have an account</Link>
+                  </div>
           </div>
         </form>
       </div>
