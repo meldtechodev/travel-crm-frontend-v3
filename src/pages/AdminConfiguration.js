@@ -2,28 +2,30 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../apiConfig/config';
 import axios from 'axios';
+import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 
 const AdminConfiguration = () => {
-
-
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
     createdBy: 'alex',
-    modifiedBy: "alex",
-    ipaddress: "",
+    modifiedBy: 'alex',
+    ipaddress: '',
     status: 1,
-    isdelete: 0
+    isdelete: 0,
   });
+
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
 
   // Fetch IP address and set in form data
   useEffect(() => {
-    axios.get(`${api.baseUrl}/company/ipAddress`)
+    axios
+      .get(`${api.baseUrl}/company/ipAddress`)
       .then((response) => {
-        setFormData(prevState => ({
+        setFormData((prevState) => ({
           ...prevState,
-          ipaddress: response.data
+          ipaddress: response.data,
         }));
       })
       .catch((error) => {
@@ -41,29 +43,19 @@ const AdminConfiguration = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // const formDatasend = new FormData();
-    // formDatasend.append('name', formData.name);
-    // formDatasend.append('email', formData.email);
-    // formDatasend.append('password', formData.password);
-    // formDatasend.append('ipaddress', "192.168.1.43");
-    // formDatasend.append('status', 1);
-    // formDatasend.append('isdelete', 0);
-    // formDatasend.append('createdby', "alex");
-    // formDatasend.append('modifiedby', "alex");
-
     const formDataSend = {
       ...formData,
       createdBy: formData.name,
       modifiedBy: formData.name,
-    }
+    };
 
-
-    await axios.post(`${api.baseUrl}/signup`, formDataSend)
-      .then(res => {
-        console.log(res.data)
+    await axios
+      .post(`${api.baseUrl}/signup`, formDataSend)
+      .then((res) => {
+        console.log(res.data);
         navigate('/success');
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   return (
@@ -122,23 +114,35 @@ const AdminConfiguration = () => {
               required
             />
           </div>
-          <div className="mb-6">
+          <div className="mb-6 relative">
             <label
               htmlFor="adminPassword"
               className="block text-gray-700 font-medium mb-2"
             >
-              Admin Password (At least 6 characters)
+              Admin Password (At least 8 characters)
             </label>
             <input
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               id="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
               className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
               placeholder="Enter admin password"
+              minLength={8}
               required
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-10 text-gray-500 focus:outline-none"
+            >
+              {showPassword ? (
+                <AiOutlineEyeInvisible size={20} />
+              ) : (
+                <AiOutlineEye size={20} />
+              )}
+            </button>
           </div>
           <div className="flex justify-between items-center">
             <button
