@@ -201,7 +201,7 @@ const Department = ({ isOpen, onClose, departmentData }) => {
 
   const [ipaddress, setIpAddress] = useState("")
   useEffect(() => {
-    axios.get(`${api.baseUrl}/ipAddress`)
+    axios.get(`${api.baseUrl}/company/ipAddress`)
       .then((response) => {
         setIpAddress(response.data)
       })
