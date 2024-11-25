@@ -61,7 +61,7 @@ function Login() {
   // console.log(ApiData)
 
   const validationSchema = Yup.object().shape({
-    username: Yup.string().required('Username is required'),
+    email: Yup.string().email().required('Email is required'),
     password: Yup.string().required('Password is required')
   });
 
@@ -304,16 +304,24 @@ function Login() {
               <img src="/assets/images/login/logo2.jpg" alt="Motherson" className="h-12" />
             </div>
             <Formik
-              initialValues={{ username: '', password: '' }}
-              // validationSchema={validationSchema}
+              initialValues={{ email: '', password: '' }}
+              validationSchema={validationSchema}
               onSubmit={handleLogin}
             >
               {({ isSubmitting }) => (
                 <Form>
 
-                  {/* {errors ? <p className='text-red-600 text-sm mb-4'>{errors}</p> : ''} */}
+                  {errors ? (toast.error("Please Fill in Required Fields", {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                  })) : ''}
                   <div className="mb-6">
-                    <label className="block text-gray-700">Username</label>
+                    <label className="block text-gray-700">Email</label>
                     <Field
                       type="email"
                       name="email"
@@ -375,14 +383,22 @@ function Login() {
             <img src="/assets/images/login/logo2.jpg" alt="Motherson" className="h-12" />
           </div>
           <Formik
-            initialValues={{ username: "", password: "" }}
-            // validate={validationSchema}
+            initialValues={{ email: "", password: "" }}
+            validate={validationSchema}
             onSubmit={handleLogin}
           >
-            {({ isSubmitting, values, handleChange }) => (<Form>
-              {/* {errors ? <p className='text-red-600 text-sm mb-4'>{errors}</p> : ''} */}
+            {({ isSubmitting, values, handleChange, errors }) => (<Form>
+              {errors ? (toast.error("Please Fill in Required Fields", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+              })) : ''}
               <div className="mb-6">
-                <label className="block text-gray-700">Username</label>
+                <label className="block text-gray-700">Email</label>
                 <Field
                   type="email"
                   name="email"
