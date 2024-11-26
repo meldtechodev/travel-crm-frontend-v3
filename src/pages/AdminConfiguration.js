@@ -151,9 +151,6 @@ const AdminConfiguration = () => {
             >
               Continue →
             </button>
-            <div className="mt-4">
-                    <Link to="/login" className="text-red-600 hover:underline">Already have an account</Link>
-                  </div>
           </div>
         </form>
       </div>

@@ -174,16 +174,6 @@ function Login() {
             >
               {({ isSubmitting }) => (
                 <Form>
-
-                  {errors ? (toast.error("Please Fill in Required Fields", {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                  })) : ''}
                   <div className="mb-6">
                     <label className="block text-gray-700">Email</label>
                     <Field
@@ -209,9 +199,6 @@ function Login() {
                     <ErrorMessage name="password" component="div" className="text-red-600 text-sm" />
                   </div>
                   <button type="submit" className="bg-red-600 text-white p-2 w-60 rounded" disabled={isSubmitting}>Log In</button>
-                  <div className="mt-4">
-                    <Link to="/signup" className="text-red-600 hover:underline">Create New Account</Link>
-                  </div>
                 </Form>
               )}
             </Formik>
@@ -255,15 +242,6 @@ function Login() {
             onSubmit={handleLogin}
           >
             {({ isSubmitting, values, handleChange, errors }) => (<Form>
-              {errors ? (toast.error("Please Fill in Required Fields", {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-              })) : ''}
               <div className="mb-6">
                 <label className="block text-gray-700">Email</label>
                 <Field
@@ -272,6 +250,7 @@ function Login() {
                   placeholder="Enter Your Email"
                   className="border border-gray-300 p-2 w-full rounded"
                 />
+                <ErrorMessage name="email" component="div" className="text-red-600 text-sm" />
               </div>
               <div className="mb-6">
                 <label className="block text-gray-700">Password</label>
@@ -281,11 +260,9 @@ function Login() {
                   className="border border-gray-300 p-2 w-full rounded"
                   name="password"
                 />
+                <ErrorMessage name="password" component="div" className="text-red-600 text-sm" />
               </div>
               <button type="submit" className="bg-red-600 text-white p-2 w-full rounded">Log In</button>
-              <div className="mt-4 text-center">
-                    <Link to="/home/adminConfiguration" className="text-red-600 hover:underline">Create New Account</Link>
-                  </div>
             </Form>)}
           </Formik>
         </div>

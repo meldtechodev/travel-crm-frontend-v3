@@ -16,6 +16,16 @@ import { CiSettings } from "react-icons/ci";
 import Department from "../pages/Department";
 import Designation from "../pages/Designation";
 import NewCompanyForm from "../pages/NewCompanyForm";
+import Country from "../pages/Country";
+import State from "../pages/State";
+import Destination from "../pages/Destination";
+import Hotel from "../pages/Hotel";
+import Itinerary from "../pages/Itinerary";
+import NewTransportationForm from "../pages/NewTransportationForm";
+import NewPolicyForm from "../pages/NewPolicyForm";
+import NewVendorForm from "../pages/NewVendorForm";
+import NewQuery from "../pages/NewQuery";
+import NewPackageForm from "../pages/NewPackageForm";
 
 const Sidebar = () => {
   const [homeStyle, setHomeStyle] = useState([]);
@@ -646,7 +656,7 @@ const Sidebar = () => {
           </div>
         </div>
       </div>
-      {/* <div
+      <div
         className="submenu-menu"
         style={{ right: addData[0] === "Country" ? "0" : "-100%" }}
       >
@@ -678,52 +688,10 @@ const Sidebar = () => {
       </div>
       <div
         className="submenu-menu"
-        style={{ right: addData[0] === "Roles" ? "0" : "-100%" }}
-      >
-        <Roles isOpen={addData[0] === "Roles"} onClose={() => setAddData([])} />
-      </div>
-      <div
-        className="submenu-menu"
-        style={{ right: addData[0] === "NewMember" ? "0" : "-100%" }}
-      >
-        <NewMember
-          isOpen={addData[0] === "NewMember"}
-          onClose={() => setAddData([])}
-        />
-      </div>
-      <div
-        className="submenu-menu"
         style={{ right: addData[0] === "Itinerary" ? "0" : "-100%" }}
       >
         <Itinerary
           isOpen={addData[0] === "Itinerary"}
-          onClose={() => setAddData([])}
-        />
-      </div>
-      <div
-        className="submenu-menu"
-        style={{ right: addData[0] === "NewPackageForm" ? "0" : "-100%" }}
-      >
-        <NewPackageForm
-          isOpen={addData[0] === "NewPackageForm"}
-          onClose={() => setAddData([])}
-        />
-      </div>
-      <div
-        className="submenu-menu"
-        style={{ right: addData[0] === "NewQuery" ? "0" : "-100%" }}
-      >
-        <NewQuery
-          isOpen={addData[0] === "NewQuery"}
-          onClose={() => setAddData([])}
-        />
-      </div>
-      <div
-        className="submenu-menu"
-        style={{ right: addData[0] === "Vendors" ? "0" : "-100%" }}
-      >
-        <NewVendorForm
-          isOpen={addData[0] === "Vendors"}
           onClose={() => setAddData([])}
         />
       </div>
@@ -744,7 +712,52 @@ const Sidebar = () => {
           isOpen={addData[0] === "Policies"}
           onClose={() => setAddData([])}
         />
-      </div> */}
+      </div>
+      <div
+        className="submenu-menu"
+        style={{ right: addData[0] === "Vendors" ? "0" : "-100%" }}
+      >
+        <NewVendorForm
+          isOpen={addData[0] === "Vendors"}
+          onClose={() => setAddData([])}
+        />
+      </div>
+      <div
+        className="submenu-menu"
+        style={{ right: addData[0] === "NewQuery" ? "0" : "-100%" }}
+      >
+        <NewQuery
+          isOpen={addData[0] === "NewQuery"}
+          onClose={() => setAddData([])}
+        />
+      </div>
+      <div
+        className="submenu-menu"
+        style={{ right: addData[0] === "NewPackageForm" ? "0" : "-100%" }}
+      >
+        <NewPackageForm
+          isOpen={addData[0] === "NewPackageForm"}
+          onClose={() => setAddData([])}
+        />
+      </div>
+      
+      {/*
+      <div
+        className="submenu-menu"
+        style={{ right: addData[0] === "Roles" ? "0" : "-100%" }}
+      >
+        <Roles isOpen={addData[0] === "Roles"} onClose={() => setAddData([])} />
+      </div>
+      <div
+        className="submenu-menu"
+        style={{ right: addData[0] === "NewMember" ? "0" : "-100%" }}
+      >
+        <NewMember
+          isOpen={addData[0] === "NewMember"}
+          onClose={() => setAddData([])}
+        />
+      </div>
+    */}
       <div
         className="submenu-menu"
         style={{ right: addData[0] === "Department" ? "0" : "-100%" }}

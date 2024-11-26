@@ -3,11 +3,11 @@ import React, { useEffect, useRef, useState } from "react";
 import api from "../apiConfig/config";
 import { toast } from "react-toastify";
 
-const Department = ({ isOpen, onClose }) => {
+const Designation = ({ isOpen, onClose, designationData }) => {
   const [user, setUser] = useState({});
   const [token, setTokens] = useState(null);
   const [ipaddress, setIpAddress] = useState("");
-  const [departments, setDepartments] = useState([]);
+  const [departments, setDepartments] = useState(null);
   const [formData, setFormData] = useState({
     departmentName: "",
     designationName: "",
@@ -83,9 +83,9 @@ const Department = ({ isOpen, onClose }) => {
 
     // Fetch departments
     axios
-      .get(`${api.baseUrl}/departments/getAll`)
+      .get(`${api.baseUrl}/departments/getall`)
       .then((response) => {
-        setDepartments(response.data);
+        setDepartments(response.data.content);
       })
       .catch((error) => {
         console.error("Error fetching departments:", error);
@@ -109,6 +109,8 @@ const Department = ({ isOpen, onClose }) => {
     });
   };
 
+  const current = new Date()
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -125,38 +127,82 @@ const Department = ({ isOpen, onClose }) => {
       return;
     }
 
-    const payload = {
-      designationName: formData.designationName,
-      createdBy: user.username,
-      modifiedBy: user.username,
-      ipaddress: ipaddress,
-      status: formData.status ? 1 : 0,
-      isdelete: 0,
-      departments: {
-        id: formData.departmentId,
-      },
-    };
-
-    await axios
-      .post(`${api.baseUrl}/designations/create`, payload, {
-        headers: {
-          Accept: "Application/json",
-          "Access-Control-Allow-Origin": "*",
+    if (designationData && designationData.id) {
+      const payload = {
+        designationName: formData.designationName,
+        departments: {
+          id: formData.departmentId,
         },
+        createdBy: formData.createdBy,
+        modifiedBy: user.username,
+        ipaddress: ipaddress,
+        status: formData.status ? 1 : 0,
+        isdelete: 0,
+        createdDate: designationData.createdDate,
+        modifiedDate: current.getDate
+      }
+
+      await axios.put(`${api.baseUrl}/designations/updatebyid/${designationData.id}`, payload, {
+        headers: {
+          // 'Authorization': `Bearer ${token}`,
+          'Accept': 'Application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
       })
-      .then((response) => {
-        toast.success("Designation saved successfully.", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
+        .then(response => {
+          toast.success("Department updated successfully.", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          setFormData({
+            departmentName: "", status: true
+          })
+        })
+        .catch(error => {
+          toast.error("Error updating country...");
+          console.log(error)
         });
-        handleReset();
-      })
-      .catch((error) => console.log(error));
+    } else {
+      const payload = {
+        designationName: formData.designationName,
+        createdBy: user.username,
+        modifiedBy: user.username,
+        ipaddress: ipaddress,
+        status: formData.status ? 1 : 0,
+        isdelete: 0,
+        departments: {
+          id: formData.departmentId,
+        },
+      };
+  
+      await axios
+        .post(`${api.baseUrl}/designations/create`, payload, {
+          headers: {
+            Accept: "Application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
+        })
+        .then((response) => {
+          toast.success("Designation saved successfully.", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          handleReset();
+        })
+        .catch((error) => console.log(error));
+
+    }
+
   };
 
   useEffect(() => {
@@ -169,6 +215,19 @@ const Department = ({ isOpen, onClose }) => {
         console.error("Error fetching data:", error);
       });
   }, []);
+
+  useEffect(() => {
+    if (designationData && designationData.id) {
+      setFormData({
+        ...designationData,
+        departmentName: designationData.departmentName || "",
+        departmentId: designationData.departments.id || "",
+        status: designationData.status || true,
+        createdBy: designationData.createdBy || "",
+        modifiedBy: designationData.modifiedBy || "",
+      });
+    }
+  }, [designationData]);
 
   return (
     <div
@@ -211,7 +270,7 @@ const Department = ({ isOpen, onClose }) => {
               <option value="" disabled>
                 Select Department
               </option>
-              {departments.map((dept) => (
+              {departments !== null && departments.map((dept) => (
                 <option key={dept.id} value={dept.id}>
                   {dept.departmentName}
                 </option>
@@ -277,4 +336,4 @@ const Department = ({ isOpen, onClose }) => {
   );
 };
 
-export default Department;
+export default Designation;

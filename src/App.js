@@ -43,8 +43,6 @@ const App = () => {
 
   console.log('isAuthenticated', isAuthenticated);
 
-  isAuthenticated = true;
-
   // Protected Route Component
   const ProtectedRoute = ({ children }) => {
     return isAuthenticated ? children : <Navigate to="/signup" />;
