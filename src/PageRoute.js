@@ -11,8 +11,6 @@ import Navbar from './component/navbar'
 import Sidebar from './component/sidebar'
 import ViewDepartments from './pages/ViewDepartment'
 import ViewDesignations from './pages/ViewDesignation'
-import Bookings from './pages/Bookings'
-import PackageDashboard from './pages/PackageDashboard'
 
 const PageRoute = () => {
 
@@ -23,19 +21,19 @@ const PageRoute = () => {
         <Sidebar />
         <div className='h-full w-full overflow-y-auto'>
           <Routes>
-            <Route path='' element={<Quickstart />} />
+            <Route path='/quickstart' element={<Quickstart />} />
             <Route path="/dashboard" element={<Dashboard />} />
             {/* <Route path="/packages" element={<Packages />} /> 
+            <Route path="/packageDashboard" element={<PackageDashboard />} />
             <Route path={'/package-list/:id'} element={<CustomerProfile />} />
             <Route path="/master-list" element={<MasterList />} />
             <Route path="/master-list/hotel" element={<HotelMaster />} />
             <Route path="/master-list/hotel" element={<HotelMaster />} />
             <Route path='/master-list/hotel/:id' element={<HotelMasterAddRoom />} />
             <Route path="/package-view" element={<CustomerProfile />} />
+            <Route path="/booking-dashboard" element={<Bookings />} />
             <Route path="/all-members" element={<AllMembers />} />
             <Route path="/profile-page" element={<ProfilePage />} /> */}
-            <Route path="/booking-dashboard" element={<Bookings />} />
-            <Route path="/packageDashboard" element={<PackageDashboard />} />
             {/* <Route path="/department-dashboard" element={<CompanyHierarchy />} /> */}
             <Route path="/profile-page" element={<ProfilePage />} />
             <Route path="/app-settings" element={<SettingsPage />} />
@@ -52,7 +50,7 @@ const PageRoute = () => {
               path="/view-designations"
               element={<ViewDesignations />}
             />
-            <Route path='/' />
+            {/* <Route path='/' /> */}
             {/* Add other routes as needed */}
           </Routes>
         </div>

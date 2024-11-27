@@ -4,10 +4,13 @@ import Login from './component/login';
 import PageRoute from './PageRoute';
 import AdminConfiguration from './pages/AdminConfiguration';
 import SuccessPage from './pages/SuccessPage';
+import axios from 'axios';
+import api from './apiConfig/config';
 
 const App = () => {
 
   const navigate = useNavigate();
+  const [allUsers, setAllUsers] = useState([])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -37,15 +40,22 @@ const App = () => {
   //   return localStorage.getItem('encryptedToken') !== null;
   // };
 
-  var isAuthenticated;
+  useEffect(() => {
+    axios.get(`${api.baseUrl}/usergetall`)
+      .then(response => {
+        setAllUsers(response.data)
+      })
+      .catch(error => console.error(error))
+  }, [])
 
-  isAuthenticated = localStorage.getItem('encryptedToken') !== null;
+  var isAuthenticated = localStorage.getItem('encryptedToken') !== null ? true : false
 
-  console.log('isAuthenticated', isAuthenticated);
+  // console.log('isAuthenticated', isAuthenticated);
+
 
   // Protected Route Component
   const ProtectedRoute = ({ children }) => {
-    return isAuthenticated ? children : <Navigate to="/signup" />;
+    return isAuthenticated ? children : allUsers.length === 0 ? <Navigate to="/signup" /> : <Navigate to="/login" />;
   };
 
   return (
