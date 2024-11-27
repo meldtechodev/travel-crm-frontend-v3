@@ -21,7 +21,7 @@ const PageRoute = () => {
         <Sidebar />
         <div className='h-full w-full overflow-y-auto'>
           <Routes>
-            <Route path='' element={<Quickstart />} />
+            <Route path='/quickstart' element={<Quickstart />} />
             <Route path="/dashboard" element={<Dashboard />} />
             {/* <Route path="/packages" element={<Packages />} /> 
             <Route path="/packageDashboard" element={<PackageDashboard />} />
@@ -50,7 +50,7 @@ const PageRoute = () => {
               path="/view-designations"
               element={<ViewDesignations />}
             />
-            <Route path='/' />
+            {/* <Route path='/' /> */}
             {/* Add other routes as needed */}
           </Routes>
         </div>
