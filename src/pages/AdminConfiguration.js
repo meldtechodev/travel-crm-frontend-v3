@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import {Link ,useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import api from '../apiConfig/config';
 import axios from 'axios';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 
 const AdminConfiguration = () => {
+  const [allUsers, setAllUsers] = useState([])
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -20,8 +21,7 @@ const AdminConfiguration = () => {
 
   // Fetch IP address and set in form data
   useEffect(() => {
-    axios
-      .get(`${api.baseUrl}/company/ipAddress`)
+    axios.get(`${api.baseUrl}/company/ipAddress`)
       .then((response) => {
         setFormData((prevState) => ({
           ...prevState,
@@ -31,6 +31,22 @@ const AdminConfiguration = () => {
       .catch((error) => {
         console.error('Error fetching IP address:', error);
       });
+
+    axios.get(`${api.baseUrl}/company/ipAddress`)
+      .then((response) => {
+        setFormData((prevState) => ({
+          ...prevState,
+          ipaddress: response.data,
+        }));
+      })
+      .catch((error) => {
+        console.error('Error fetching IP address:', error);
+      });
+
+    axios.get(`${api.baseUrl}/usergetall`)
+      .then(response => response.data.length === 0 ? <Navigate to="/login" /> : setAllUsers([]))
+      .catch(error => console.error(error))
+
   }, []);
 
   const navigate = useNavigate();
@@ -47,7 +63,8 @@ const AdminConfiguration = () => {
       ...formData,
       createdBy: formData.name,
       modifiedBy: formData.name,
-    };
+    }
+    // console.log(formDataSend)
 
     await axios
       .post(`${api.baseUrl}/signup`, formDataSend)
@@ -151,6 +168,9 @@ const AdminConfiguration = () => {
             >
               Continue →
             </button>
+            <div className="mt-4">
+              <Link to="/login" className="text-red-600 hover:underline">Already have an account</Link>
+            </div>
           </div>
         </form>
       </div>

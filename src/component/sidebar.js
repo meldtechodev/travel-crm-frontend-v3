@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 // Icons
@@ -16,45 +16,22 @@ import { CiSettings } from "react-icons/ci";
 import Department from "../pages/Department";
 import Designation from "../pages/Designation";
 import NewCompanyForm from "../pages/NewCompanyForm";
-import Country from "../pages/Country";
-import State from "../pages/State";
-import Destination from "../pages/Destination";
-import Hotel from "../pages/Hotel";
-import Itinerary from "../pages/Itinerary";
-import NewTransportationForm from "../pages/NewTransportationForm";
-import NewPolicyForm from "../pages/NewPolicyForm";
-import NewVendorForm from "../pages/NewVendorForm";
-import NewQuery from "../pages/NewQuery";
-import NewPackageForm from "../pages/NewPackageForm";
+import axios from "axios";
+import api from "../apiConfig/config";
 
 const Sidebar = () => {
-  const [homeStyle, setHomeStyle] = useState([]);
-  const [addData, setAddData] = useState([]);
+  const [homeStyle, setHomeStyle] = useState();
+  const [addData, setAddData] = useState();
+  const [module, setModule] = useState([])
 
-  // const showNewMember = () => {
-  //   setAddNewMember(true)
-  // }
-  // const showRole = () => {
-  //   setAddRole(true)
-  // }
-  // const showState = () => {
-  //   setAddData([])
-  //   setAddData(['state'])
-  // }
-  // const showDestination = () => {
-  //   setAddDestination(true)
-  // }
-  // const showHotel = () => {
-  //   setAddHotel(true)
-  // }
-
-  // const showItinerary = () => {
-  //   setAddItinerary(true)
-  // }
-  // const showNewPackage = () => {
-  //   setAddNewPackage(true)
-  // }
-
+  useEffect(() => {
+    axios.get(`${api.baseUrl}/modules/getall`)
+      .then(response =>
+        setModule(response.data))
+      .catch(error =>
+        console.error(error)
+      )
+  }, [])
   const navigate = useNavigate();
 
   return (
@@ -64,22 +41,20 @@ const Sidebar = () => {
         style={{ zIndex: "2" }}
       >
         <div
-          className="sidebar-menu flex flex-col justify-between items-center space-y-4 overflow-x-hidden overflow-y-auto"
-        >
+          className="sidebar-menu flex flex-col justify-between items-center space-y-4 overflow-x-hidden overflow-y-auto">
           {/* Sidebar Home Item */}
           <div className="sidebar-item group relative">
             <div
               className="sidebar-icons flex flex-col justify-center items-center rounded cursor-pointer m-0 p-0  w-full"
               style={{ minWidth: "100%" }}
-              onMouseEnter={() => setHomeStyle(["Home"])}
-              onMouseLeave={() => setHomeStyle([])}
-            >
+              onMouseEnter={() => setHomeStyle("Home")}
+              onMouseLeave={() => setHomeStyle()}>
               <FaHome
                 size="30px"
-                color={homeStyle[0] === "Home" ? "#fff" : "#B4B4B8"}
+                color={homeStyle === "Home" ? "#fff" : "#B4B4B8"}
               />
               <p
-                className={`menu-name text-[14px] mt-2 ${homeStyle[0] === "Home" ? "text-white" : "text-[#B4B4B8]"
+                className={`menu-name text-[14px] mt-2 ${homeStyle === "Home" ? "text-white" : "text-[#B4B4B8]"
                   } `}
               >
                 Home
@@ -92,93 +67,79 @@ const Sidebar = () => {
             >
               <div className="flex flex-col">
                 <p className="font-bold text-lg">Home</p>
-                {/* <Link to='/home' className="block px-4 py-2 hover:bg-gray-600 rounded"> */}
-                <Link to="/home">
-                  <button class="w-[90%] mt-6 p-4 flex justify-between items-center bg-gradient-to-r from-[#FFF9F9] to-[#F7C6C6]  cursor-pointer border-none text-left shadow-md my-3">
-                    Quickstart
-                  </button>
-                </Link>
-                {/* </Link> */}
-                {/* <Link to='/home/dashboard' className="block px-4 py-2 hover:bg-gray-600 rounded">       */}
-                <Link to="/home/dashboard">
-                  <button className="w-[90%] p-4 flex justify-between items-center bg-gradient-to-r from-[#FFF9F9] to-[#F7C6C6]  cursor-pointer border-none text-left shadow-md my-3">
-                    Dashboard
-                  </button>
-                </Link>
+                {module.map((item, i) =>
+                  (item.moduleName === 'Quickstart' || item.moduleName === 'Dashboard') ?
+                    (<Link to={`/home/${item.moduleName}`}>
+                      <button class="w-[90%] mt-6 p-4 flex justify-between items-center bg-gradient-to-r from-[#FFF9F9] to-[#F7C6C6]  cursor-pointer border-none text-left shadow-md my-3">
+                        {item.moduleName}
+                      </button>
+                    </Link>) : <></>
+                )}
                 {/* </Link> */}
               </div>
             </div>
           </div>
 
           {/* Sidebar Packages Item */}
-          <div className="sidebar-item group relative hover:w-full">
-            <div
-              className="sidebar-icons flex flex-col justify-center  items-center p-2 rounded cursor-pointer hover:color-black"
-              style={{ zIndex: "2" }}
-              onMouseEnter={() => setHomeStyle(["Packages"])}
-              onMouseLeave={() => setHomeStyle([])}
-            >
-              <FiPackage
-                size="30px"
-                color={homeStyle[0] === "Packages" ? "#fff" : "#B4B4B8"}
-              />
-              <p
-                className={`menu-name text-[14px] mt-2 ${homeStyle[0] === "Packages" ? "text-white" : "text-[#B4B4B8]"
-                  } `}
-              >
-                Packages
-              </p>
-            </div>
-            {/* Animated Submenu */}
-            {/* <div className="submenu fixed left-20 top-0 h-screen pointer-events-none transform -translate-x-full opacity-0 transition-all duration-1000 ease-in-out group-hover:translate-x-0 group-hover:opacity-100 group-hover:pointer-events-auto bg-[#f9f9f9] p-4 rounded shadow-lg space-y-2 mt-2"
-          style={{ width: '340px', zIndex: "1" }}> */}
-            <div
-              className="submenu fixed left-20 top-10 h-screen pointer-events-none transform opacity-0 scale-95 transition-all duration-500 ease-in-out group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto bg-[#f9f9f9] text-black p-4 rounded shadow-lg space-y-2 mt-2"
-              style={{ width: "340px" }}
-            >
-              <div className="flex flex-col">
-                <p className="font-bold text-lg">Package</p>
-                {/* <Link to='/home' className="block px-4 py-2 hover:bg-gray-600 rounded"> */}
-                <div className="mt-4 border-b-2">
-                  <h6 className="flex  gap-4 items-center">
-                    <FaListUl size="18px" />
-                    Package List
-                  </h6>
-                </div>
-                <div className="mt-6 flex flex-col justify-center items-center">
-                  <button
-                    class="w-[90%] p-4 flex justify-between items-center bg-gradient-to-r from-[#FFF9F9] to-[#F7C6C6]  cursor-pointer border-none text-left shadow-md my-2"
-                    onClick={() => {
-                      setAddData([]);
-                      setAddData(["NewPackageForm"]);
-                    }}
+          {module.map((items, i) =>
+            ((items.moduleName !== 'Quickstart' && items.moduleName !== 'Dashboard') && items.parentId === 0) ?
+              (<div className="sidebar-item group relative hover:w-full">
+                <div
+                  className="sidebar-icons flex flex-col justify-center  items-center p-2 rounded cursor-pointer hover:color-black"
+                  style={{ zIndex: "2" }}
+                  onMouseEnter={() => setHomeStyle(items.moduleName)}
+                  onMouseLeave={() => setHomeStyle()}
+                >
+                  <FiPackage
+                    size="30px"
+                    color={homeStyle === items.moduleName ? "#fff" : "#B4B4B8"}
+                  />
+                  <p
+                    className={`menu-name text-[14px] mt-2 ${homeStyle === items.moduleName ? "text-white" : "text-[#B4B4B8]"} `}
                   >
-                    New Package
-                    <span>
-                      <IoMdAdd size="16px" />
-                    </span>
-                  </button>
-                  {/* </Link> */}
-                  {/* <Link to='/home/dashboard' className="block px-4 py-2 hover:bg-gray-600 rounded">       */}
-                  <button class="w-[90%] p-4 flex justify-between items-center bg-gradient-to-r from-[#FFF9F9] to-[#F7C6C6]  cursor-pointer border-none text-left shadow-md my-2">
-                    Ouick Package
-                    <span>
-                      <IoMdAdd size="16px" />
-                    </span>
-                  </button>
-                  <Link to="/home/packageDashboard" className="w-[90%]">
-                    <button class="w-full p-4 flex justify-between items-center bg-gradient-to-r from-[#FFF9F9] to-[#F7C6C6]  cursor-pointer border-none text-left shadow-md my-2">
-                      Packages Dashboard
-                    </button>
-                  </Link>
+                    {items.moduleName}
+                  </p>
                 </div>
-                {/* </Link> */}
-              </div>
-            </div>
-          </div>
+                <div className="submenu fixed left-20 top-10 h-screen pointer-events-none transform opacity-0 scale-95 transition-all duration-500 ease-in-out group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto bg-[#f9f9f9] text-black p-4 rounded shadow-lg space-y-2 mt-2"
+                  style={{ width: "340px" }} >
+                  <div className="flex flex-col">
+                    <p className="font-bold text-lg">{items.moduleName}</p>
+                    <div className="mt-4 border-b-2">
+                      <h6 className="flex  gap-4 items-center">
+                        <FaListUl size="18px" />
+                        {items.moduleName} List
+                      </h6>
+                    </div>
+                    <div className="mt-6 flex flex-col justify-center items-center">
+                      {module.map(item => (items.id === item.parentId) ? (<button
+                        class="w-[90%] p-4 flex justify-between items-center bg-gradient-to-r from-[#FFF9F9] to-[#F7C6C6]  cursor-pointer border-none text-left shadow-md my-2"
+                        onClick={() => {
+                          setAddData();
+                          setAddData(item.moduleName);
+                        }}>
+                        {item.moduleName}
+                        <span>
+                          <IoMdAdd size="16px" />
+                        </span>
+                      </button>) : <></>)}
+                      {/* <button class="w-[90%] p-4 flex justify-between items-center bg-gradient-to-r from-[#FFF9F9] to-[#F7C6C6]  cursor-pointer border-none text-left shadow-md my-2">
+                        Ouick Package
+                        <span>
+                          <IoMdAdd size="16px" />
+                        </span>
+                      </button>
+                      <Link to="/home/packageDashboard" className="w-[90%]">
+                        <button class="w-full p-4 flex justify-between items-center bg-gradient-to-r from-[#FFF9F9] to-[#F7C6C6]  cursor-pointer border-none text-left shadow-md my-2">
+                          Packages Dashboard
+                        </button>
+                      </Link> */}
+                    </div>
+                  </div>
+                </div>
+              </div>) : <></>
+          )}
 
-          {/* Sidebar Bookings Item */}
-          <div className="sidebar-item group relative hover:w-full">
+          {/* <div className="sidebar-item group relative hover:w-full">
             <div
               className="sidebar-icons flex flex-col justify-center  items-center p-2 rounded cursor-pointer"
               onMouseEnter={() => setHomeStyle(["Bookings"])}
@@ -195,7 +156,6 @@ const Sidebar = () => {
                 Bookings
               </p>
             </div>
-            {/* Animated Submenu */}
             <div
               className="submenu fixed left-20 top-10 h-screen pointer-events-none transform opacity-0 scale-95 transition-all duration-500 ease-in-out group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto bg-[#f9f9f9] text-black p-4 rounded shadow-lg space-y-2 mt-2"
               style={{ width: "340px" }}
@@ -225,7 +185,6 @@ const Sidebar = () => {
             </div>
           </div>
 
-          {/* Other Sidebar Items (without submenus) */}
           <div className="sidebar-item group hover:w-full">
             <div
               className="sidebar-icons flex flex-col justify-center  items-center p-2 rounded cursor-pointer"
@@ -250,7 +209,6 @@ const Sidebar = () => {
               <div className="flex flex-col h-full">
                 <p className="font-bold text-lg  mb-4">My Teams</p>
 
-                {/* Members Section Header */}
                 <div className="flex items-center py-4 border-b-2">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -269,7 +227,6 @@ const Sidebar = () => {
                   <p className="text-sm font-semibold">Members</p>
                 </div>
 
-                {/* Member Item */}
                 <div className="flex flex-col justify-between  border-b-2 mb-2">
                   <div className="flex items-center space-x-2 py-4">
                     <div className="w-12 h-12 rounded-full bg-red-500 text-white flex items-center justify-center">
@@ -284,12 +241,12 @@ const Sidebar = () => {
                   </div>
                 </div>
                 <div className="flex flex-col justify-between  border-b-2 mb-2">
-                  {/* All Members Button */}
+
                   <button className="w-full px-4 py-2 mt-40 text-blue-600 font-semibold border border-blue-600 hover:bg-blue-600 hover:text-white rounded-md my-4" onClick={() => navigate('/home/all-members')}>
                     All Members
                   </button>
                 </div>
-                {/* Roles & Permission, New Member, Member Board Buttons */}
+
                 <div className="flex flex-col items-center pb-4 border-b">
                   <button
                     className="w-[90%] p-4 flex justify-between items-center bg-gradient-to-r from-[#FFF9F9] to-[#F7C6C6]  cursor-pointer border-none text-left shadow-md my-2"
@@ -321,7 +278,7 @@ const Sidebar = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* <div className="sidebar-item group relative hover:w-full">
             <div
@@ -350,7 +307,7 @@ const Sidebar = () => {
             </div>
           </div> */}
 
-          <div className="sidebar-item group relative hover:w-full">
+          {/* <div className="sidebar-item group relative hover:w-full">
             <div
               className="sidebar-icons flex flex-col text-center justify-center items-center p-2 rounded cursor-pointer"
               onMouseEnter={() => setHomeStyle(["Sales"])}
@@ -578,22 +535,21 @@ const Sidebar = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
         <div className="sidebar-item group relative hover:w-full shadow-sm">
-  <div className="w-full h-[1px] bg-transparent my-2 shadow-[0_0_10px_2px_rgba(255,255,255,0.7)]"></div>
+          <div className="w-full h-[1px] bg-transparent my-2 shadow-[0_0_10px_2px_rgba(255,255,255,0.7)]"></div>
           <div className="sidebar-item group relative hover:w-full">
-            <div
-              className="sidebar-icons flex flex-col justify-center  items-center  p-2 rounded cursor-pointer"
-              onMouseEnter={() => setHomeStyle(["Reports"])}
-              onMouseLeave={() => setHomeStyle([])}
+            <div className="sidebar-icons flex flex-col justify-center  items-center  p-2 rounded cursor-pointer"
+              onMouseEnter={() => setHomeStyle("Reports")}
+              onMouseLeave={() => setHomeStyle()}
             >
               <HiOutlineDocumentReport
                 size="30px"
-                color={homeStyle[0] === "Reports" ? "#fff" : "#B4B4B8"}
+                color={homeStyle === "Reports" ? "#fff" : "#B4B4B8"}
               />
               <p
-                className={`menu-name text-[14px] mt-2 ${homeStyle[0] === "Reports" ? "text-white" : "text-[#B4B4B8]"
+                className={`menu-name text-[14px] mt-2 ${homeStyle === "Reports" ? "text-white" : "text-[#B4B4B8]"
                   } `}
               >
                 Reports
@@ -608,21 +564,15 @@ const Sidebar = () => {
               </div>
             </div>
           </div>
-          <div
-            className="sidebar-icons flex flex-col justify-center items-center text-center p-2 rounded cursor-pointer"
-            onMouseEnter={() => setHomeStyle(["Settings"])}
-            onMouseLeave={() => setHomeStyle([])}
-          >
-            <div
-              className="sidebar-icons flex flex-col justify-center items-center text-center p-2 rounded cursor-pointer"
-            >
+          <div className="sidebar-icons flex flex-col justify-center items-center text-center p-2 rounded cursor-pointer"
+            onMouseEnter={() => setHomeStyle("Settings")}
+            onMouseLeave={() => setHomeStyle()}>
+            <div className="sidebar-icons flex flex-col justify-center items-center text-center p-2 rounded cursor-pointer">
               <CiSettings
                 size="30px"
                 color={"#B4B4B8"}
               />
-              <p
-                className="menu-name text-[14px] mt-2 text-[#B4B4B8]"
-              >
+              <p className="menu-name text-[14px] mt-2 text-[#B4B4B8]">
                 Settings
               </p>
             </div>
@@ -656,7 +606,7 @@ const Sidebar = () => {
           </div>
         </div>
       </div>
-      <div
+      {/* <div
         className="submenu-menu"
         style={{ right: addData[0] === "Country" ? "0" : "-100%" }}
       >
@@ -688,10 +638,52 @@ const Sidebar = () => {
       </div>
       <div
         className="submenu-menu"
+        style={{ right: addData[0] === "Roles" ? "0" : "-100%" }}
+      >
+        <Roles isOpen={addData[0] === "Roles"} onClose={() => setAddData([])} />
+      </div>
+      <div
+        className="submenu-menu"
+        style={{ right: addData[0] === "NewMember" ? "0" : "-100%" }}
+      >
+        <NewMember
+          isOpen={addData[0] === "NewMember"}
+          onClose={() => setAddData([])}
+        />
+      </div>
+      <div
+        className="submenu-menu"
         style={{ right: addData[0] === "Itinerary" ? "0" : "-100%" }}
       >
         <Itinerary
           isOpen={addData[0] === "Itinerary"}
+          onClose={() => setAddData([])}
+        />
+      </div>
+      <div
+        className="submenu-menu"
+        style={{ right: addData[0] === "NewPackageForm" ? "0" : "-100%" }}
+      >
+        <NewPackageForm
+          isOpen={addData[0] === "NewPackageForm"}
+          onClose={() => setAddData([])}
+        />
+      </div>
+      <div
+        className="submenu-menu"
+        style={{ right: addData[0] === "NewQuery" ? "0" : "-100%" }}
+      >
+        <NewQuery
+          isOpen={addData[0] === "NewQuery"}
+          onClose={() => setAddData([])}
+        />
+      </div>
+      <div
+        className="submenu-menu"
+        style={{ right: addData[0] === "Vendors" ? "0" : "-100%" }}
+      >
+        <NewVendorForm
+          isOpen={addData[0] === "Vendors"}
           onClose={() => setAddData([])}
         />
       </div>
@@ -712,77 +704,32 @@ const Sidebar = () => {
           isOpen={addData[0] === "Policies"}
           onClose={() => setAddData([])}
         />
-      </div>
+      </div> */}
       <div
         className="submenu-menu"
-        style={{ right: addData[0] === "Vendors" ? "0" : "-100%" }}
-      >
-        <NewVendorForm
-          isOpen={addData[0] === "Vendors"}
-          onClose={() => setAddData([])}
-        />
-      </div>
-      <div
-        className="submenu-menu"
-        style={{ right: addData[0] === "NewQuery" ? "0" : "-100%" }}
-      >
-        <NewQuery
-          isOpen={addData[0] === "NewQuery"}
-          onClose={() => setAddData([])}
-        />
-      </div>
-      <div
-        className="submenu-menu"
-        style={{ right: addData[0] === "NewPackageForm" ? "0" : "-100%" }}
-      >
-        <NewPackageForm
-          isOpen={addData[0] === "NewPackageForm"}
-          onClose={() => setAddData([])}
-        />
-      </div>
-      
-      {/*
-      <div
-        className="submenu-menu"
-        style={{ right: addData[0] === "Roles" ? "0" : "-100%" }}
-      >
-        <Roles isOpen={addData[0] === "Roles"} onClose={() => setAddData([])} />
-      </div>
-      <div
-        className="submenu-menu"
-        style={{ right: addData[0] === "NewMember" ? "0" : "-100%" }}
-      >
-        <NewMember
-          isOpen={addData[0] === "NewMember"}
-          onClose={() => setAddData([])}
-        />
-      </div>
-    */}
-      <div
-        className="submenu-menu"
-        style={{ right: addData[0] === "Department" ? "0" : "-100%" }}
+        style={{ right: addData === "Department" ? "0" : "-100%" }}
       >
         <Department
-          isOpen={addData[0] === "Department"}
-          onClose={() => setAddData([])}
+          isOpen={addData === "Department"}
+          onClose={() => setAddData()}
         />
       </div>
       <div
         className="submenu-menu"
-        style={{ right: addData[0] === "Designation" ? "0" : "-100%" }}
+        style={{ right: addData === "Designation" ? "0" : "-100%" }}
       >
         <Designation
-          isOpen={addData[0] === "Designation"}
-          onClose={() => setAddData([])}
+          isOpen={addData === "Designation"}
+          onClose={() => setAddData()}
         />
       </div>
       <div
         className="submenu-menu"
-        style={{ right: addData[0] === "Company" ? "0" : "-100%" }}
+        style={{ right: addData === "Company" ? "0" : "-100%" }}
       >
         <NewCompanyForm
-          isOpen={addData[0] === "Company"}
-          onClose={() => setAddData([])}
+          isOpen={addData === "Company"}
+          onClose={() => setAddData()}
         />
       </div>
     </>
