@@ -60,7 +60,7 @@ const App = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/home" replace />} />
+      <Route path="/" element={<Navigate to="/home/quickstart" replace />} />
       <Route exact path="/signup" element={<AdminConfiguration />} />
       <Route exact path="/success" element={<SuccessPage />} />
       <Route exact path="/login" element={<Login />} />
