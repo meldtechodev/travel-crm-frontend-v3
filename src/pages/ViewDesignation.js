@@ -145,7 +145,7 @@ const ViewDesignations = () => {
               <FiFilter />
             </button>
           </div>
-            <button className="flex items-center justify-center bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mt-2 md:mt-0 md:ml-2" onClick={() => setAddData(['Designation'])}>Add new +</button>
+            <button className="flex items-center justify-center bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mt-2 md:mt-0 md:ml-2" onClick={() => setAddData(['Designation'])}>New Designation +</button>
         </div>
         <hr className="my-4" />
         <div className="w-full overflow-auto">
@@ -153,7 +153,7 @@ const ViewDesignations = () => {
         </div>
 
         {/* Pagination */}
-        <div className="flex justify-center items-center mt-4 space-x-4">
+        <div className="flex justify-start items-center mt-4 space-x-4">
           {/* Previous Page Button */}
           <button
             className={`text-xl text-blue-500 hover:text-blue-700 ${currentPage === 1 && "opacity-50 cursor-not-allowed"

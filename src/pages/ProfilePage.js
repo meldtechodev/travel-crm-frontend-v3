@@ -6,9 +6,9 @@ const ProfilePage = () => {
   const [profileData, setProfileData] = useState({
     firstName: "Aditi",
     middleName: "",
-    lastName: "Sharma",
+    lastName: "Shahi",
     workNumber: "8899889988",
-    mobileNumber: "9876543210",
+    mobileNumber: "79059556",
     companyName: "Meld Techo",
     jobTitle: "Software Developer",
     language: "English",
