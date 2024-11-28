@@ -16,14 +16,25 @@ import { CiSettings } from "react-icons/ci";
 import Department from "../pages/Department";
 import Designation from "../pages/Designation";
 import NewCompanyForm from "../pages/NewCompanyForm";
+import Country from "../pages/Country";
+import State from '../pages/State'
+import Hotel from '../pages/Hotel'
 import axios from "axios";
 import api from "../apiConfig/config";
+import Destination from '../pages/Destination'
+import Itinerary from '../pages/Itinerary'
+import NewPackageForm from '../pages/NewPackageForm'
+import NewQuery from '../pages/NewQuery'
+import NewVendorForm from '../pages/NewVendorForm'
+import NewTransportationForm from '../pages/NewTransportationForm'
+import NewPolicyForm from '../pages/NewPolicyForm'
 
 const Sidebar = () => {
   const [homeStyle, setHomeStyle] = useState();
-  const [addData, setAddData] = useState();
+  const [addData, setAddData] = useState('');
   const [module, setModule] = useState([])
 
+  const navigate = useNavigate();
   useEffect(() => {
     axios.get(`${api.baseUrl}/modules/getall`)
       .then(response =>
@@ -32,7 +43,21 @@ const Sidebar = () => {
         console.error(error)
       )
   }, [])
-  const navigate = useNavigate();
+
+  const handlePageAndForm = (word) => {
+    setAddData('');
+    if (word.toLowerCase().includes('Dashboard'.toLowerCase())) {
+
+      let wd = word.trim().split(/\s+/);
+      let firstWord = wd[0].toLowerCase();
+      const remainingWords = wd.slice(1).join('');
+      const result = firstWord + remainingWords;
+
+      navigate(`/home/${result}`);
+    } else {
+      setAddData(word);
+    }
+  }
 
   return (
     <>
@@ -62,15 +87,15 @@ const Sidebar = () => {
             </div>
             {/* Animated Submenu */}
             <div
-              className="submenu fixed left-20 top-10 h-screen pointer-events-none transform opacity-0 scale-95 transition-all duration-500 ease-in-out group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto bg-[#f9f9f9] text-[#333338] p-4 z-2 rounded shadow-lg space-y-2 mt-2"
+              className="submenu fixed left-[72px] top-10 h-screen pointer-events-none transform opacity-0 scale-95 transition-all duration-500 ease-in-out group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto bg-[#f9f9f9] text-[#333338] p-4 z-2 rounded shadow-lg space-y-2 mt-2"
               style={{ width: "340px" }}
             >
               <div className="flex flex-col">
                 <p className="font-bold text-lg">Home</p>
                 {module.map((item, i) =>
                   (item.moduleName === 'Quickstart' || item.moduleName === 'Dashboard') ?
-                    (<Link to={`/home/${item.moduleName}`}>
-                      <button class="w-[90%] mt-6 p-4 flex justify-between items-center bg-gradient-to-r from-[#FFF9F9] to-[#F7C6C6]  cursor-pointer border-none text-left shadow-md my-3">
+                    (<Link to={`/home/${item.moduleName.toLowerCase()}`}>
+                      <button class="w-[90%] mt-6 p-4 flex justify-between items-center bg-gradient-to-r from-[#FFF9F9] to-[#F7C6C6]  cursor-pointer border-none text-left shadow-md">
                         {item.moduleName}
                       </button>
                     </Link>) : <></>
@@ -100,7 +125,7 @@ const Sidebar = () => {
                     {items.moduleName}
                   </p>
                 </div>
-                <div className="submenu fixed left-20 top-10 h-screen pointer-events-none transform opacity-0 scale-95 transition-all duration-500 ease-in-out group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto bg-[#f9f9f9] text-black p-4 rounded shadow-lg space-y-2 mt-2"
+                <div className="submenu fixed left-[72px] top-10 h-screen pointer-events-none transform opacity-0 scale-95 transition-all duration-500 ease-in-out group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto bg-[#f9f9f9] text-black p-4 rounded shadow-lg space-y-2 mt-2"
                   style={{ width: "340px" }} >
                   <div className="flex flex-col">
                     <p className="font-bold text-lg">{items.moduleName}</p>
@@ -113,10 +138,7 @@ const Sidebar = () => {
                     <div className="mt-6 flex flex-col justify-center items-center">
                       {module.map(item => (items.id === item.parentId) ? (<button
                         class="w-[90%] p-4 flex justify-between items-center bg-gradient-to-r from-[#FFF9F9] to-[#F7C6C6]  cursor-pointer border-none text-left shadow-md my-2"
-                        onClick={() => {
-                          setAddData();
-                          setAddData(item.moduleName);
-                        }}>
+                        onClick={() => handlePageAndForm(item.moduleName)}>
                         {item.moduleName}
                         <span>
                           <IoMdAdd size="16px" />
@@ -606,105 +628,105 @@ const Sidebar = () => {
           </div>
         </div>
       </div>
-      {/* <div
+      <div
         className="submenu-menu"
-        style={{ right: addData[0] === "Country" ? "0" : "-100%" }}
+        style={{ right: addData.toLowerCase().includes("New Country".toLowerCase()) ? "0" : "-100%" }}
       >
         <Country
-          isOpen={addData[0] === "Country"}
-          onClose={() => setAddData([])}
+          isOpen={addData.toLowerCase().includes("New Country".toLowerCase())}
+          onClose={() => setAddData()}
         />
       </div>
       <div
         className="submenu-menu"
-        style={{ right: addData[0] === "State" ? "0" : "-100%" }}
+        style={{ right: addData.toLowerCase().includes("State".toLowerCase()) ? "0" : "-100%" }}
       >
-        <State isOpen={addData[0] === "State"} onClose={() => setAddData([])} />
+        <State isOpen={addData.toLowerCase().includes("State".toLowerCase())} onClose={() => setAddData()} />
       </div>
       <div
         className="submenu-menu"
-        style={{ right: addData[0] === "Destination" ? "0" : "-100%" }}
+        style={{ right: addData.toLowerCase().includes("Destination".toLowerCase()) ? "0" : "-100%" }}
       >
         <Destination
-          isOpen={addData[0] === "Destination"}
-          onClose={() => setAddData([])}
+          isOpen={addData.toLowerCase().includes("Destination".toLowerCase())}
+          onClose={() => setAddData()}
         />
       </div>
       <div
         className="submenu-menu"
-        style={{ right: addData[0] === "Hotel" ? "0" : "-100%" }}
+        style={{ right: addData.toLowerCase().includes("Hotel".toLowerCase()) ? "0" : "-100%" }}
       >
-        <Hotel isOpen={addData[0] === "Hotel"} onClose={() => setAddData([])} />
+        <Hotel isOpen={addData.toLowerCase().includes("Hotel".toLowerCase())} onClose={() => setAddData()} />
+      </div>
+      {/* <div
+        className="submenu-menu"
+        style={{ right: addData.includes("Roles") ? "0" : "-100%" }}
+      >
+        <Roles isOpen={addData.includes("Roles")} onClose={() => setAddData()} />
       </div>
       <div
         className="submenu-menu"
-        style={{ right: addData[0] === "Roles" ? "0" : "-100%" }}
-      >
-        <Roles isOpen={addData[0] === "Roles"} onClose={() => setAddData([])} />
-      </div>
-      <div
-        className="submenu-menu"
-        style={{ right: addData[0] === "NewMember" ? "0" : "-100%" }}
+        style={{ right: addData.includes("New Member") ? "0" : "-100%" }}
       >
         <NewMember
-          isOpen={addData[0] === "NewMember"}
-          onClose={() => setAddData([])}
-        />
-      </div>
-      <div
-        className="submenu-menu"
-        style={{ right: addData[0] === "Itinerary" ? "0" : "-100%" }}
-      >
-        <Itinerary
-          isOpen={addData[0] === "Itinerary"}
-          onClose={() => setAddData([])}
-        />
-      </div>
-      <div
-        className="submenu-menu"
-        style={{ right: addData[0] === "NewPackageForm" ? "0" : "-100%" }}
-      >
-        <NewPackageForm
-          isOpen={addData[0] === "NewPackageForm"}
-          onClose={() => setAddData([])}
-        />
-      </div>
-      <div
-        className="submenu-menu"
-        style={{ right: addData[0] === "NewQuery" ? "0" : "-100%" }}
-      >
-        <NewQuery
-          isOpen={addData[0] === "NewQuery"}
-          onClose={() => setAddData([])}
-        />
-      </div>
-      <div
-        className="submenu-menu"
-        style={{ right: addData[0] === "Vendors" ? "0" : "-100%" }}
-      >
-        <NewVendorForm
-          isOpen={addData[0] === "Vendors"}
-          onClose={() => setAddData([])}
-        />
-      </div>
-      <div
-        className="submenu-menu"
-        style={{ right: addData[0] === "Transportation" ? "0" : "-100%" }}
-      >
-        <NewTransportationForm
-          isOpen={addData[0] === "Transportation"}
-          onClose={() => setAddData([])}
-        />
-      </div>
-      <div
-        className="submenu-menu"
-        style={{ right: addData[0] === "Policies" ? "0" : "-100%" }}
-      >
-        <NewPolicyForm
-          isOpen={addData[0] === "Policies"}
-          onClose={() => setAddData([])}
+          isOpen={addData.includes("New Member")}
+          onClose={() => setAddData()}
         />
       </div> */}
+      <div
+        className="submenu-menu"
+        style={{ right: addData.toLowerCase().includes("Itinerary".toLowerCase()) ? "0" : "-100%" }}
+      >
+        <Itinerary
+          isOpen={addData.toLowerCase().includes("Itinerary".toLowerCase())}
+          onClose={() => setAddData()}
+        />
+      </div>
+      <div
+        className="submenu-menu"
+        style={{ right: addData.toLowerCase().includes("New Package".toLowerCase()) ? "0" : "-100%" }}
+      >
+        <NewPackageForm
+          isOpen={addData.toLowerCase().includes("NewPackage".toLowerCase())}
+          onClose={() => setAddData()}
+        />
+      </div>
+      <div
+        className="submenu-menu"
+        style={{ right: addData.toLowerCase().includes("New Query".toLowerCase()) ? "0" : "-100%" }}
+      >
+        <NewQuery
+          isOpen={addData.toLowerCase().includes("New Query".toLowerCase())}
+          onClose={() => setAddData()}
+        />
+      </div>
+      <div
+        className="submenu-menu"
+        style={{ right: addData.toLowerCase().includes("Vendor".toLowerCase()) ? "0" : "-100%" }}
+      >
+        <NewVendorForm
+          isOpen={addData.toLowerCase().includes("Vendor".toLowerCase())}
+          onClose={() => setAddData()}
+        />
+      </div>
+      <div
+        className="submenu-menu"
+        style={{ right: addData.toLowerCase().includes("Transportation".toLowerCase()) ? "0" : "-100%" }}
+      >
+        <NewTransportationForm
+          isOpen={addData.toLowerCase().includes("Transportation".toLowerCase())}
+          onClose={() => setAddData()}
+        />
+      </div>
+      <div
+        className="submenu-menu"
+        style={{ right: addData.toLowerCase().includes("Policies".toLowerCase()) ? "0" : "-100%" }}
+      >
+        <NewPolicyForm
+          isOpen={addData.toLowerCase().includes("Policies".toLowerCase())}
+          onClose={() => setAddData()}
+        />
+      </div>
       <div
         className="submenu-menu"
         style={{ right: addData === "Department" ? "0" : "-100%" }}
