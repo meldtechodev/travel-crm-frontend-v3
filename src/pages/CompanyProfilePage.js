@@ -15,7 +15,7 @@ const CompanyProfilePage = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-100 p-6">
+      <div className="min-h-screen bg-gray-100 p-6 mb-10">
         <div className="flex flex-col md:flex-row justify-between items-center w-full h-20 bg-white shadow-md mb-6 px-6">
           <h1 className="text-lg font-bold text-center md:text-left">
             Company Admin Center

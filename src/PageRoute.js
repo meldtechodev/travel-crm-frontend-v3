@@ -45,7 +45,7 @@ const PageRoute = () => {
             <Route path="/master-list/hotel" element={<HotelMaster />} /> */}
             {/* <Route path='/master-list/hotel/:id' element={<HotelMasterAddRoom />} /> */}
             {/* <Route path="/package-view" element={<CustomerProfile />} /> */}
-            <Route path="/booking-dashboard" element={<Bookings />} />
+            <Route path="/bookingsDashboard" element={<Bookings />} />
             {/* <Route path="/all-members" element={<AllMembers />} /> */}
             <Route path="/profile-page" element={<ProfilePage />} />
             {/* <Route path="/department-dashboard" element={<CompanyHierarchy />} /> */}
