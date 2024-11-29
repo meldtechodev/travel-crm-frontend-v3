@@ -663,21 +663,21 @@ const Sidebar = () => {
       >
         <Hotel isOpen={addData.toLowerCase().includes("Hotel".toLowerCase())} onClose={() => setAddData('')} />
       </div>
-      {/* <div
+      <div
         className="submenu-menu"
-        style={{ right: addData.includes("Roles") ? "0" : "-100%" }}
+        style={{ right: addData.toLowerCase().includes("Roles".toLowerCase()) ? "0" : "-100%" }}
       >
-        <Roles isOpen={addData.includes("Roles")} onClose={() => setAddData()} />
+        <Roles isOpen={addData.toLowerCase().includes("Roles".toLowerCase())} onClose={() => setAddData('')} />
       </div>
       <div
         className="submenu-menu"
-        style={{ right: addData.includes("New Member") ? "0" : "-100%" }}
+        style={{ right: addData.toLowerCase().includes("New Member".toLowerCase()) ? "0" : "-100%" }}
       >
         <NewMember
-          isOpen={addData.includes("New Member")}
-          onClose={() => setAddData()}
+          isOpen={addData.toLowerCase().includes("New Member".toLowerCase())}
+          onClose={() => setAddData('')}
         />
-      </div> */}
+      </div>
       <div
         className="submenu-menu"
         style={{ right: addData.toLowerCase().includes("Itinerary".toLowerCase()) ? "0" : "-100%" }}
