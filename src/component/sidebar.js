@@ -68,7 +68,7 @@ const Sidebar = () => {
         <div
           className="sidebar-menu flex flex-col justify-between items-center space-y-4 overflow-x-hidden overflow-y-auto">
           {/* Sidebar Home Item */}
-          <div className="sidebar-item group relative">
+          <div className="sidebar-item group relative w-full">
             <div
               className="sidebar-icons flex flex-col justify-center items-center rounded cursor-pointer m-0 p-0  w-full"
               style={{ minWidth: "100%" }}
@@ -132,10 +132,13 @@ const Sidebar = () => {
                     <div className="mt-4 border-b-2">
                       <h6 className="flex  gap-4 items-center">
                         <FaListUl size="18px" />
-                        {items.moduleName} List
+                        <Link to={`/home/${items.moduleName.toLowerCase()}`}>
+                          {items.moduleName} List
+                        </Link>
                       </h6>
                     </div>
-                    <div className="mt-6 flex flex-col justify-center items-center">
+                    <div className="mt-6 flex flex-col justify-center items-center overflow-y-scroll">
+
                       {module.map(item => (items.id === item.parentId) ? (<button
                         class="w-[90%] p-4 flex justify-between items-center bg-gradient-to-r from-[#FFF9F9] to-[#F7C6C6]  cursor-pointer border-none text-left shadow-md my-2"
                         onClick={() => handlePageAndForm(item.moduleName)}>
@@ -587,14 +590,16 @@ const Sidebar = () => {
             </div>
           </div>
           <div className="sidebar-icons flex flex-col justify-center items-center text-center p-2 rounded cursor-pointer"
-            onMouseEnter={() => setHomeStyle("Settings")}
-            onMouseLeave={() => setHomeStyle()}>
-            <div className="sidebar-icons flex flex-col justify-center items-center text-center p-2 rounded cursor-pointer">
+          >
+            <div className="sidebar-icons flex flex-col justify-center items-center text-center p-2 rounded cursor-pointer"
+              onMouseEnter={() => setHomeStyle("Settings")}
+              onMouseLeave={() => setHomeStyle()}>
               <CiSettings
                 size="30px"
-                color={"#B4B4B8"}
+                color={homeStyle === "Settings" ? "#fff" : "#B4B4B8"}
               />
-              <p className="menu-name text-[14px] mt-2 text-[#B4B4B8]">
+              <p className={`menu-name text-[14px] mt-2 text-[#B4B4B8]  ${homeStyle === "Settings" ? "text-white" : "text-[#B4B4B8]"
+                }`}>
                 Settings
               </p>
             </div>
@@ -603,7 +608,7 @@ const Sidebar = () => {
               style={{ width: "340px" }}
             >
               <div className="flex flex-col">
-                <p className="font-bold text-lg">Settings</p>
+                <p className={`font-bold text-lg`}>Settings</p>
                 {/* <Link to='/home' className="block px-4 py-2 hover:bg-gray-600 rounded"> */}
                 <Link to="/home/app-settings">
                   <button class="w-[90%] mt-6 p-4 flex justify-between items-center bg-gradient-to-r from-[#FFF9F9] to-[#F7C6C6]  cursor-pointer border-none text-left shadow-md my-3"
@@ -641,22 +646,22 @@ const Sidebar = () => {
         className="submenu-menu"
         style={{ right: addData.toLowerCase().includes("State".toLowerCase()) ? "0" : "-100%" }}
       >
-        <State isOpen={addData.toLowerCase().includes("State".toLowerCase())} onClose={() => setAddData()} />
+        <State isOpen={addData.toLowerCase().includes("State".toLowerCase())} onClose={() => setAddData('')} />
       </div>
       <div
         className="submenu-menu"
-        style={{ right: addData.toLowerCase().includes("Destination".toLowerCase()) ? "0" : "-100%" }}
+        style={{ right: addData.toLowerCase().includes("City".toLowerCase()) ? "0" : "-100%" }}
       >
         <Destination
-          isOpen={addData.toLowerCase().includes("Destination".toLowerCase())}
-          onClose={() => setAddData()}
+          isOpen={addData.toLowerCase().includes("City".toLowerCase())}
+          onClose={() => setAddData('')}
         />
       </div>
       <div
         className="submenu-menu"
         style={{ right: addData.toLowerCase().includes("Hotel".toLowerCase()) ? "0" : "-100%" }}
       >
-        <Hotel isOpen={addData.toLowerCase().includes("Hotel".toLowerCase())} onClose={() => setAddData()} />
+        <Hotel isOpen={addData.toLowerCase().includes("Hotel".toLowerCase())} onClose={() => setAddData('')} />
       </div>
       {/* <div
         className="submenu-menu"
@@ -687,8 +692,8 @@ const Sidebar = () => {
         style={{ right: addData.toLowerCase().includes("New Package".toLowerCase()) ? "0" : "-100%" }}
       >
         <NewPackageForm
-          isOpen={addData.toLowerCase().includes("NewPackage".toLowerCase())}
-          onClose={() => setAddData()}
+          isOpen={addData.toLowerCase().includes("New Package".toLowerCase())}
+          onClose={() => setAddData('')}
         />
       </div>
       <div
@@ -697,7 +702,7 @@ const Sidebar = () => {
       >
         <NewQuery
           isOpen={addData.toLowerCase().includes("New Query".toLowerCase())}
-          onClose={() => setAddData()}
+          onClose={() => setAddData('')}
         />
       </div>
       <div
@@ -706,7 +711,7 @@ const Sidebar = () => {
       >
         <NewVendorForm
           isOpen={addData.toLowerCase().includes("Vendor".toLowerCase())}
-          onClose={() => setAddData()}
+          onClose={() => setAddData('')}
         />
       </div>
       <div
@@ -715,7 +720,7 @@ const Sidebar = () => {
       >
         <NewTransportationForm
           isOpen={addData.toLowerCase().includes("Transportation".toLowerCase())}
-          onClose={() => setAddData()}
+          onClose={() => setAddData('')}
         />
       </div>
       <div
@@ -724,7 +729,7 @@ const Sidebar = () => {
       >
         <NewPolicyForm
           isOpen={addData.toLowerCase().includes("Policies".toLowerCase())}
-          onClose={() => setAddData()}
+          onClose={() => setAddData('')}
         />
       </div>
       <div
@@ -733,7 +738,7 @@ const Sidebar = () => {
       >
         <Department
           isOpen={addData === "Department"}
-          onClose={() => setAddData()}
+          onClose={() => setAddData('')}
         />
       </div>
       <div
@@ -742,7 +747,7 @@ const Sidebar = () => {
       >
         <Designation
           isOpen={addData === "Designation"}
-          onClose={() => setAddData()}
+          onClose={() => setAddData('')}
         />
       </div>
       <div
@@ -751,7 +756,7 @@ const Sidebar = () => {
       >
         <NewCompanyForm
           isOpen={addData === "Company"}
-          onClose={() => setAddData()}
+          onClose={() => setAddData('')}
         />
       </div>
     </>

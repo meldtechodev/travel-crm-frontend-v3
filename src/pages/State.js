@@ -9,7 +9,7 @@ const State = ({ isOpen, onClose, stateData, isFormEditEnabled, setIsFormEditEna
   const [selectedOption, setSelectedOption] = useState(null);
   const [countryId, setCountryId] = useState(null)
 
-  console.log(stateData);
+  // console.log(stateData);
 
   const fileInputRef = useRef(null);
 

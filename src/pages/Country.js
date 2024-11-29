@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 const Country = ({ isOpen, onClose, countryData, isFormEditEnabled, setIsFormEditEnabled }) => {
   const fileInputRef = useRef(null);
 
-  console.log(countryData);
+  // console.log(countryData);
 
   const [user, setUser] = useState({})
   const [token, setTokens] = useState(null)

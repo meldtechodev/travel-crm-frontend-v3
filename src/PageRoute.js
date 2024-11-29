@@ -11,6 +11,7 @@ import Navbar from './component/navbar'
 import Sidebar from './component/sidebar'
 import ViewDepartments from './pages/ViewDepartment'
 import ViewDesignations from './pages/ViewDesignation'
+import MasterList from './pages/masterlis'
 
 
 // import Packages from './components/Packages'
@@ -20,7 +21,6 @@ import PackageDashboard from './pages/PackageDashboard'
 // import HotelMaster from './pages/HotelMaster'
 import Bookings from './pages/Bookings'
 // import HotelMasterAddRoom from './pages/HotelMasterAddRoom'
-// import MasterList from './pages/masterlis'
 // import AllMembers from './pages/AllMembers'
 
 const PageRoute = () => {
@@ -36,11 +36,12 @@ const PageRoute = () => {
         <div className='h-full w-full overflow-y-auto'>
           <Routes>
             <Route path='/quickstart' element={<Quickstart />} />
+            <Route path='/' element={<Quickstart />} />
             <Route path="/dashboard" element={<Dashboard />} />
             {/* <Route path="/packages" element={<Packages />} /> */}
             <Route path="/packageDashboard" element={<PackageDashboard />} />
             {/* <Route path={'/package-list/:id'} element={<CustomerProfile />} /> */}
-            {/* <Route path="/master-list" element={<MasterList />} /> */}
+            <Route path="/masters" element={<MasterList />} />
             {/* <Route path="/master-list/hotel" element={<HotelMaster />} />
             <Route path="/master-list/hotel" element={<HotelMaster />} /> */}
             {/* <Route path='/master-list/hotel/:id' element={<HotelMasterAddRoom />} /> */}
