@@ -176,7 +176,7 @@ const State = ({ isOpen, onClose, stateData, isFormEditEnabled, setIsFormEditEna
       return;
     }
 
-    if (isFormEditEnabled && stateData && stateData.id) {
+    if (stateData && stateData.id) {
       await axios.put(`${api.baseUrl}/state/updatebyid/${stateData.id}`, formDataToSend, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -239,7 +239,7 @@ const State = ({ isOpen, onClose, stateData, isFormEditEnabled, setIsFormEditEna
         onClick={
           () => {
             onClose(true);
-            setIsFormEditEnabled(false);
+            // setIsFormEditEnabled(false);
           }
         }
         className="absolute top-[12px] left-[-22px] font-semibold text-white text-sm bg-red-700 square px-3  py-1.5 border border-1 border-transparent hover:border-red-700 hover:bg-white hover:text-red-700"

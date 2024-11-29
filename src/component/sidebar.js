@@ -639,7 +639,7 @@ const Sidebar = () => {
       >
         <Country
           isOpen={addData.toLowerCase().includes("New Country".toLowerCase())}
-          onClose={() => setAddData()}
+          onClose={() => setAddData('')}
         />
       </div>
       <div
