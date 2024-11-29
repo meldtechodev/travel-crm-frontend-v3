@@ -17,7 +17,7 @@ const OrganizationDetailsPage = () => {
     organizationCountryCode: "",
     organizationWebsite: "",
     status: true, // Status field
-    organizationLogo: null, // File object for the logo
+    organizationLogo: null, 
   });
 
   const [organizationData, setOrganizationData] = useState(null);
