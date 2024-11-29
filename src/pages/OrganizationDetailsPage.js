@@ -1,8 +1,14 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import api from "../apiConfig/config";
+import { useLocation } from "react-router-dom";
 
 const OrganizationDetailsPage = () => {
+  const location = useLocation();
+
+  const state = location.state;
   const [formData, setFormData] = useState({
     organizationName: "",
     organizationEmail: "",
@@ -14,6 +20,23 @@ const OrganizationDetailsPage = () => {
     organizationLogo: null, // File object for the logo
   });
 
+  const [organizationData, setOrganizationData] = useState(null);
+
+  const params = new URLSearchParams(window.location.search);
+
+  const organizationId = params.get("id");
+
+
+  // useEffect(() => {
+  //   organizationId && axios.get(`${api.baseUrl}/company/getbyid/${organizationId}`).then((res) => {
+  //     setOrganizationData(res.data);
+  //   })
+  // }, [organizationId]);
+
+  // console.log(organizationData);
+
+
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevState) => ({
@@ -21,7 +44,7 @@ const OrganizationDetailsPage = () => {
       [name]: value,
     }));
   };
-
+  
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setFormData((prevState) => ({
