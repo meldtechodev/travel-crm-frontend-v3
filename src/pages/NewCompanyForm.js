@@ -164,7 +164,7 @@ const NewCompanyForm = ({ isOpen, onClose, companyData, isFormEditEnabled, setIs
 
   // Fetch IP address and set in form data
   useEffect(() => {
-    axios.get(`${api.baseUrl}/company/ipAddress`)
+    axios.get(`${api.baseUrl}/ipAddress`)
       .then((response) => {
         setFormData(prevState => ({
           ...prevState,

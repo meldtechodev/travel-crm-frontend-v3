@@ -55,12 +55,12 @@ const App = () => {
 
   // Protected Route Component
   const ProtectedRoute = ({ children }) => {
-    return isAuthenticated ? children : allUsers.length === 0 ? <Navigate to="/signup" /> : <Navigate to="/login" />;
+    return isAuthenticated ? children : allUsers.length === 0 ? <Navigate to="/login" /> : <Navigate to="/login" />;
   };
 
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/home/quickstart" replace />} />
+      <Route path="/" element={<Navigate to="/home" replace />} />
       <Route exact path="/signup" element={<AdminConfiguration />} />
       <Route exact path="/success" element={<SuccessPage />} />
       <Route exact path="/login" element={<Login />} />

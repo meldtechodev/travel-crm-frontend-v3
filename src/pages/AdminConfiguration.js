@@ -5,7 +5,8 @@ import axios from 'axios';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 
 const AdminConfiguration = () => {
-  const [allUsers, setAllUsers] = useState([])
+
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -44,12 +45,10 @@ const AdminConfiguration = () => {
       });
 
     axios.get(`${api.baseUrl}/usergetall`)
-      .then(response => response.data.length === 0 ? <Navigate to="/login" /> : setAllUsers([]))
+      .then(response => response.data.length !== 0 ? navigate('/login') : <></>)
       .catch(error => console.error(error))
 
   }, []);
-
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -168,9 +167,9 @@ const AdminConfiguration = () => {
             >
               Continue →
             </button>
-            <div className="mt-4">
+            {/* <div className="mt-4">
               <Link to="/login" className="text-red-600 hover:underline">Already have an account</Link>
-            </div>
+            </div> */}
           </div>
         </form>
       </div>
