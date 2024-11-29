@@ -150,7 +150,7 @@ const ViewDepartments = () => {
               <FiFilter />
             </button>
           </div>
-            <button className="flex items-center justify-center bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mt-2 md:mt-0 md:ml-2" onClick={() => setAddData(['Department'])}>New Department +</button>
+            <button className="flex items-center justify-center bg-red-500  text-white p-2 rounded-md hover:bg-red-700 mt-2 md:mt-0 md:ml-2" onClick={() => setAddData(['Department'])}>New Department +</button>
         </div>
 
         <hr className="my-4" />

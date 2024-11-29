@@ -21,7 +21,7 @@ const CompanyProfilePage = () => {
             Company Admin Center
           </h1>
           <button
-            className="border border-dashed border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-4 md:mb-0 w-full md:w-auto"
+            className="border bg-red-500  text-white text-sm py-2 px-4 rounded mb-4 md:mb-0 w-full md:w-auto"
             onClick={() => setAddData(["Company"])}
           >
             Add Branch/Company
@@ -31,7 +31,7 @@ const CompanyProfilePage = () => {
         <div className="bg-white shadow-md rounded-md p-6 mb-6 flex flex-col md:flex-row items-center relative">
           {/* Left Section (Profile Picture and Info) */}
           <div className="flex items-center space-x-4 w-full md:w-1/2">
-            <div className="w-16 h-16 bg-green-200 rounded-full flex items-center justify-center">
+            <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
               <span className="text-3xl font-semibold text-gray-700">A</span>
             </div>
             <div>
@@ -58,7 +58,7 @@ const CompanyProfilePage = () => {
           <div className="text-right w-full md:w-1/2 mt-4 md:mt-0">
             <button
               onClick={() => handleNavigation("upload-logo")}
-              className="border border-dashed border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-2"
+              className="border  border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-2"
             >
               Upload Organization Logo
             </button>
@@ -88,13 +88,13 @@ const CompanyProfilePage = () => {
           {/* Account List */}
           <div className="flex items-center space-x-4">
             <button
-              className="border border-dashed border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-2"
+              className="border border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-2"
               onClick={() => setAddData(["Department"])}
             >
               Add Department
             </button>
             <button
-              className="border border-dashed border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-2"
+              className="border bg-red-500  text-white text-sm py-2 px-4 rounded mb-2"
               onClick={() => navigate("/home/view-departments")}
             >
               View Department
@@ -114,13 +114,13 @@ const CompanyProfilePage = () => {
           {/* Account List */}
           <div className="flex items-center space-x-4">
             <button
-              className="border border-dashed border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-2"
+              className="border border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-2"
               onClick={() => setAddData(["Designation"])}
             >
               Add Designation
             </button>
             <button
-              className="border border-dashed border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-2"
+              className="border bg-red-500  text-white  text-sm py-2 px-4 rounded mb-2"
               onClick={() => navigate("/home/view-designations")}
             >
               View Designation

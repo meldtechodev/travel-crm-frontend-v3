@@ -126,7 +126,7 @@ const OrganizationDetailsPage = () => {
                     )}
                   </div>
                   {/* Upload Button */}
-                  <div className="mt-4 md:mt-0 md:ml-4">
+                  <div className=" flex flex-col mt-4 md:mt-0 md:ml-4">
                     <label
                       htmlFor="organizationLogo"
                       className="text-blue-500 underline cursor-pointer"
@@ -139,12 +139,13 @@ const OrganizationDetailsPage = () => {
                       className="hidden"
                       onChange={handleFileChange}
                     />
-                  </div>
-                </div>
-                <p className="text-sm text-gray-500 mt-2">
+                      
+                  <p className="text-sm text-gray-500 mt-2">
                   We recommend a resolution of at least 120x80 and 4:1 aspect
                   ratio.
                 </p>
+                  </div>
+                </div>
               </div>
             </div>
 

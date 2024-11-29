@@ -62,7 +62,7 @@ const ProfilePage = () => {
         </div>
         <button
           onClick={() => setIsEditing(true)}
-          className="px-4 py-2 bg-blue-500 text-white rounded-md mt-4 md:mt-0"
+          className="px-4 py-2 bg-red-500  text-white rounded-md mt-4 md:mt-0"
         >
           Edit Profile
         </button>
@@ -190,7 +190,7 @@ const ProfilePage = () => {
             </button>
             <button
               onClick={handleSave}
-              className="px-4 py-2 bg-red-700 text-white rounded-md"
+              className="px-4 py-2 bg-red-500 text-white rounded-md"
             >
               Save
             </button>
