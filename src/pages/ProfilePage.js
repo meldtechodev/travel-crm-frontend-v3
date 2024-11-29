@@ -7,12 +7,12 @@ const ProfilePage = () => {
     firstName: "Aditi",
     middleName: "",
     lastName: "Shahi",
-    workNumber: "8899889988",
+    email: "aditi@domain.com",
     mobileNumber: "79059556",
     companyName: "Meld Techo",
-    jobTitle: "Software Developer",
+    designation: "Software Developer",
     language: "English",
-    timeZone: "(GMT-04:00) Eastern Time (US & Canada)",
+    timeZone: "(GMT+05:30) Kolkata", // Updated time zone
     orgURL: "tourbom.myfreshworks.com",
     adminRole: "Organization Admin",
   });
@@ -54,7 +54,7 @@ const ProfilePage = () => {
           {/* User Info */}
           <div>
             <h1 className="text-lg font-semibold text-gray-800">{`${profileData.firstName} ${profileData.lastName}`}</h1>
-            <p className="text-gray-600 text-sm">aditi@domain.com</p>
+            <p className="text-gray-600 text-sm">{profileData.email}</p>
             <span className="text-xs bg-orange-100 text-orange-800 font-medium py-1 px-2 rounded inline-block mt-2">
               {profileData.adminRole}
             </span>
@@ -62,7 +62,7 @@ const ProfilePage = () => {
         </div>
         <button
           onClick={() => setIsEditing(true)}
-          className="px-4 py-2 bg-blue-500  text-white rounded-md mt-4 md:mt-0"
+          className="px-4 py-2 bg-blue-500 text-white rounded-md mt-4 md:mt-0"
         >
           Edit Profile
         </button>
@@ -81,7 +81,7 @@ const ProfilePage = () => {
                 name="firstName"
                 value={formData.firstName}
                 onChange={handleChange}
-                className="w-full p-2 border rounded-md"
+                className="w-full p-2 border rounded-md mt-2"
               />
             ) : (
               <p className="text-sm">{profileData.firstName || "-"}</p>
@@ -96,7 +96,7 @@ const ProfilePage = () => {
                 name="middleName"
                 value={formData.middleName}
                 onChange={handleChange}
-                className="w-full p-2 border rounded-md"
+                className="w-full p-2 border rounded-md mt-2"
               />
             ) : (
               <p className="text-sm">{profileData.middleName || "-"}</p>
@@ -111,25 +111,25 @@ const ProfilePage = () => {
                 name="lastName"
                 value={formData.lastName}
                 onChange={handleChange}
-                className="w-full p-2 border rounded-md"
+                className="w-full p-2 border rounded-md mt-2"
               />
             ) : (
               <p className="text-sm">{profileData.lastName || "-"}</p>
             )}
           </div>
-          {/* Work Number */}
+          {/* Email */}
           <div>
-            <p className="text-sm font-bold">Work Number</p>
+            <p className="text-sm font-bold">Email</p>
             {isEditing ? (
               <input
-                type="text"
-                name="workNumber"
-                value={formData.workNumber}
+                type="email"
+                name="email"
+                value={formData.email}
                 onChange={handleChange}
-                className="w-full p-2 border rounded-md"
+                className="w-full p-2 border rounded-md mt-2"
               />
             ) : (
-              <p className="text-sm">{profileData.workNumber || "-"}</p>
+              <p className="text-sm">{profileData.email || "-"}</p>
             )}
           </div>
           {/* Mobile Number */}
@@ -141,7 +141,7 @@ const ProfilePage = () => {
                 name="mobileNumber"
                 value={formData.mobileNumber}
                 onChange={handleChange}
-                className="w-full p-2 border rounded-md"
+                className="w-full p-2 border rounded-md mt-2"
               />
             ) : (
               <p className="text-sm">{profileData.mobileNumber || "-"}</p>
@@ -156,25 +156,25 @@ const ProfilePage = () => {
                 name="companyName"
                 value={formData.companyName}
                 onChange={handleChange}
-                className="w-full p-2 border rounded-md"
+                className="w-full p-2 border rounded-md mt-2"
               />
             ) : (
               <p className="text-sm">{profileData.companyName || "-"}</p>
             )}
           </div>
-          {/* Job Title */}
+          {/* Designation */}
           <div>
-            <p className="text-sm font-bold">Job Title</p>
+            <p className="text-sm font-bold">Designation</p>
             {isEditing ? (
               <input
                 type="text"
-                name="jobTitle"
-                value={formData.jobTitle}
+                name="designation"
+                value={formData.designation}
                 onChange={handleChange}
-                className="w-full p-2 border rounded-md"
+                className="w-full p-2 border rounded-md mt-2"
               />
             ) : (
-              <p className="text-sm">{profileData.jobTitle || "-"}</p>
+              <p className="text-sm">{profileData.designation || "-"}</p>
             )}
           </div>
         </div>
