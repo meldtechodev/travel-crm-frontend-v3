@@ -92,8 +92,9 @@ function Login() {
         password: values.password
       })
         .then(async (response) => {
-          const token = response;
-          await saveEncryptedToken(token);
+          const token = response.data;
+          // await saveEncryptedToken(token);
+          localStorage.setItem('token', token); 
           toast.success("Logged In", {
             position: "top-center",
             autoClose: 5000,

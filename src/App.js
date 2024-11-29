@@ -48,7 +48,7 @@ const App = () => {
       .catch(error => console.error(error))
   }, [])
 
-  var isAuthenticated = localStorage.getItem('encryptedToken') !== null ? true : false
+  var isAuthenticated = localStorage.getItem('token') !== null ? true : false
 
   // console.log('isAuthenticated', isAuthenticated);
 

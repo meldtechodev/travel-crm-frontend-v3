@@ -59,7 +59,7 @@ const Destination = ({ isOpen, onClose, destinationData, isFormEditEnabled, setI
       .then(token => {
         setTokens(token);
 
-        return axios.get(`${api.baseUrl}/getbytoken`, {
+        return axios.get(`${api.baseUrl}/username`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Access-Control-Allow-Origin': '*'

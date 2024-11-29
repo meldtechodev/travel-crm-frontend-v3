@@ -33,12 +33,11 @@ const Navbar = () => {
   const dropdownRef = useRef(null);
   const isOpenRef = useRef(null);
 
-
   const getFirstCharacter = (word) => {
     return word ? word.charAt(0) : "";
   };
 
-  const [token, setTokens] = useState(null)
+  const [token, setTokens] = useState(null);
   async function decryptToken(encryptedToken, key, iv) {
     const dec = new TextDecoder();
 
@@ -56,42 +55,67 @@ const Navbar = () => {
 
   // Function to retrieve and decrypt the token
   async function getDecryptedToken() {
-    const keyData = JSON.parse(localStorage.getItem('encryptionKey'));
-    const ivBase64 = localStorage.getItem('iv');
-    const encryptedTokenBase64 = localStorage.getItem('encryptedToken');
-
+    const keyData = JSON.parse(localStorage.getItem("encryptionKey"));
+    const ivBase64 = localStorage.getItem("iv");
+    const encryptedTokenBase64 = localStorage.getItem("encryptedToken");
 
     if (!keyData || !ivBase64 || !encryptedTokenBase64) {
-      throw new Error('No token found');
+      throw new Error("No token found");
     }
 
     // Convert back from base64
-    const key = await crypto.subtle.importKey('jwk', keyData, { name: "AES-GCM" }, true, ['encrypt', 'decrypt']);
-    const iv = new Uint8Array(atob(ivBase64).split('').map(char => char.charCodeAt(0)));
-    const encryptedToken = new Uint8Array(atob(encryptedTokenBase64).split('').map(char => char.charCodeAt(0)));
+    const key = await crypto.subtle.importKey(
+      "jwk",
+      keyData,
+      { name: "AES-GCM" },
+      true,
+      ["encrypt", "decrypt"]
+    );
+    const iv = new Uint8Array(
+      atob(ivBase64)
+        .split("")
+        .map((char) => char.charCodeAt(0))
+    );
+    const encryptedToken = new Uint8Array(
+      atob(encryptedTokenBase64)
+        .split("")
+        .map((char) => char.charCodeAt(0))
+    );
 
     return await decryptToken(encryptedToken, key, iv);
   }
 
-  // Example usage to make an authenticated request
+  // // Example usage to make an authenticated request
+  // useEffect(() => {
+  //   getDecryptedToken()
+  //     .then(res => {
+  //       setTokens(res);
+
+  //       return axios.get(`${api.baseUrl}/username`, {
+  //         headers: {
+  //           'Authorization': `Bearer ${token}`,
+  //           'Access-Control-Allow-Origin': '*'
+  //         }
+  //       });
+  //     })
+  //     .then(response => {
+  //       setUser(response.data);
+  //     })
+  //     .catch(error => console.error('Error fetching protected resource:', error))
+  // }, [])
+
   useEffect(() => {
-    getDecryptedToken()
-      .then(token => {
-        setTokens(token);
+    const token = localStorage.getItem("token");
 
-        return axios.get(`${api.baseUrl}/getbytoken`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Access-Control-Allow-Origin': '*'
-          }
-        });
-      })
-      .then(response => {
-        setUser(response.data);
-      })
-      .catch(error => console.error('Error fetching protected resource:', error))
-  }, [])
-
+    axios.get(`${api.baseUrl}/username`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Access-Control-Allow-Origin": "*",
+      },
+    }).then((response) => {
+      setUser(response.data);
+    });
+  }, []);
 
   const handleLogout = () => {
     localStorage.clear();
@@ -123,7 +147,6 @@ const Navbar = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
 
   return (
     <div className="w-full flex flex-col md:flex-row">
@@ -281,7 +304,7 @@ const Navbar = () => {
                 className="bg-green-500 text-white text-center p-2 cursor-pointer rounded-sm w-8 h-8 
                 flex items-center justify-center"
               >
-                {getFirstCharacter(user.username)}
+                {getFirstCharacter(user.name)}
               </div>
 
               {/* Dropdown Menu */}
@@ -292,7 +315,7 @@ const Navbar = () => {
                 >
                   <div className="flex items-center space-x-2 border-b border-red-500 p-2">
                     <div className="bg-green-500 h-8 w-8 text-white flex items-center justify-center rounded-full">
-                      {getFirstCharacter(user.username)}
+                      {getFirstCharacter(user.name)}
                     </div>
 
                     <div>
@@ -303,9 +326,10 @@ const Navbar = () => {
 
                   {/* Dropdown Links */}
                   <div className="flex flex-col p-2 space-y-2">
-                    <div className="flex items-center space-x-2 hover:bg-red-500 p-2 rounded cursor-pointer" onClick={
-                      () => navigate('/home/profile-page')
-                    }>
+                    <div
+                      className="flex items-center space-x-2 hover:bg-red-500 p-2 rounded cursor-pointer"
+                      onClick={() => navigate("/home/profile-page")}
+                    >
                       <FaUserAlt />
                       <p>My Profile</p>
                       {/* <Profile/> */}
