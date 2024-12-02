@@ -13,6 +13,8 @@ import axios from "axios";
 const NewMember = ({ isOpen, onClose }) => {
   const [role, setRole] = useState([])
   const [selectedOption, setSelectedOption] = useState(null)
+  const [errors, setErrors] = useState({});
+
 
   const [token, setTokens] = useState(null)
   async function decryptToken(encryptedToken, key, iv) {
@@ -79,9 +81,15 @@ const NewMember = ({ isOpen, onClose }) => {
   }, [])
 
   const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    password: "",
+    Company: "",
+    role: "",
+    Department: "",
+    Designation: "",
+    firstName: "",
+    middleName: "",
+    lastName: "",
+    Email: "",
+    Password: "",
   });
 
   const handleChange = (e) => {
@@ -91,7 +99,15 @@ const NewMember = ({ isOpen, onClose }) => {
       [name]: value,
     }));
   };
-
+   
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = "First Name is required";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
   const handleRoleChange = (selectedOption) => {
     // setFormData((prevData) => ({
     //   ...prevData,
@@ -102,31 +118,62 @@ const NewMember = ({ isOpen, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const postData = {
-      "username": formData.username,
-      "email": formData.email,
-      "password": formData.password,
-      "role": [selectedOption.label]
+  
+    // Validate form fields
+    if (!validateForm()) {
+      alert("Please fill out the required fields.");
+      return;
     }
-
-    await axios.post(`${api.baseUrl}/signup`, postData, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      }
-    }).then(async (response) => {
-      alert(response.data);
-      setSelectedOption(null);
+  
+    const postData = {
+      username: formData.firstName, // Assuming username corresponds to firstName
+      email: formData.Email, // Ensure consistent case for field names
+      password: formData.Password, 
+      role: selectedOption ? [selectedOption.value] : [], // Send role ID(s)
+    };
+  
+    try {
+      const response = await axios.post(`${api.baseUrl}/signup`, postData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      alert("User successfully created!");
       setFormData({
-        username: "",
-        email: "",
-        password: "",
-      })
-    })
-      .catch(error => console.log(error));
-  }
-
+        Company: "",
+        role: "",
+        Department: "",
+        Designation: "",
+        firstName: "",
+        middleName: "",
+        lastName: "",
+        Email: "",
+        Password: "",
+      });
+      setSelectedOption(null); // Clear role selection
+    } catch (error) {
+      console.error("Error creating user:", error);
+      alert("There was an error creating the user. Please try again.");
+    }
+  };
+  
+  const handleReset = () => {
+    setFormData({
+      Company: "",
+      role: "",
+      Department: "",
+      Designation: "",
+      firstName: "",
+      middleName: "",
+      lastName: "",
+      Email: "",
+      Password: "",
+    });
+    setSelectedOption(null); // Clear role selection
+    setErrors({}); // Clear errors
+  };
+  
 
 
   return (
@@ -154,6 +201,20 @@ const NewMember = ({ isOpen, onClose }) => {
         <div className="flex flex-wrap sm:flex-nowrap -mx-1 sm:-mx-2 mb-3 sm:mb-4">
           <div className="w-full sm:w-1/2 px-1 sm:px-2 mb-3 sm:mb-0">
             <label className="block text-gray-700 text-sm font-bold mb-1 sm:mb-2" htmlFor="role">
+              Company <span className="text-red-700">*</span>
+            </label>
+            <Select
+              id="role"
+              name="role"
+              value={formData.role}
+              onChange={handleRoleChange}
+              options={role}
+              className="w-full"
+              placeholder="Select..."
+            />
+          </div>
+          <div className="w-full sm:w-1/2 px-1 sm:px-2 mb-3 sm:mb-0">
+            <label className="block text-gray-700 text-sm font-bold mb-1 sm:mb-2" htmlFor="role">
               Role <span className="text-red-700">*</span>
             </label>
             <Select
@@ -166,23 +227,84 @@ const NewMember = ({ isOpen, onClose }) => {
               placeholder="Select..."
             />
           </div>
-
-          <div className="w-full sm:w-1/2 px-1 sm:px-2">
-            <label className="block text-gray-700 text-sm font-bold mb-1 sm:mb-2" htmlFor="username">
-              Username <span className="text-red-700">*</span>
+        </div>
+        <div className="flex flex-wrap sm:flex-nowrap -mx-1 sm:-mx-2 mb-3 sm:mb-4">
+          <div className="w-full sm:w-1/2 px-1 sm:px-2 mb-3 sm:mb-0">
+            <label className="block text-gray-700 text-sm font-bold mb-1 sm:mb-2" htmlFor="role">
+              Department <span className="text-red-700">*</span>
             </label>
-            <input
-              id="username"
-              name="username"
-              type="text"
-              placeholder="Your Team Member Username"
-              value={formData.username}
-              onChange={handleChange}
-              className="border border-gray-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            <Select
+              id="role"
+              name="role"
+              value={formData.role}
+              onChange={handleRoleChange}
+              options={role}
+              className="w-full"
+              placeholder="Select..."
+            />
+          </div>
+          <div className="w-full sm:w-1/2 px-1 sm:px-2 mb-3 sm:mb-0">
+            <label className="block text-gray-700 text-sm font-bold mb-1 sm:mb-2" htmlFor="role">
+              Designation <span className="text-red-700">*</span>
+            </label>
+            <Select
+              id="role"
+              name="role"
+              value={formData.role}
+              onChange={handleRoleChange}
+              options={role}
+              className="w-full"
+              placeholder="Select..."
             />
           </div>
         </div>
-
+        <div className="flex gap-2 mb-4">
+          <div className="w-1/2">
+            <label htmlFor="firstName" className="block text-sm font-medium">
+              First Name <span className="text-red-700">*</span>
+            </label>
+            <input
+              type="text"
+              id="firstName"
+              name="firstName"
+              className="mt-1 p-2 w-full border rounded"
+              placeholder="Enter First Name"
+              value={formData.firstName}
+              onChange={handleChange}
+            />
+            {errors.firstName && (
+              <span className="text-red-600 text-sm">{errors.firstName}</span>
+            )}
+          </div>
+          <div className="w-1/4">
+            <label htmlFor="middleName" className="block text-sm font-medium">
+              Middle Name
+            </label>
+            <input
+              type="text"
+              id="middleName"
+              name="middleName"
+              className="mt-1 p-2 w-full border rounded"
+              placeholder="Enter Middle Name"
+              value={formData.middleName}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="w-1/4">
+            <label htmlFor="lastName" className="block text-sm font-medium">
+              Last Name
+            </label>
+            <input
+              type="text"
+              id="lastName"
+              name="lastName"
+              className="mt-1 p-2 w-full border rounded"
+              placeholder="Enter Last Name"
+              value={formData.lastName}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
         {/* Email and Password fields in one row */}
         <div className="flex flex-wrap sm:flex-nowrap -mx-1 sm:-mx-2 mb-3 sm:mb-4">
           <div className="w-full sm:w-1/2 px-1 sm:px-2 mb-3 sm:mb-0">
@@ -194,7 +316,7 @@ const NewMember = ({ isOpen, onClose }) => {
               name="email"
               type="email"
               placeholder="Your Team Member Email Id"
-              value={formData.email}
+              value={formData.Email}
               onChange={handleChange}
               className="border border-gray-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
@@ -227,7 +349,7 @@ const NewMember = ({ isOpen, onClose }) => {
           <button
             type="button"
             className="bg-red-700 text-white px-4 py-2 rounded shadow"
-          >
+            onClick={handleReset}>   
             Reset
           </button>
         </div>

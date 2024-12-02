@@ -28,6 +28,8 @@ import NewQuery from '../pages/NewQuery'
 import NewVendorForm from '../pages/NewVendorForm'
 import NewTransportationForm from '../pages/NewTransportationForm'
 import NewPolicyForm from '../pages/NewPolicyForm'
+import NewMember from '../pages/NewMember'
+import Roles from '../pages/Roles'
 
 const Sidebar = () => {
   const [homeStyle, setHomeStyle] = useState();
