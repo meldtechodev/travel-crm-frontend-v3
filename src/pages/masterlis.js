@@ -81,7 +81,7 @@ const MasterList = () => {
   const fetchData = async (endpoint, setData, updateStatus) => {
     try {
       const response = await axios.get(`${api.baseUrl}/${endpoint}`);
-      const formattedData = await response.data.map((item) => ({
+      const formattedData = await response.data.content.map((item) => ({
         ...item,
         status: item.status ? 'Active' : 'Inactive',
       }));
@@ -178,10 +178,10 @@ const MasterList = () => {
   useEffect(() => {
     switch (activeTab) {
       case 'country':
-        fetchData('country/get', setCountryData, handleStatusToggle);
+        fetchData('country/getall', setCountryData, handleStatusToggle);
         break;
       case 'state':
-        fetchData('state/get', setStateData, handleStatusToggle);
+        fetchData('state/getall', setStateData, handleStatusToggle);
         break;
       case 'destination':
         fetchData('destination/get', setDestinationData, handleStatusToggle);
@@ -301,8 +301,8 @@ const MasterList = () => {
   useEffect(() => {
     const fetchCountryData = async () => {
       try {
-        const response = await axios.get(`${api.baseUrl}/country/get`);
-        const formattedData = await response.data.map((country) => ({
+        const response = await axios.get(`${api.baseUrl}/country/getall`);
+        const formattedData = await response.data.content.map((country) => ({
           ...country,
           status: country.status ? 'Active' : 'Inactive'
         }));
@@ -321,12 +321,13 @@ const MasterList = () => {
 
     const fetchStateData = async () => {
       try {
-        const response = await axios.get(`${api.baseUrl}/state/get`);
-        const formattedData = response.data.map((state) => ({
+        const response = await axios.get(`${api.baseUrl}/state/getall`);
+        const formattedData = response.data.content.map((state) => ({
           ...state,
           status: state.status ? 'Active' : 'Inactive',
           countryName: state.country.countryName
         }));
+        console.log('formattedData:', formattedData);
         const sortedData = formattedData.sort((a, b) => {
           return a.stateName.localeCompare(b.stateName);  // Replace 'name' with the key to sort by
         });
