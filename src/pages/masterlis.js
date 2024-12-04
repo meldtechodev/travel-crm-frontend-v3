@@ -12,6 +12,7 @@ import State from './State';
 import Destination from './Destination';
 import Department from './Department'
 import { toast } from 'react-toastify';
+import Hotel from './Hotel';
 
 
 
@@ -32,6 +33,7 @@ const MasterList = () => {
   const [selectedDestination, setSelectedDestination] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [isFormEditEnabled, setIsFormEditEnabled] = useState(false);
+  const [addButton, setAddButton] = useState(activeTab);
   const navigate = useNavigate()
 
   // Reusable ToggleSwitch Component
@@ -471,58 +473,15 @@ const MasterList = () => {
         <div className="pb-1 flex justify-between">
           <h2 className="text-xl font-bold mb-6">Master List</h2>
           <div className="relative" ref={dropdownRef}>
-            <span
-              className="text-black text-3xl md:text-3xl cursor-pointer flex"
-              onClick={() => setDropdownOpen(!dropdownOpen)}
+          <button className="flex items-center justify-center bg-red-500  text-white p-2 rounded-md hover:bg-red-700 mt-2 md:mt-0 md:ml-2"
+            onClick={
+              () => {
+                setAddData([`${activeTab[0].toUpperCase()}${activeTab.substring(1)}`])
+              }
+            }
             >
-              +
-            </span>
-            {dropdownOpen && (
-              <div className="absolute top-10 right-0 w-48 bg-white shadow-lg rounded-md  text-black">
-                <ul className="space-y-2">
-                  <li
-                    className="hover:bg-gray-200  hover:border-l-4  border-blue-500 p-2 rounded cursor-pointer"
-                    onClick={() => {
-                      setAddData([]);
-                      setAddData(["Vendors"]);
-                    }}
-                  >
-                    New Vendors
-                  </li>
-                  <li className="hover:bg-gray-200  hover:border-l-4  border-blue-500 p-2 rounded cursor-pointer">
-                    New Customer
-                  </li>
-                  <li
-                    className="hover:bg-gray-200  hover:border-l-4  border-blue-500 p-2 rounded cursor-pointer"
-                    onClick={() => {
-                      setAddData([]);
-                      setAddData(["NewPackageForm"]);
-                    }}
-                  >
-                    New Package
-                  </li>
-                  <li
-                    className="hover:bg-gray-200  hover:border-l-4  border-blue-500 p-2 rounded cursor-pointer"
-                    onClick={() => {
-                      setAddData([]);
-                      setAddData(["Transportation"]);
-                    }}
-                  >
-                    New Transportation
-                  </li>
-                  <hr className="border-gray-300" />
-                  <li
-                    className="hover:bg-gray-200  hover:border-l-4  border-blue-500 p-2 rounded cursor-pointer"
-                    onClick={() => {
-                      setAddData([]);
-                      setAddData(["NewMember"]);
-                    }}
-                  >
-                    New Member
-                  </li>
-                </ul>
-              </div>
-            )}
+            New {`${activeTab[0].toUpperCase()}${activeTab.substring(1)}`}
+          </button>
           </div>
 
         </div>
@@ -630,6 +589,30 @@ const MasterList = () => {
       >
         <Department
           isOpen={addData[0] === "Department"}
+          onClose={() => setAddData([])}
+          departmentData={selectedDepartment}
+          isFormEditEnabled={isFormEditEnabled}
+          setIsFormEditEnabled={setIsFormEditEnabled}
+        />
+      </div>
+      <div
+        className="submenu-menu"
+        style={{ right: addData[0] === "Hotel" ? "0" : "-100%" }}
+      >
+        <Hotel
+          isOpen={addData[0] === "Hotel"}
+          onClose={() => setAddData([])}
+          departmentData={selectedDepartment}
+          isFormEditEnabled={isFormEditEnabled}
+          setIsFormEditEnabled={setIsFormEditEnabled}
+        />
+      </div>
+      <div
+        className="submenu-menu"
+        style={{ right: addData[0] === "Vendor" ? "0" : "-100%" }}
+      >
+        <NewVendorForm
+          isOpen={addData[0] === "Vendor"}
           onClose={() => setAddData([])}
           departmentData={selectedDepartment}
           isFormEditEnabled={isFormEditEnabled}
