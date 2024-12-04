@@ -1,23 +1,32 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { FaFacebook, FaLinkedin, FaTwitter } from "react-icons/fa";
+import api from "../apiConfig/config";
 
 const ProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
-  const [profileData, setProfileData] = useState({
-    firstName: "Aditi",
-    middleName: "",
-    lastName: "Shahi",
-    email: "aditi@domain.com",
-    mobileNumber: "79059556",
-    companyName: "Meld Techo",
-    designation: "Software Developer",
-    language: "English",
-    timeZone: "(GMT+05:30) Kolkata", // Updated time zone
-    orgURL: "tourbom.myfreshworks.com",
-    adminRole: "Organization Admin",
-  });
+  const [profileData, setProfileData] = useState(null);
 
   const [formData, setFormData] = useState(profileData);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    axios.get(`${api.baseUrl}/username`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Access-Control-Allow-Origin": "*",
+      },
+    }).then((response) => {
+      setProfileData(response.data);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (profileData) {
+      setFormData(profileData);
+    }
+  }, [profileData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -48,15 +57,15 @@ const ProfilePage = () => {
           {/* Profile Picture */}
           <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
             <span className="text-2xl font-bold text-gray-700">
-              {profileData.firstName.charAt(0)}
+              {profileData && `${profileData.name.charAt(0).toUpperCase()}`}
             </span>
           </div>
           {/* User Info */}
           <div>
-            <h1 className="text-lg font-semibold text-gray-800">{`${profileData.firstName} ${profileData.lastName}`}</h1>
-            <p className="text-gray-600 text-sm">{profileData.email}</p>
+            <h1 className="text-lg font-semibold text-gray-800">{`${profileData && profileData.name} ${profileData && profileData.lname}`}</h1>
+            <p className="text-gray-600 text-sm">{profileData && profileData.email}</p>
             <span className="text-xs bg-orange-100 text-orange-800 font-medium py-1 px-2 rounded inline-block mt-2">
-              {profileData.adminRole}
+              {profileData && profileData.role && profileData.role.roleName}
             </span>
           </div>
         </div>
@@ -79,12 +88,12 @@ const ProfilePage = () => {
               <input
                 type="text"
                 name="firstName"
-                value={formData.firstName}
+                value={formData && formData.name}
                 onChange={handleChange}
                 className="w-full p-2 border rounded-md mt-2"
               />
             ) : (
-              <p className="text-sm">{profileData.firstName || "-"}</p>
+              <p className="text-sm">{profileData && profileData.name}</p>
             )}
           </div>
           {/* Middle Name */}
@@ -94,12 +103,12 @@ const ProfilePage = () => {
               <input
                 type="text"
                 name="middleName"
-                value={formData.middleName}
+                value={formData && formData.mname}
                 onChange={handleChange}
                 className="w-full p-2 border rounded-md mt-2"
               />
             ) : (
-              <p className="text-sm">{profileData.middleName || "-"}</p>
+              <p className="text-sm">{profileData && profileData.mname}</p>
             )}
           </div>
           {/* Last Name */}
@@ -109,12 +118,12 @@ const ProfilePage = () => {
               <input
                 type="text"
                 name="lastName"
-                value={formData.lastName}
+                value={formData && formData.lname}
                 onChange={handleChange}
                 className="w-full p-2 border rounded-md mt-2"
               />
             ) : (
-              <p className="text-sm">{profileData.lastName || "-"}</p>
+              <p className="text-sm">{profileData && profileData.lname}</p>
             )}
           </div>
           {/* Email */}
@@ -124,12 +133,12 @@ const ProfilePage = () => {
               <input
                 type="email"
                 name="email"
-                value={formData.email}
+                value={formData && formData.email}
                 onChange={handleChange}
                 className="w-full p-2 border rounded-md mt-2"
               />
             ) : (
-              <p className="text-sm">{profileData.email || "-"}</p>
+              <p className="text-sm">{profileData && profileData.email}</p>
             )}
           </div>
           {/* Mobile Number */}
@@ -139,12 +148,12 @@ const ProfilePage = () => {
               <input
                 type="text"
                 name="mobileNumber"
-                value={formData.mobileNumber}
+                value={formData && formData.mobnumber}
                 onChange={handleChange}
                 className="w-full p-2 border rounded-md mt-2"
               />
             ) : (
-              <p className="text-sm">{profileData.mobileNumber || "-"}</p>
+              <p className="text-sm">{profileData && profileData.mobnumber}</p>
             )}
           </div>
           {/* Company Name */}
@@ -154,12 +163,12 @@ const ProfilePage = () => {
               <input
                 type="text"
                 name="companyName"
-                value={formData.companyName}
+                value={formData && formData.companyName}
                 onChange={handleChange}
                 className="w-full p-2 border rounded-md mt-2"
               />
             ) : (
-              <p className="text-sm">{profileData.companyName || "-"}</p>
+              <p className="text-sm">{profileData && profileData.companyName}</p>
             )}
           </div>
           {/* Designation */}
@@ -169,12 +178,12 @@ const ProfilePage = () => {
               <input
                 type="text"
                 name="designation"
-                value={formData.designation}
+                value={formData && formData.designation && formData.designation.designationName}
                 onChange={handleChange}
                 className="w-full p-2 border rounded-md mt-2"
               />
             ) : (
-              <p className="text-sm">{profileData.designation || "-"}</p>
+              <p className="text-sm">{profileData && profileData.designation && profileData.designation.designationName}</p>
             )}
           </div>
         </div>
@@ -206,11 +215,11 @@ const ProfilePage = () => {
           <div className="grid grid-cols-2 gap-6">
             <div>
               <p className="text-sm font-bold">Language</p>
-              <p className="text-sm">{profileData.language}</p>
+              <p className="text-sm">{profileData && profileData.language}</p>
             </div>
             <div>
               <p className="text-sm font-bold">Time Zone</p>
-              <p className="text-sm">{profileData.timeZone}</p>
+              <p className="text-sm">{profileData && profileData.timeZone}</p>
             </div>
           </div>
           <div className="flex items-center space-x-4 mt-6">

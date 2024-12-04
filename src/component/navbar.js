@@ -304,7 +304,7 @@ const Navbar = () => {
                 className="bg-green-500 text-white text-center p-2 cursor-pointer rounded-sm w-8 h-8 
                 flex items-center justify-center"
               >
-                {getFirstCharacter(user.name)}
+                {user && user.name && getFirstCharacter(user.name.toUpperCase())}
               </div>
 
               {/* Dropdown Menu */}
@@ -315,7 +315,7 @@ const Navbar = () => {
                 >
                   <div className="flex items-center space-x-2 border-b border-red-500 p-2">
                     <div className="bg-green-500 h-8 w-8 text-white flex items-center justify-center rounded-full">
-                      {getFirstCharacter(user.name)}
+                    {user && user.name && getFirstCharacter(user.name.toUpperCase())}
                     </div>
 
                     <div>
