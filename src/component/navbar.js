@@ -319,8 +319,9 @@ const Navbar = () => {
                     </div>
 
                     <div>
+                      <p className="text-lg">{user && user.name && `${user.name[0].toUpperCase()}${user.name.substring(1)}`}{" "}{user && user.lname}</p>
                       <p>{user.email}</p>
-                      <p className="text-sm">{user.roles}</p>
+                      <p className="text-sm">{user && user.role && user.role.roleName}</p>
                     </div>
                   </div>
 
