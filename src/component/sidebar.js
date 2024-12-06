@@ -187,7 +187,7 @@ const Sidebar = () => {
 
           {/* Sidebar Packages Item */}
           {module.map((items, i) =>
-            ((items.permissionName !== 'Quickstart' && items.permissionName !== 'Dashboard') && items.parentId === 0) ?
+            ((items.permissionName !== 'Quickstart' && items.permissionName !== 'Dashboard') && items.module.parentId === 0) ?
               (<div className="sidebar-item group relative hover:w-full">
                 <div
                   className="sidebar-icons flex flex-col justify-center  items-center p-2 rounded cursor-pointer hover:color-black"

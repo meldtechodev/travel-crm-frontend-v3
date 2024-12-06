@@ -207,7 +207,7 @@ const ListView = () => {
     const fetchData = async () => {
       await axios.get(`${api.baseUrl}/destination/getall`)
         .then((response) => {
-          setDestination(response.data)
+          setDestination(response.data.content)
         })
         .catch((error) => {
           console.error('Error fetching data:', error);
@@ -222,7 +222,7 @@ const ListView = () => {
     const fetchData = async () => {
       await axios.get(`${api.baseUrl}/packages/getAll`)
         .then((response) => {
-          const sortedData = response.data.sort((a, b) => {
+          const sortedData = response.data.content.sort((a, b) => {
             return a.pkName.localeCompare(b.pkName);  // Replace 'name' with the key to sort by
           });
           setPackageList(sortedData);

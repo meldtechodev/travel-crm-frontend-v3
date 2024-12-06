@@ -11,7 +11,7 @@ import { toast } from "react-toastify";
 const ViewDepartments = () => {
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
-  const [itemsPerPage] = useState(5); // Set the number of items per page
+  const [itemsPerPage] = useState(10); // Set the number of items per page
   const [totalPages, setTotalPages] = useState(0);
   const [addData, setAddData] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState(null);
@@ -31,7 +31,7 @@ const ViewDepartments = () => {
           params: {
             page: currentPage,
             size: itemsPerPage,
-            sortDirection: 'desc' // Adjust sorting if necessary
+            sortDirection: 'asc' // Adjust sorting if necessary
           }
         }
         );
@@ -155,7 +155,7 @@ const ViewDepartments = () => {
               <FiFilter />
             </button>
           </div>
-            <button className="flex items-center justify-center bg-red-500  text-white p-2 rounded-md hover:bg-red-700 mt-2 md:mt-0 md:ml-2" onClick={() => setAddData(['Department'])}>New Department +</button>
+          <button className="flex items-center justify-center bg-red-500  text-white p-2 rounded-md hover:bg-red-700 mt-2 md:mt-0 md:ml-2" onClick={() => setAddData(['Department'])}>New Department +</button>
         </div>
 
         <hr className="my-4" />
