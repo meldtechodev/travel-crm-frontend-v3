@@ -1,8 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaCaretDown, FaFilter, FaSort, FaArrowsAltH, FaPlus } from "react-icons/fa";
+import { FaCaretDown, FaFilter, FaSort, FaArrowsAltH, FaPlus, FaEdit, FaTrashAlt, FaSearch } from "react-icons/fa";
 import axios from "axios";
 import api from "../apiConfig/config";
+import TableComponent from '../component/TableComponent';
+import { IoArrowBack, IoArrowForward } from "react-icons/io5";
+import { FiFilter } from "react-icons/fi";
+import NewPackageForm from "./NewPackageForm";
 
 // The main dashboard component
 const PackageDashboard = () => {
@@ -61,6 +65,23 @@ const KanbanBoard = () => (
   </>
 );
 
+const ToggleSwitch = ({ isOn, handleToggle }) => {
+  return (
+    <div className="flex justify-center items-center w-full h-full">
+      <div
+        className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer ${isOn ? 'bg-green-500' : 'bg-gray-300'
+          }`}
+        onClick={handleToggle}
+      >
+        <div
+          className={`w-3 h-4 bg-white rounded-full shadow-md transform transition-transform duration-300 ${isOn ? 'translate-x-6' : 'translate-x-0'
+            }`}
+        />
+      </div>
+    </div>
+  );
+};
+
 // List View 
 const ListView = () => {
   const navigate = useNavigate();
@@ -73,6 +94,59 @@ const ListView = () => {
   const [packageTheme, setPackageTheme] = useState([])
   const [packD, setPackD] = useState([])
   const [siteSeeings, setSiteSeeings] = useState([])
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [addData, setAddData] = useState([])
+  const [toggleSwitch, setToggleSwitch] = useState(true);
+
+  const handleStatusToggle = (id) => {
+    setPackageList((prevData) =>
+      prevData.map((item) =>
+        item.id === id ? { ...item, status: !item.status } : item
+      )
+    );
+  };
+
+  const columns = [
+    { header: 'S. No.', accessor: 'index' },
+    { header: "Package Name", accessor: "pkName" },
+    { header: "From City", render: ({ row }) => ViewDestination(row.fromCityId) },
+    { header: "To City", render: ({ row }) => ViewDestination(row.toCityId) },
+    { header: "Category", accessor: "pkCategory" },
+    { header: "Type", accessor: "packageType" },
+    { header: 'Status', render: (({row}) => <div className="flex items-center justify-center">
+    <label className="relative inline-flex items-center cursor-pointer">
+      <input
+        type="checkbox"
+        className="sr-only peer"
+        checked={row.status}
+        onChange={() => handleStatusToggle(row.id)}
+      />
+      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:bg-green-500 dark:bg-gray-300 dark:peer-focus:ring-green-800">
+        <div
+          className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${row.status ? "translate-x-5" : ""
+            }`}
+        ></div>
+      </div>
+    </label>
+  </div> ) },
+    { header: "Days/Nights", render: ({ row }) => `${row.days}/${row.nights}` },
+    {
+      header: "Action",
+      render: (row) => (
+        <div className="flex gap-2 justify-center">
+          <FaEdit
+            className="text-purple-600 cursor-pointer"
+          onClick={() => setAddData(['New Package'])}
+          />
+          <FaTrashAlt
+            className="text-red-600 cursor-pointer"
+          // onClick={() => handleDelete(item)}
+          />
+        </div>
+      )
+    },
+  ]
 
   const handleView = (option) => {
     const pack = packIti.filter(item => option.id === item.packid)
@@ -220,52 +294,102 @@ const ListView = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      await axios.get(`${api.baseUrl}/packages/getAll`)
+      await axios.get(`${api.baseUrl}/packages/getAll?page=${currentPage}&size=10`)
         .then((response) => {
-          const sortedData = response.data.content.sort((a, b) => {
-            return a.pkName.localeCompare(b.pkName);  // Replace 'name' with the key to sort by
-          });
-          setPackageList(sortedData);
+          setPackageList(response.data.content.map((item, index) => {
+            return {
+              ...item,
+              index: index + 1,
+              status: item.status,
+            }
+          }));
+          setTotalPages(response.data.totalPages);
         })
         .catch(error => console.error(error));
       return
     }
     fetchData()
-  }, [])
+  }, [currentPage])
 
   return (
-    <table className="min-w-full bg-white">
-      <thead>
-        <tr className='truncate border-collapse'>
-          <th className="py-2 px-4 border"></th>
-          <th className="py-2 px-4 border">Package Name</th>
-          <th className="py-2 px-4 border">From City</th>
-          <th className="py-2 px-4 border">To City</th>
-          <th className="py-2 px-4 border">Category</th>
-          {/* <th className="py-2 px-4 border">Theme</th> */}
-          <th className="py-2 px-4 border">Type</th>
-          <th className="py-2 px-4 border">Days/Nights</th>
-          {/* <th className="py-2 px-4 border">No. of Nights</th> */}
-          <th className="py-2 px-4 border">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {packageList.map((option, index) => (
-          <tr key={index} className="border-collapse text-center truncate">
-            <td className="py-2 px-4 border">{index + 1}</td>
-            <td className="py-2 px-4 border">{option.pkName}</td>
-            <td className="py-2 px-4 border">{ViewDestination(option.fromCityId)}</td>
-            <td className="py-2 px-4 border">{ViewDestination(option.toCityId)}</td>
-            <td className="py-2 px-4 border">{option.pkCategory}</td>
-            {/* <td className="py-2 px-4 border">{ViewTheme(option.pkthem)}</td> */}
-            <td className="py-2 px-4 border">{option.packageType}</td>
-            <td className="py-2 px-4 border">{option.days}/{option.nights}</td>
-            {/* <td className="py-2 px-4 border"></td> */}
-            <td className="py-2 px-4 border"><button onClick={() => handleView(option)}>Action</button></td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <>
+
+    <div className='mt-4'>
+      <div className="flex items-center justify-between gap-2 w-full flex-col md:flex-row">
+        <div className="flex justify-between">
+          <div className="flex items-center bg-white border border-gray-300 rounded-md px-3 py-2 w-full">
+            <FaSearch className="text-gray-500 mr-2" />
+            <input
+              type="text"
+              placeholder="Search"
+              className="w-full outline-none text-gray-700"
+            />
+          </div>
+
+          {/* Filter Button */}
+          <button className="flex items-center justify-center bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mt-2 md:mt-0 md:ml-2">
+            <FiFilter />
+          </button>
+        </div>
+        <button className="flex items-center justify-center bg-blue-500  text-white p-2 rounded-md hover:bg-blue-600 mt-2 md:mt-0 md:ml-2" onClick={() => setAddData(['New Package'])}>New Package +</button>
+      </div>
+
+      <hr className="my-4" />
+      <div className='mt-4'>
+        <TableComponent
+          columns={columns}
+          data={packageList}
+        />
+        {/* Pagination */}
+        <div className="flex justify-start items-center mt-4 space-x-4">
+          {/* Previous Page Button */}
+          <button
+            className={`text-xl text-blue-500 hover:text-blue-700 ${currentPage === 0 && "opacity-50 cursor-not-allowed"
+              }`}
+            disabled={currentPage === 0}
+            onClick={() => setCurrentPage((prev) => prev - 1)}
+          >
+            <IoArrowBack />
+          </button>
+
+          {/* Page Numbers */}
+          <div className="flex space-x-2">
+            {Array.from({ length: totalPages }, (_, index) => (
+              <button
+                key={index}
+                className={`px-2 py-1 border rounded ${currentPage === index
+                  ? "bg-blue-500 text-white"
+                  : "text-blue-500 hover:bg-blue-100"
+                  }`}
+                onClick={() => setCurrentPage(index)}
+              >
+                {index + 1}
+              </button>
+            ))}
+          </div>
+
+          {/* Next Page Button */}
+          <button
+            className={`text-xl text-blue-500 hover:text-blue-700 ${currentPage === totalPages - 1 && "opacity-50 cursor-not-allowed"
+              }`}
+            disabled={currentPage === totalPages - 1}
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+          >
+            <IoArrowForward />
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+        className="submenu-menu"
+        style={{ right: addData[0] === 'New Package' ? "0" : "-100%" }}
+      >
+        <NewPackageForm
+          isOpen={addData[0] === 'New Package'}
+          onClose={() => setAddData('')}
+        />
+      </div>
+    </>
   )
 };
 
@@ -380,8 +504,6 @@ const PackageDashboardTab = ({ isListViewSelected, setIsListViewSelected }) => {
       <div className="flex flex-col gap-3 justify-between items-center py-4 bg-white shadow-md px-6 rounded-md lg:flex-row sm:flex-col">
         <h2 className="text-xl font-bold">Packages</h2>
 
-        {/* <div></div> */}
-
         <div className="flex items-center">
           <button
             className={`btn ${!isListViewSelected
@@ -404,30 +526,6 @@ const PackageDashboardTab = ({ isListViewSelected, setIsListViewSelected }) => {
         </div>
 
         <div className="flex items-center">
-          {/* <div className="relative" ref={workflowRef}>
-            <button
-              className="bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 py-2 px-4 rounded-md flex items-center"
-              onClick={() => setWorkflowDropdown(!workflowDropdown)}
-            >
-              Default Workflow <FaCaretDown className="ml-2" />
-            </button>
-            {workflowDropdown && (
-              <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
-                <a
-                  href="#task1"
-                  className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                >
-                  Default Workflow
-                </a>
-                <a
-                  href="#task2"
-                  className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                >
-                  Another Workflow
-                </a>
-              </div>
-            )}
-          </div> */}
 
           <div className="relative ml-2" ref={createTaskRef}>
             <button
@@ -456,111 +554,6 @@ const PackageDashboardTab = ({ isListViewSelected, setIsListViewSelected }) => {
           </div>
         </div>
       </div>
-      {/* Filter, Plus, Sort, and Arrow buttons */}
-      {/* <div className="flex md:flex- mt-3 justify-center md:justify-between items-center rounded-md bg-white p-3 border-b border-gray-300 mb-4">
-        <div className="flex items-center">
-          <input
-            type="text"
-            placeholder="Search"
-            className="px-2 py-1 border border-gray-300 rounded mr-2"
-          />
-          <button className="bg-white border border-gray-300 rounded px-2 py-1">
-            <FaFilter />
-          </button> */}
-
-      {/* Plus Button Dropdown */}
-      {/* <div className="relative" ref={plusRef}>
-            <button
-              className="bg-white border border-gray-300 rounded px-2 py-1"
-              onClick={() => setPlusDropdown(!plusDropdown)}
-            >
-              <FaPlus className="ml-1" />
-            </button> */}
-      {/* {plusDropdown && (
-              <div className="absolute bg-white min-w-[160px] shadow-md z-10 mt-2 rounded border border-gray-300">
-                {[
-                  "Name",
-                  "End Date",
-                  "Start Date",
-                  "Owner",
-                  "Stage",
-                  "Priority",
-                  "Collaborators",
-                  "Followers",
-                  "Created",
-                  "Edited Date",
-                  "Assignee or Collaborated",
-                  "Project",
-                  "Group",
-                  "Tags",
-                  "Assignee",
-                ].map((item, index) => (
-                  <a
-                    key={index}
-                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
-                    href="#"
-                  >
-                    {item}
-                  </a>
-                ))}
-              </div>
-            )} */}
-      {/* </div>
-
-
-        </div> */}
-      {/* <div className="flex"> */}
-      {/* Sort Button Dropdown */}
-      {/* <div className="relative" ref={towerRef}>
-            <button
-              className="bg-white border border-gray-300 rounded px-2 py-1"
-              onClick={() => setTowerDropdown(!towerDropdown)}
-            >
-              <FaSort className="ml-1" />
-            </button>
-            {towerDropdown && (
-              <div className="absolute bg-white min-w-[160px] shadow-md z-10 mt-2 rounded border border-gray-300">
-                {["Name", "Due Date"].map((item, index) => (
-                  <a
-                    key={index}
-                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
-                    href="#"
-                  >
-                    {item}
-                  </a>
-                ))}
-              </div>
-            )}
-          </div> */}
-
-      {/* Arrows Button Dropdown */}
-      {/* <div className="relative" ref={arrowsRef}>
-            <button
-              className="bg-white border border-gray-300 rounded px-2 py-1"
-              onClick={() => setArrowsDropdown(!arrowsDropdown)}
-            >
-              <FaArrowsAltH className="ml-1" />
-            </button>
-            {arrowsDropdown && (
-              <div className="absolute bg-white min-w-[160px] shadow-md z-10 mt-2 rounded border border-gray-300">
-                {["Due Date", "Priority", "Owner"].map((item, index) => (
-                  <a
-                    key={index}
-                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
-                    href="#"
-                  >
-                    {item}
-                  </a>
-                ))}
-              </div>
-            )}
-          </div>
-
-        </div>
-      </div> */}
-      {/* <div className="submenu-menu" style={{ right: addData[0] === 'NewPackageForm' ? "0" : "-100%" }}>
-        <NewPackageForm isOpen={addData[0] === 'NewPackageForm'} onClose={() => setAddData([])} />
-      </div> */}
     </>
   );
 };
