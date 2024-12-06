@@ -113,7 +113,7 @@ const NewPackageForm = ({ isOpen, onClose }) => {
       .then(token => {
         setTokens(token);
 
-        return axios.get(`${api.baseUrl}/getbytoken`, {
+        return axios.get(`${api.baseUrl}/username`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Access-Control-Allow-Origin': '*'
@@ -173,14 +173,14 @@ const NewPackageForm = ({ isOpen, onClose }) => {
       axios.get(`${api.baseUrl}/transport/getAll`),
     ])
       .then(response => {
-        const formatIti = response[0].data.map(item => ({
+        const formatIti = response[0].data.content.map(item => ({
           value: item.id,
           label: item.daytitle
         }))
         setAllItineray(response.data)
         setDisplayIti(formatIti)
 
-        const formatTransport = response[1].data.map(item => ({
+        const formatTransport = response[1].data.content.map(item => ({
           value: item.id,
           label: item.transportmode
         }))
@@ -198,37 +198,37 @@ const NewPackageForm = ({ isOpen, onClose }) => {
       axios.get(`${api.baseUrl}/exclusion/getall`),  //index 4
       axios.get(`${api.baseUrl}/hotel/getAll`),  //index 5
       axios.get(`${api.baseUrl}/roomtypes/getAll`),  //index 6
-      axios.get(`${api.baseUrl}/mealspackage/getall`),  //index 7
-      axios.get(`${api.baseUrl}/activities/getAll`),  //index 8
+      axios.get(`${api.baseUrl}/mealspackage/getAll`),  //index 7
+      axios.get(`${api.baseUrl}/activities/getall`),  //index 8
       axios.get(`${api.baseUrl}/sightseeing/getAll`),  //index 9
       axios.get(`${api.baseUrl}/policy/getallpolicy`),  //index 10
     ]).then((response) => {
 
-      const formattedOptions = response[0].data.map(item => ({
+      const formattedOptions = response[0].data.content.map(item => ({
         value: item.id, // or any unique identifier
         label: item.destinationName, // or any display label you want
       }));
       setDestinations(formattedOptions);
 
-      const formattedSuppliers = response[1].data.map(item => ({
+      const formattedSuppliers = response[1].data.content.map(item => ({
         value: item.id,
         label: item.vendorName,
       }));
       setSupplier(formattedSuppliers);
 
-      const formattedPackageThemes = response[2].data.map((item) => ({
+      const formattedPackageThemes = response[2].data.content.map((item) => ({
         value: item.id,
         label: item.title,
       }));
       setPackageTheme(formattedPackageThemes);
 
-      const formattedInclusions = response[3].data.map((item) => ({
+      const formattedInclusions = response[3].data.content.map((item) => ({
         value: item.id,
         label: item.inclusionname,
       }));
       setInclusions(formattedInclusions);
 
-      const formattedExclusions = response[4].data.map((item) => ({
+      const formattedExclusions = response[4].data.content.map((item) => ({
         value: item.id,
         label: item.exclusionname,
       }));
@@ -241,38 +241,39 @@ const NewPackageForm = ({ isOpen, onClose }) => {
       setHotelData(formattedHotel);
       setHotelCompleteData(response[5].data)
 
-      const formattedRoomType = response[6].data.map((item) => ({
+      const formattedRoomType = response[6].data.content.map((item) => ({
         value: item.id,
         label: item.bed_size,
       }));
-      setRoomTypeCompleteData(response[6].data)
+      setRoomTypeCompleteData(response[6].data.content)
       setRoomTypeData(formattedRoomType);
 
-      const formattedMealType = response[7].data.map((item) => ({
+      const formattedMealType = response[7].data.content.map((item) => ({
         value: item.id,
-        label: item.mealstype_code,
+        label: item.mealstypeCode,
       }));
       setMealTypeData(formattedMealType);
 
-      const formattedActivity = response[8].data.map((item) => ({
+      const formattedActivity = response[8].data.content.map((item) => ({
         value: item.id,
         label: item.title,
       }));
       setActivityData(formattedActivity);
 
-      const formattedSiteSeeing = response[9].data.map((item) => ({
+      const formattedSiteSeeing = response[9].data.content.map((item) => ({
         value: item.id,
         label: item.title,
       }));
       setSiteSeeingData(formattedSiteSeeing);
 
-      const formattedPolicy = response[10].data.map((item) => ({
+      const formattedPolicy = response[10].data.content.map((item) => ({
+
         value: item.id,
         label: item.policyName,
         description: item.policyDescription
       }));
       // console.log(first)
-      setPolicyList(response[10].data);
+      setPolicyList(response[10].data.content);
     });
   }, []);
 
@@ -297,13 +298,16 @@ const NewPackageForm = ({ isOpen, onClose }) => {
   const handleHotelChange = (selectedOption, index, i) => {
     const updatedHotels = [...formItinaryData[index].hotel];
     updatedHotels[i].roomType = null;
+    // console.log(roomTypeCompleteData)
+    console.log(selectedOption)
     const result = roomTypeCompleteData.filter(item => item.hotel.id === selectedOption.value)
     const formatRoomType = result.map(item => ({
       value: item.id,
-      label: item.bed_size
+      label: item.bedSize
     }))
     updatedHotels[i].hotelName = selectedOption;
     updatedHotels[i].roomTypeData = formatRoomType;
+    console.log(formatRoomType)
 
     const updateVal = formItinaryData.map((prev, list) => index === list ? { ...prev, hotel: updatedHotels } : prev)
     setFormItinaryData(updateVal)
@@ -577,8 +581,8 @@ const NewPackageForm = ({ isOpen, onClose }) => {
       basiccost: 0,
       gst: 0,
       totalcost: 0,
-      createdby: user.username,
-      modifiedby: user.username,
+      createdby: user.name,
+      modifiedby: user.name,
       ipaddress: ipAddress,
       status: 1,
       isdelete: 0,
@@ -602,10 +606,7 @@ const NewPackageForm = ({ isOpen, onClose }) => {
   const handleItinearaySubmit = async (e) => {
     e.preventDefault();
 
-    // console.log(packageData)
-
     for (let i = 0; i < formItinaryData.length; i++) {
-      // for (let i = 0; i < 0; i++) {
 
       let val = [...formItinaryData[i].hotel]
       let updateVal = val.filter(item => item.hotelName !== null)
@@ -629,7 +630,6 @@ const NewPackageForm = ({ isOpen, onClose }) => {
 
 
     for (let i = 0; i < formItinaryData.length; i++) {
-      // for (let i = 0; i < 0; i++) {
 
       const val = [...formItinaryData[i].hotel]
       const updateVal = val.filter(item => item.hotelName !== null)
@@ -656,8 +656,8 @@ const NewPackageForm = ({ isOpen, onClose }) => {
         "daytitle": formItinaryData[i].daytitle.label,
         "program": formItinaryData[i].program,
         "meals": meald,
-        "createdby": user.username,
-        "modifiedby": user.username,
+        "createdby": user.name,
+        "modifiedby": user.name,
         "ipaddress": ipAddress,
         "status": 1,
         "isdelete": 0,
@@ -665,13 +665,13 @@ const NewPackageForm = ({ isOpen, onClose }) => {
           "id": formItinaryData[i].transport.value
         },
         // "packid": packageData.id
-        "packid": 101
+        "packid": packageData.id
       }
       // console.log(payload)
 
       await axios.post(`${api.baseUrl}/packageitinerary/create`, payload, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          // 'Authorization': `Bearer ${token}`,
           'Access-Control-Allow-Origin': '*'
         }
       })
@@ -692,8 +692,8 @@ const NewPackageForm = ({ isOpen, onClose }) => {
           ipaddress: ipAddress,
           status: 1,
           isdelete: 0,
-          createdby: user.username,
-          modifiedby: user.username,
+          createdby: user.name,
+          modifiedby: user.name,
           category: formItinaryData[i].hotel[j].category,
           packitid: {
             id: 501
@@ -704,15 +704,13 @@ const NewPackageForm = ({ isOpen, onClose }) => {
           roomtypes: {
             id: formItinaryData[i].hotel[j].roomType.value
           },
-          mealPackages: [{
-            id: formItinaryData[i].hotel[j].mealType.value
-          }]
+          mealPackages: [formItinaryData[i].hotel[j].mealType.value]
         }
         console.log(payloadItineararyDetails)
 
         await axios.post(`${api.baseUrl}/packageitinerarydetails/create`, payloadItineararyDetails, {
           headers: {
-            'Authorization': `Bearer ${token}`,
+            // 'Authorization': `Bearer ${token}`,
             'Access-Control-Allow-Origin': '*'
           }
         })
@@ -769,8 +767,8 @@ const NewPackageForm = ({ isOpen, onClose }) => {
     formDataPackageMaster.append('is_fixed_departure', isFixedDeparture)
     formDataPackageMaster.append('fixed_departure_destinations', isFixedDeparture ? selectedDestinationDepartureStr : ' ')
     formDataPackageMaster.append('packageType', packageCategoriesStr)
-    formDataPackageMaster.append('created_by', user.username)
-    formDataPackageMaster.append('modified_by', user.username)
+    formDataPackageMaster.append('created_by', user.name)
+    formDataPackageMaster.append('modified_by', user.name)
     formDataPackageMaster.append('ipaddress', ipAddress)
     formDataPackageMaster.append('status', formData.status)
     formDataPackageMaster.append('isdelete', 0)
@@ -780,9 +778,9 @@ const NewPackageForm = ({ isOpen, onClose }) => {
     formDataPackageMaster.append('pkthem', selectedPackageThemeStr)
     formDataPackageMaster.append('image', pkImage)
 
-    for (var pair of formDataPackageMaster.entries()) {
-      console.log(pair[0] + ' = ' + pair[1]);
-    }
+    // for (var pair of formDataPackageMaster.entries()) {
+    //   console.log(pair[0] + ' = ' + pair[1]);
+    // }
 
     await axios.post(`${api.baseUrl}/packages/create`, formDataPackageMaster, {
       headers: {
@@ -793,6 +791,7 @@ const NewPackageForm = ({ isOpen, onClose }) => {
     })
       .then((response) => {
         setPackageData(response.data)
+        console.log(response.data)
         toast.success("Package Created...", {
           position: "top-center",
           autoClose: 5000,
@@ -884,8 +883,8 @@ const NewPackageForm = ({ isOpen, onClose }) => {
       const policyPayload = {
         policytitle: policyList[i].policyName,
         policydescription: policyList[i].policyDescription,
-        createdby: user.username,
-        modifiedby: user.username,
+        createdby: user.name,
+        modifiedby: user.name,
         ipaddress: ipAddress,
         status: 1,
         isdelete: 0,

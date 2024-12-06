@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import api from "../apiConfig/config";
+import { useParams } from "react-router-dom";
 
 const OrganizationDetailsPage = () => {
+  const [organizationData, setOrganizationData] = useState(null);
   const [formData, setFormData] = useState({
     organizationName: "",
     organizationEmail: "",
@@ -10,9 +14,35 @@ const OrganizationDetailsPage = () => {
     organizationPhone: "",
     organizationCountryCode: "",
     organizationWebsite: "",
-    status: true, // Status field
-    organizationLogo: null, // File object for the logo
+    status: "",
+    organizationLogo: null,
   });
+
+  const params = useParams();
+  const organizationId = params.id;
+
+  useEffect(() => {
+    if (organizationId) {
+      axios.get(`${api.baseUrl}/company/getbyid/${organizationId}`).then((res) => {
+        setOrganizationData(res.data);
+      });
+    }
+  }, [organizationId]);
+
+  useEffect(() => {
+    if (organizationData) {
+      setFormData({
+        organizationName: organizationData.companyname || "",
+        organizationEmail: organizationData.companyemail || "",
+        organizationAddress: organizationData.companyaddress || "",
+        organizationPhone: organizationData.companyphone || "",
+        organizationCountryCode: organizationData.companycountrycode || "",
+        organizationWebsite: organizationData.companywebsite || "",
+        status: organizationData.status || "",
+        organizationLogo: organizationData.companylogo || null,
+      });
+    }
+  }, [organizationData]);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -30,7 +60,7 @@ const OrganizationDetailsPage = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Check for required fields
@@ -50,24 +80,28 @@ const OrganizationDetailsPage = () => {
       return;
     }
 
-    toast.success("Organization details saved successfully!", {
-      position: "top-right",
-    });
-
-    console.log("Form Data Submitted:", formData);
+    await axios.post(`${api.baseUrl}/company/updateby/${organizationId}`, formData).then(
+      (res) => {
+        console.log(res.data);
+        toast.success("Organization details saved successfully!", {
+          position: "top-right",
+        });
+      });
   };
 
   const handleCancel = () => {
-    setFormData({
-      organizationName: "",
-      organizationEmail: "",
-      organizationAddress: "",
-      organizationPhone: "",
-      organizationCountryCode: "",
-      organizationWebsite: "",
-      status: true,
-      organizationLogo: null,
-    });
+    if (organizationData) {
+      setFormData({
+        organizationName: organizationData.companyname || "",
+        organizationEmail: organizationData.companyemail || "",
+        organizationAddress: organizationData.companyaddress || "",
+        organizationPhone: organizationData.companyphone || "",
+        organizationCountryCode: organizationData.companycountrycode || "",
+        organizationWebsite: organizationData.companywebsite || "",
+        status: organizationData.status || "",
+        organizationLogo: organizationData.companylogo || null,
+      });
+    }
 
     toast.info("Form reset successfully!", { position: "top-right" });
   };
@@ -117,7 +151,7 @@ const OrganizationDetailsPage = () => {
                   <div className="w-full md:w-1/2 h-20 border rounded-md bg-gray-100 flex items-center justify-center">
                     {formData.organizationLogo ? (
                       <img
-                        src={URL.createObjectURL(formData.organizationLogo)}
+                        src={formData.organizationLogo}
                         alt="Uploaded Logo"
                         className="h-full object-contain"
                       />
@@ -126,7 +160,7 @@ const OrganizationDetailsPage = () => {
                     )}
                   </div>
                   {/* Upload Button */}
-                  <div className="mt-4 md:mt-0 md:ml-4">
+                  <div className=" flex flex-col mt-4 md:mt-0 md:ml-4">
                     <label
                       htmlFor="organizationLogo"
                       className="text-blue-500 underline cursor-pointer"
@@ -139,12 +173,13 @@ const OrganizationDetailsPage = () => {
                       className="hidden"
                       onChange={handleFileChange}
                     />
+
+                    <p className="text-sm text-gray-500 mt-2">
+                      We recommend a resolution of at least 120x80 and 4:1 aspect
+                      ratio.
+                    </p>
                   </div>
                 </div>
-                <p className="text-sm text-gray-500 mt-2">
-                  We recommend a resolution of at least 120x80 and 4:1 aspect
-                  ratio.
-                </p>
               </div>
             </div>
 
@@ -232,13 +267,14 @@ const OrganizationDetailsPage = () => {
                 <textarea
                   id="organizationAddress"
                   className="mt-1 w-full border rounded p-2"
-                  placeholder="Enter organization address"
+                  placeholder="Enter address"
+                  rows="3"
                   name="organizationAddress"
                   value={formData.organizationAddress}
                   onChange={handleInputChange}
-                  rows={3}
-                />
+                ></textarea>
               </div>
+
               <div>
                 <label
                   htmlFor="organizationWebsite"
@@ -263,35 +299,31 @@ const OrganizationDetailsPage = () => {
                 </label>
                 <select
                   id="status"
-                  className="mt-1 p-2 w-full border rounded"
+                  className="mt-1 w-full border rounded p-2"
                   name="status"
-                  value={formData.status.toString()}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      status: e.target.value === "true",
-                    }))
-                  }
+                  value={formData.status}
+                  onChange={handleInputChange}
                 >
+                  <option value="">Select status</option>
                   <option value="true">Active</option>
                   <option value="false">Inactive</option>
                 </select>
               </div>
             </div>
 
-            <div className="flex justify-end space-x-4">
+            <div className="flex justify-end gap-4 mt-6">
               <button
                 type="button"
-                className="bg-gray-300 text-gray-800 px-4 py-2 rounded"
+                className="bg-gray-200 text-gray-700 px-4 py-2 rounded"
                 onClick={handleCancel}
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="bg-red-500 text-white px-4 py-2 rounded"
+                className="bg-blue-500 text-white px-4 py-2 rounded"
               >
-                Save
+                Save Changes
               </button>
             </div>
           </form>

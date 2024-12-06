@@ -75,7 +75,7 @@ const NewQuery = ({ isOpen, onClose }) => {
   useEffect(() => {
     getDecryptedToken()
       .then((token) => {
-        return axios.get(`${api.baseUrl}/getbytoken`, {
+        return axios.get(`${api.baseUrl}/username`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Access-Control-Allow-Origin": "*",
@@ -382,6 +382,7 @@ const NewQuery = ({ isOpen, onClose }) => {
     e.preventDefault();
 
     const payload = {
+      proposalId: "ABC123",
       requirementType: "Holiday Package",
       travelDate: formData.travelDate,
       nights: formData.nights,
@@ -391,9 +392,9 @@ const NewQuery = ({ isOpen, onClose }) => {
       kids: 0,
       infants: 0,
       salutation: formData.customer.salutation,
-      fname: formData.customer.fname,
+      fname: formData.customer.fname || 'Raj',
       lname: formData.customer.lname,
-      emailId: formData.customer.emailId,
+      emailId: formData.customer.emailId || 2,
       contactNo: formData.customer.contactNo,
       leadSource: formData.leadSource,
       foodPreferences: "Veg",
@@ -405,16 +406,20 @@ const NewQuery = ({ isOpen, onClose }) => {
       emailStatus: 0,
       leadStatus: 0,
       pkg: {
-        id: formData.pkg.id
+        // id: formData.pkg.id
+        id: 1
       },
       did: {
-        id: formData.did
+        // id: formData.did 
+        id: 1
       },
       fromcityid: {
-        id: formData.fromcityid
+        // id: formData.fromcityid 
+        id: 1
       },
       userId: {
-        id: user.id
+        // id: user.id || 1
+        id: 1
       }
     }
 
@@ -438,6 +443,7 @@ const NewQuery = ({ isOpen, onClose }) => {
       })
       .catch(error => console.error(error));
 
+    console.log(payload)
 
   }
 

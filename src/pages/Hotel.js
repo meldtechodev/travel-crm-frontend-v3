@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import Select from "react-select";
 import api from "../apiConfig/config";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../contexts/userContext";
 import { toast, ToastContainer } from "react-toastify";
+import useDecryptedToken from "../hooks/useDecryptedToken";
 
-const Hotel = ({ isOpen, onClose }) => {
+const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
   const [priceMaster, setPriceMaster] = useState([])
   const [roomTypeId, setRoomTypeId] = useState([])
 
@@ -45,13 +47,16 @@ const Hotel = ({ isOpen, onClose }) => {
   const [stateSelected, setStateSelected] = useState(null)
   const [selectedDestination, setSelectedDestinations] = useState(null)
   const [ipAddress, setIpAddress] = useState("")
-  const [user, setUser] = useState(null)
+  // const [user, setUser] = useState(null)
   const [hImage, setHImage] = useState(null)
 
   const [seasons, setSeasons] = useState([])
   const [hotelData, setHotelData] = useState({})
 
   const [formDataRoomMaster, setFormDataRoomMaster] = useState([])
+
+  const { user } = useContext(UserContext);
+  const token = useDecryptedToken();
 
   const [formRoomDetails, setFormRoomDetails] = useState({
     roomMasterSelected: '',
@@ -89,7 +94,7 @@ const Hotel = ({ isOpen, onClose }) => {
     updatedPriceMaster[index] = updatedItem;
 
     setPriceMaster(updatedPriceMaster);
-    console.log(index)
+    // console.log(index) 
   };
 
 
@@ -135,64 +140,13 @@ const Hotel = ({ isOpen, onClose }) => {
 
   const [currentPage, setCurrentPage] = useState(0); //Track your page
 
-  const [token, setTokens] = useState(null)
-  async function decryptToken(encryptedToken, key, iv) {
-    const dec = new TextDecoder();
-
-    const decrypted = await crypto.subtle.decrypt(
-      {
-        name: "AES-GCM",
-        iv: iv,
-      },
-      key,
-      encryptedToken
-    );
-    return dec.decode(new Uint8Array(decrypted));
-  }
-
-  // Function to retrieve and decrypt the token
-  async function getDecryptedToken() {
-    const keyData = JSON.parse(localStorage.getItem('encryptionKey'));
-    const ivBase64 = localStorage.getItem('iv');
-    const encryptedTokenBase64 = localStorage.getItem('encryptedToken');
-
-
-    if (!keyData || !ivBase64 || !encryptedTokenBase64) {
-      throw new Error('No token found');
-    }
-
-    // Convert back from base64
-    const key = await crypto.subtle.importKey('jwk', keyData, { name: "AES-GCM" }, true, ['encrypt', 'decrypt']);
-    const iv = new Uint8Array(atob(ivBase64).split('').map(char => char.charCodeAt(0)));
-    const encryptedToken = new Uint8Array(atob(encryptedTokenBase64).split('').map(char => char.charCodeAt(0)));
-
-    return await decryptToken(encryptedToken, key, iv);
-  }
-
   // Example usage to make an authenticated request
-  useEffect(() => {
-    getDecryptedToken()
-      .then(token => {
-        setTokens(token);
-
-        return axios.get(`${api.baseUrl}/getbytoken`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Access-Control-Allow-Origin': '*'
-          }
-        });
-      })
-      .then(response => {
-        setUser(response.data);
-      })
-      .catch(error => console.error('Error fetching protected resource:', error))
-  }, [])
 
   useEffect(() => {
-    axios.get(`${api.baseUrl}/country/get`
+    axios.get(`${api.baseUrl}/country/getall`
     )
       .then(response => {
-        const formattedOptions = response.data.map(item => ({
+        const formattedOptions = response.data.content.map(item => ({
           value: item.id, // or any unique identifier
           label: item.countryName
         }));
@@ -206,11 +160,12 @@ const Hotel = ({ isOpen, onClose }) => {
   useEffect(() => {
     axios.get(`${api.baseUrl}/destination/getall`)
       .then(response => {
-        const formattedOptions = response.data.map(item => ({
+        const formattedOptions = response.data.content.map(item => ({
+          ...item,
           value: item.id,
           label: item.destinationName
         }));
-        setDestinationDetails(response.data);
+        setDestinationDetails(formattedOptions);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
@@ -302,7 +257,7 @@ const Hotel = ({ isOpen, onClose }) => {
   useEffect(() => {
     axios.get(`${api.baseUrl}/season/getAll`)
       .then(response => {
-        setSeasons(response.data);
+        setSeasons(response.data.content);
       })
       .catch((error) => {
         console.error('Error fetching Room Type Name data :', error);
@@ -312,12 +267,12 @@ const Hotel = ({ isOpen, onClose }) => {
   useEffect(() => {
     axios.get(`${api.baseUrl}/rooms/getAll`)
       .then(response => {
-        const formattedOptions = response.data.map(item => ({
+        const formattedOptions = response.data.content.map(item => ({
           value: item.id, // or any unique identifier
           label: item.roomname // or any display label you want
         }));
         setRoomMaster(formattedOptions);
-        const formatRoom = response.data.map(item => ({
+        const formatRoom = response.data.content.map(item => ({
           value: item.id,
           label: item.roomname,
           status: false
@@ -388,10 +343,10 @@ const Hotel = ({ isOpen, onClose }) => {
 
         const formDataHotelRoomType = new FormData()
 
-        formDataHotelRoomType.append('bed_size', totalRoomDetails[i].bed_size[j])
+        formDataHotelRoomType.append('bedSize', totalRoomDetails[i].bed_size[j])
         formDataHotelRoomType.append('max_person', totalRoomDetails[i].max_person)
-        formDataHotelRoomType.append('created_by', user.username)
-        formDataHotelRoomType.append('modified_by', user.username)
+        formDataHotelRoomType.append('created_by', user.name)
+        formDataHotelRoomType.append('modified_by', user.name)
         formDataHotelRoomType.append('ipaddress', ipAddress)
         formDataHotelRoomType.append('status', totalRoomDetails[i].status.value)
         formDataHotelRoomType.append('isdelete', false)
@@ -399,13 +354,13 @@ const Hotel = ({ isOpen, onClose }) => {
         formDataHotelRoomType.append('rooms.id', allSelectedRoomType[i].value)
         formDataHotelRoomType.append('image', totalRoomDetails[i].image)
 
-        // for (var pair of formDataHotelRoomType.entries()) {
-        //   console.log(pair[0] + ', ' + pair[1]);
-        // }
+        for (var pair of formDataHotelRoomType.entries()) {
+          console.log(pair[0] + ', ' + pair[1]);
+        }
 
         await axios.post(`${api.baseUrl}/roomtypes/create`, formDataHotelRoomType, {
           headers: {
-            'Authorization': `Bearer ${token}`,
+            // 'Authorization': `Bearer ${token}`,
             'Content-Type': 'multipart/form-data',
             'Access-Control-Allow-Origin': '*'
           }
@@ -435,8 +390,8 @@ const Hotel = ({ isOpen, onClose }) => {
           direct_booking_price: 0,
           third_party_price: 0,
           status: true,
-          created_by: user.username,
-          modified_by: user.username,
+          created_by: user.name,
+          modified_by: user.name,
           isdelete: 0,
           ipaddress: ipAddress,
           roomtypes: {
@@ -493,8 +448,8 @@ const Hotel = ({ isOpen, onClose }) => {
     formDataHotelMaster.append('ipaddress', ipAddress)
     formDataHotelMaster.append('status', Boolean(status.value))
     formDataHotelMaster.append('isdelete', Boolean(0))
-    formDataHotelMaster.append('created_by', user.username)
-    formDataHotelMaster.append('modified_by', user.username)
+    formDataHotelMaster.append('created_by', user.name)
+    formDataHotelMaster.append('modified_by', user.name)
     formDataHotelMaster.append('image', hImage)
 
     for (var pair of formDataHotelMaster.entries()) {
@@ -569,7 +524,7 @@ const Hotel = ({ isOpen, onClose }) => {
       //     "id": seasons[val].id
       //   }
       // }
-      // console.log(priceMaster[i])
+      console.log(priceMaster[i])
       await axios.post(`${api.baseUrl}/hotelprice/create`, priceMaster[i], {
         headers: {
           'Authorization': `Bearer ${token}`,

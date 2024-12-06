@@ -1,15 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom'; 
+import React, { useContext, useEffect, useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import api from '../apiConfig/config';
 import axios from 'axios';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { toast } from "react-toastify"
+import { UserContext } from '../contexts/userContext';
 
 
 function Login() {
   const [errors, setErrors] = useState('');
   const navigate = useNavigate()
+  const { setIsAuthenticated, setUser } = useContext(UserContext);
 
   async function generateKey() {
     return await crypto.subtle.generateKey(
@@ -67,76 +69,77 @@ function Login() {
 
 
   const handleLogin = async (values, { setSubmitting }) => {
-
     setErrors('');
 
-    try {
-
-      if (values.email.length === 0 || values.password.length === 0) {
-        setErrors('Please fill in all the fields');
-        toast.error("Please fill in all the fields", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-        setSubmitting(false);
-        return;
-      }
-
-      axios.post(`${api.baseUrl}/login`, {
-        email: values.email,
-        password: values.password
-      })
-        .then(async (response) => {
-          const token = response;
-          await saveEncryptedToken(token);
-          toast.success("Logged In", {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-          navigate('/home');
-        })
-        .catch(error => {
-          // setErrors(error.response.data.error.message);
-          toast.error("Invalid username or password.", {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-          setSubmitting(false);
-        });
-    } catch (e) {
-      setErrors(e.message);
-      toast.error("Something went wrong.", {
-        position: "top-center",
+    if (!values.email || !values.password) {
+      setErrors('Please fill in all the fields');
+      toast.error('Please fill in all the fields', {
+        position: 'top-center',
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
-        progress: undefined,
+      });
+      setSubmitting(false);
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `${api.baseUrl}/login`,
+        {
+          email: values.email,
+          password: values.password,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+          },
+        }
+      );
+
+      const token = response.data;
+      await saveEncryptedToken(token);
+
+      const { data } = await axios.get(`${api.baseUrl}/username`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
+
+      setUser(data);
+      setIsAuthenticated(true);
+
+      toast.success('Logged In', {
+        position: 'top-center',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+
+      navigate('/home');
+    } catch (error) {
+      setErrors(error.response?.data?.error?.message || 'Something went wrong');
+      toast.error('Invalid username or password.', {
+        position: 'top-center',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
       });
       setSubmitting(false);
     }
-
   };
 
-  useEffect(() => {
-    localStorage.clear();
-  }, []);
+  // useEffect(() => {
+  //   localStorage.clear();
+  // }, []);
 
   return (
     <div className="min-h-screen flex overflow-hidden max-w-full">
