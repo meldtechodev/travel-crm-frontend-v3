@@ -16,6 +16,7 @@ const Designation = ({ isOpen, onClose, designationData }) => {
   const [module, setModule] = useState([])
   const [designations, setDesignation] = useState([])
   const [modulePermission, setModulePermission] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
 
   const [formData, setFormData] = useState({
     departmentName: "",
