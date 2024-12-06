@@ -193,7 +193,7 @@ const NewPackageForm = ({ isOpen, onClose }) => {
     Promise.all([
       axios.get(`${api.baseUrl}/destination/getall`),  //index 0
       axios.get(`${api.baseUrl}/vendor/getAll`),  //index  1
-      axios.get(`${api.baseUrl}/packageTheme/getall`),  //index 2
+      axios.get(`${api.baseUrl}/packageTheme/getAll`),  //index 2
       axios.get(`${api.baseUrl}/inclusion/getall`),  //index 3
       axios.get(`${api.baseUrl}/exclusion/getall`),  //index 4
       axios.get(`${api.baseUrl}/hotel/getAll`),  //index 5
