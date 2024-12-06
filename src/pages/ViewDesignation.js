@@ -55,10 +55,14 @@ const ViewDesignations = () => {
   }
 
   const columns = [
+    // {
+    //   header: "Select",
+    //   accessor: "select",
+    //   render: ({ row }) => <input type="checkbox" />,
+    // },
     {
-      header: "Select",
-      accessor: "select",
-      render: ({ row }) => <input type="checkbox" />,
+      header: 'S. No.',
+      render: ({ row }) => <span>{row.index + 1}</span>,
     },
     {
       header: "Designation Name",
@@ -68,13 +72,13 @@ const ViewDesignations = () => {
       header: "Department Name",
       accessor: "departmentName",
     },
-    {
-      header: "Ip Address",
-      accessor: "ipAddress",
-    },
+    // {
+    //   header: "Ip Address",
+    //   accessor: "ipAddress",
+    // },
     {
       header: "Status",
-      render: ({ row }) => (
+      render: ({ row }) => (  
         <div className="flex items-center justify-center">
           <label className="relative inline-flex items-center cursor-pointer">
             <input
@@ -118,6 +122,7 @@ const ViewDesignations = () => {
             ...designation,
             departmentName: designation.departments.departmentName,
             status: designation.status ? "Active" : "Inactive",
+            index: response.data.content.indexOf(designation),
           }))
         );
       })

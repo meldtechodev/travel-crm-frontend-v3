@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import Select from "react-select";
 import api from "../apiConfig/config";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import {UserContext} from "../contexts/userContext";
 import { toast, ToastContainer } from "react-toastify";
+import useDecryptedToken from "../hooks/useDecryptedToken";
 
-const Hotel = ({ isOpen, onClose }) => {
+const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
   const [priceMaster, setPriceMaster] = useState([])
   const [roomTypeId, setRoomTypeId] = useState([])
 
@@ -45,13 +47,16 @@ const Hotel = ({ isOpen, onClose }) => {
   const [stateSelected, setStateSelected] = useState(null)
   const [selectedDestination, setSelectedDestinations] = useState(null)
   const [ipAddress, setIpAddress] = useState("")
-  const [user, setUser] = useState(null)
+  // const [user, setUser] = useState(null)
   const [hImage, setHImage] = useState(null)
 
   const [seasons, setSeasons] = useState([])
   const [hotelData, setHotelData] = useState({})
 
   const [formDataRoomMaster, setFormDataRoomMaster] = useState([])
+
+  const {user} = useContext(UserContext);
+  const token = useDecryptedToken();
 
   const [formRoomDetails, setFormRoomDetails] = useState({
     roomMasterSelected: '',
@@ -135,64 +140,13 @@ const Hotel = ({ isOpen, onClose }) => {
 
   const [currentPage, setCurrentPage] = useState(0); //Track your page
 
-  const [token, setTokens] = useState(null)
-  async function decryptToken(encryptedToken, key, iv) {
-    const dec = new TextDecoder();
-
-    const decrypted = await crypto.subtle.decrypt(
-      {
-        name: "AES-GCM",
-        iv: iv,
-      },
-      key,
-      encryptedToken
-    );
-    return dec.decode(new Uint8Array(decrypted));
-  }
-
-  // Function to retrieve and decrypt the token
-  async function getDecryptedToken() {
-    const keyData = JSON.parse(localStorage.getItem('encryptionKey'));
-    const ivBase64 = localStorage.getItem('iv');
-    const encryptedTokenBase64 = localStorage.getItem('encryptedToken');
-
-
-    if (!keyData || !ivBase64 || !encryptedTokenBase64) {
-      throw new Error('No token found');
-    }
-
-    // Convert back from base64
-    const key = await crypto.subtle.importKey('jwk', keyData, { name: "AES-GCM" }, true, ['encrypt', 'decrypt']);
-    const iv = new Uint8Array(atob(ivBase64).split('').map(char => char.charCodeAt(0)));
-    const encryptedToken = new Uint8Array(atob(encryptedTokenBase64).split('').map(char => char.charCodeAt(0)));
-
-    return await decryptToken(encryptedToken, key, iv);
-  }
-
   // Example usage to make an authenticated request
-  useEffect(() => {
-    getDecryptedToken()
-      .then(token => {
-        setTokens(token);
-
-        return axios.get(`${api.baseUrl}/username`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Access-Control-Allow-Origin': '*'
-          }
-        });
-      })
-      .then(response => {
-        setUser(response.data);
-      })
-      .catch(error => console.error('Error fetching protected resource:', error))
-  }, [])
 
   useEffect(() => {
-    axios.get(`${api.baseUrl}/country/get`
+    axios.get(`${api.baseUrl}/country/getall`
     )
       .then(response => {
-        const formattedOptions = response.data.map(item => ({
+        const formattedOptions = response.data.content.map(item => ({
           value: item.id, // or any unique identifier
           label: item.countryName
         }));

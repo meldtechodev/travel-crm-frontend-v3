@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import { IoMenu, IoClose, IoSearch } from "react-icons/io5";
 import {
   FaEnvelope,
@@ -18,6 +18,7 @@ import Sidebar from "./sidebar"; // Adjust the path as needed
 import { Link, useNavigate } from "react-router-dom";
 import api from "../apiConfig/config";
 import axios from "axios";
+import { UserContext } from "../contexts/userContext";
 // import NewVendorForm from "../pages/NewVendorForm";
 // import NewPackageForm from "../pages/NewPacakgeForm";
 // import NewTransportationForm from "../pages/NewTransportationForm";
@@ -28,99 +29,101 @@ const Navbar = () => {
   const [addData, setAddData] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false); // State for the "+" dropdown
   const [showSearchField, setShowSearchField] = useState(false); // State for the "+" dropdown
-  const [user, setUser] = useState({ username: "", email: "", roles: "" });
+  // const [user, setUser] = useState({ username: "", email: "", roles: "" });
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
   const isOpenRef = useRef(null);
+
+  const {user, handleLogout} = useContext(UserContext);
 
   const getFirstCharacter = (word) => {
     return word ? word.charAt(0) : "";
   };
 
   const [token, setTokens] = useState(null);
-  async function decryptToken(encryptedToken, key, iv) {
-    const dec = new TextDecoder();
+  // async function decryptToken(encryptedToken, key, iv) {
+  //   const dec = new TextDecoder();
 
-    const decrypted = await crypto.subtle.decrypt(
-      {
-        name: "AES-GCM",
-        iv: iv,
-      },
-      key,
-      encryptedToken
-    );
+  //   const decrypted = await crypto.subtle.decrypt(
+  //     {
+  //       name: "AES-GCM",
+  //       iv: iv,
+  //     },
+  //     key,
+  //     encryptedToken
+  //   );
 
-    return dec.decode(new Uint8Array(decrypted));
-  }
+  //   return dec.decode(new Uint8Array(decrypted));
+  // }
 
-  // Function to retrieve and decrypt the token
-  async function getDecryptedToken() {
-    const keyData = JSON.parse(localStorage.getItem("encryptionKey"));
-    const ivBase64 = localStorage.getItem("iv");
-    const encryptedTokenBase64 = localStorage.getItem("encryptedToken");
+  // // Function to retrieve and decrypt the token
+  // async function getDecryptedToken() {
+  //   const keyData = JSON.parse(localStorage.getItem("encryptionKey"));
+  //   const ivBase64 = localStorage.getItem("iv");
+  //   const encryptedTokenBase64 = localStorage.getItem("encryptedToken");
 
-    if (!keyData || !ivBase64 || !encryptedTokenBase64) {
-      throw new Error("No token found");
-    }
+  //   if (!keyData || !ivBase64 || !encryptedTokenBase64) {
+  //     throw new Error("No token found");
+  //   }
 
-    // Convert back from base64
-    const key = await crypto.subtle.importKey(
-      "jwk",
-      keyData,
-      { name: "AES-GCM" },
-      true,
-      ["encrypt", "decrypt"]
-    );
-    const iv = new Uint8Array(
-      atob(ivBase64)
-        .split("")
-        .map((char) => char.charCodeAt(0))
-    );
-    const encryptedToken = new Uint8Array(
-      atob(encryptedTokenBase64)
-        .split("")
-        .map((char) => char.charCodeAt(0))
-    );
+  //   // Convert back from base64
+  //   const key = await crypto.subtle.importKey(
+  //     "jwk",
+  //     keyData,
+  //     { name: "AES-GCM" },
+  //     true,
+  //     ["encrypt", "decrypt"]
+  //   );
+  //   const iv = new Uint8Array(
+  //     atob(ivBase64)
+  //       .split("")
+  //       .map((char) => char.charCodeAt(0))
+  //   );
+  //   const encryptedToken = new Uint8Array(
+  //     atob(encryptedTokenBase64)
+  //       .split("")
+  //       .map((char) => char.charCodeAt(0))
+  //   );
 
-    return await decryptToken(encryptedToken, key, iv);
-  }
+  //   return await decryptToken(encryptedToken, key, iv);
+  // }
 
-  // // Example usage to make an authenticated request
+  // // // Example usage to make an authenticated request
+  // // useEffect(() => {
+  // //   getDecryptedToken()
+  // //     .then(res => {
+  // //       setTokens(res);
+
+  // //       return axios.get(`${api.baseUrl}/username`, {
+  // //         headers: {
+  // //           'Authorization': `Bearer ${token}`,
+  // //           'Access-Control-Allow-Origin': '*'
+  // //         }
+  // //       });
+  // //     })
+  // //     .then(response => {
+  // //       setUser(response.data);
+  // //     })
+  // //     .catch(error => console.error('Error fetching protected resource:', error))
+  // // }, [])
+
   // useEffect(() => {
-  //   getDecryptedToken()
-  //     .then(res => {
-  //       setTokens(res);
+  //   const token = localStorage.getItem("token");
 
-  //       return axios.get(`${api.baseUrl}/username`, {
-  //         headers: {
-  //           'Authorization': `Bearer ${token}`,
-  //           'Access-Control-Allow-Origin': '*'
-  //         }
-  //       });
-  //     })
-  //     .then(response => {
-  //       setUser(response.data);
-  //     })
-  //     .catch(error => console.error('Error fetching protected resource:', error))
-  // }, [])
+  //   axios.get(`${api.baseUrl}/username`, {
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //       "Access-Control-Allow-Origin": "*",
+  //     },
+  //   }).then((response) => {
+  //     setUser(response.data);
+  //   });
+  // }, []);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    axios.get(`${api.baseUrl}/username`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Access-Control-Allow-Origin": "*",
-      },
-    }).then((response) => {
-      setUser(response.data);
-    });
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate("/login");
-  };
+  // const handleLogout = () => {
+  //   localStorage.clear();
+  //   navigate("/login");
+  // };
 
   // Close the dropdown on outside click
   useEffect(() => {
@@ -319,8 +322,9 @@ const Navbar = () => {
                     </div>
 
                     <div>
+                      <p className="text-lg">{user && user.name && `${user.name[0].toUpperCase()}${user.name.substring(1)}`}{" "}{user && user.lname}</p>
                       <p>{user.email}</p>
-                      <p className="text-sm">{user.roles}</p>
+                      <p className="text-sm">{user && user.role && user.role.roleName}</p>
                     </div>
                   </div>
 

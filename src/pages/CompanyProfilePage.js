@@ -1,38 +1,39 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import NewCompanyForm from "./NewCompanyForm";
 import Department from "./Department";
 import Designation from "./Designation";
 import axios from "axios";
 import api from "../apiConfig/config";
+import { UserContext } from "../contexts/userContext";
 
 const CompanyProfilePage = () => {
   const navigate = useNavigate();
 
-  
+  const {user} = useContext(UserContext);
+
   const [addData, setAddData] = useState([]);
-  const [userData, setUserData] = useState(null);
+  // const [userData, setUserData] = useState(null);
   const [designationData, setDesignationData] = useState(null);
 
-  console.log(userData);
   
   const handleNavigation = (type) => {
-    navigate(`/home/organization-details/${userData && userData.companyId}`, { state: { type } });
+    navigate(`/home/organization-details/${user && user.companyId}`, { state: { type } });
   };
-  useEffect(() => {
+  // useEffect(() => {
 
-    const token = localStorage.getItem('token');
+  //   const token = localStorage.getItem('token');
 
-    axios.get(`${api.baseUrl}/username`,
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      },
-    ).then((res) => {
-      setUserData(res.data);
-    })
-  }, []);
+  //   axios.get(`${api.baseUrl}/username`,
+  //     {
+  //       headers: {
+  //         'Authorization': `Bearer ${token}`
+  //       }
+  //     },
+  //   ).then((res) => {
+  //     setUserData(res.data);
+  //   })
+  // }, []);
 
   // useEffect(() => {
   //   userData && axios.get(`${api.baseUrl}/designations/getbyid/${userData && userData.designationId}`).then((res) => {
@@ -63,11 +64,11 @@ const CompanyProfilePage = () => {
             </div>
             <div>
               <h2 className="text-xl font-semibold text-gray-800">
-                {userData && userData.name} {userData && userData.mname} {userData && userData.lname}  
+                {user && user.name} {user && user.mname} {user && user.lname}  
               </h2>
-              <p className="text-gray-600 text-sm">{userData && userData.email}</p>
+              <p className="text-gray-600 text-sm">{user && user.email}</p>
               <span className="text-xs bg-orange-100 text-orange-800 font-medium py-1 px-2 rounded inline-block mt-2">
-                {userData && userData.designation &&  userData.designation.designationName}
+                {user && user.designation &&  user.designation.designationName}
                </span>
               <p
                 className="text-blue-500 text-sm mt-2 underline cursor-pointer"
@@ -84,7 +85,7 @@ const CompanyProfilePage = () => {
           {/* Right Section (Organization Details and Buttons) */}
           <div className="text-right w-full md:w-1/2 mt-4 md:mt-0">
             <button
-              onClick={() => navigate(`/home/organization-details/${userData && userData.company && userData.company.id}`, {state: userData.company})}
+              onClick={() => navigate(`/home/organization-details/${user && user.company && user.company.id}`, {state: user.company})}
               className="border  border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-2"
             >
               Upload Organization Logo
@@ -94,7 +95,7 @@ const CompanyProfilePage = () => {
               <span className="text-gray-800">tourbom.myfreshworks.com</span>
             </div>
             <button
-              onClick={() => navigate(`/home/organization-details/${userData && userData.companyId}`, {state: userData.company})}
+              onClick={() => navigate(`/home/organization-details/${user && user.companyId}`, {state: user.company})}
               className="text-blue-500 underline text-sm mt-2"
             >
               Edit Organization Information

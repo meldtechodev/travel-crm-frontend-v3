@@ -1,10 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import api from "../apiConfig/config";
 import Select from 'react-select'
 import axios from "axios";
 import { toast } from "react-toastify";
+import { UserContext } from "../contexts/userContext";
+import useDecryptedToken from "../hooks/useDecryptedToken";
 
 const Destination = ({ isOpen, onClose, destinationData, isFormEditEnabled, setIsFormEditEnabled }) => {
   const [countryDetails, setCountryDetails] = useState([])
@@ -18,59 +20,62 @@ const Destination = ({ isOpen, onClose, destinationData, isFormEditEnabled, setI
   const [newImage, setNewImage] = useState('')
   const fileInputRef = useRef(null);
 
-  const [user, setUser] = useState({})
-  const [token, setTokens] = useState(null)
-  async function decryptToken(encryptedToken, key, iv) {
-    const dec = new TextDecoder();
+  const {user}= useContext(UserContext);
+  const token = useDecryptedToken();
 
-    const decrypted = await crypto.subtle.decrypt(
-      {
-        name: "AES-GCM",
-        iv: iv,
-      },
-      key,
-      encryptedToken
-    );
-    return dec.decode(new Uint8Array(decrypted));
-  }
+  // const [user, setUser] = useState({})
+  // const [token, setTokens] = useState(null)
+  // async function decryptToken(encryptedToken, key, iv) {
+  //   const dec = new TextDecoder();
 
-  // Function to retrieve and decrypt the token
-  async function getDecryptedToken() {
-    const keyData = JSON.parse(localStorage.getItem('encryptionKey'));
-    const ivBase64 = localStorage.getItem('iv');
-    const encryptedTokenBase64 = localStorage.getItem('encryptedToken');
+  //   const decrypted = await crypto.subtle.decrypt(
+  //     {
+  //       name: "AES-GCM",
+  //       iv: iv,
+  //     },
+  //     key,
+  //     encryptedToken
+  //   );
+  //   return dec.decode(new Uint8Array(decrypted));
+  // }
+
+  // // Function to retrieve and decrypt the token
+  // async function getDecryptedToken() {
+  //   const keyData = JSON.parse(localStorage.getItem('encryptionKey'));
+  //   const ivBase64 = localStorage.getItem('iv');
+  //   const encryptedTokenBase64 = localStorage.getItem('encryptedToken');
 
 
-    if (!keyData || !ivBase64 || !encryptedTokenBase64) {
-      throw new Error('No token found');
-    }
+  //   if (!keyData || !ivBase64 || !encryptedTokenBase64) {
+  //     throw new Error('No token found');
+  //   }
 
-    // Convert back from base64
-    const key = await crypto.subtle.importKey('jwk', keyData, { name: "AES-GCM" }, true, ['encrypt', 'decrypt']);
-    const iv = new Uint8Array(atob(ivBase64).split('').map(char => char.charCodeAt(0)));
-    const encryptedToken = new Uint8Array(atob(encryptedTokenBase64).split('').map(char => char.charCodeAt(0)));
+  //   // Convert back from base64
+  //   const key = await crypto.subtle.importKey('jwk', keyData, { name: "AES-GCM" }, true, ['encrypt', 'decrypt']);
+  //   const iv = new Uint8Array(atob(ivBase64).split('').map(char => char.charCodeAt(0)));
+  //   const encryptedToken = new Uint8Array(atob(encryptedTokenBase64).split('').map(char => char.charCodeAt(0)));
 
-    return await decryptToken(encryptedToken, key, iv);
-  }
+  //   return await decryptToken(encryptedToken, key, iv);
+  // }
 
-  // Example usage to make an authenticated request
-  useEffect(() => {
-    getDecryptedToken()
-      .then(token => {
-        setTokens(token);
+  // // Example usage to make an authenticated request
+  // useEffect(() => {
+  //   getDecryptedToken()
+  //     .then(token => {
+  //       setTokens(token);
 
-        return axios.get(`${api.baseUrl}/username`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Access-Control-Allow-Origin': '*'
-          }
-        });
-      })
-      .then(response => {
-        setUser(response.data);
-      })
-      .catch(error => console.error('Error fetching protected resource:', error))
-  }, [])
+  //       return axios.get(`${api.baseUrl}/username`, {
+  //         headers: {
+  //           'Authorization': `Bearer ${token}`,
+  //           'Access-Control-Allow-Origin': '*'
+  //         }
+  //       });
+  //     })
+  //     .then(response => {
+  //       setUser(response.data);
+  //     })
+  //     .catch(error => console.error('Error fetching protected resource:', error))
+  // }, [])
 
   const [formData, setFormData] = useState({
     destinationName: "",
@@ -142,9 +147,9 @@ const Destination = ({ isOpen, onClose, destinationData, isFormEditEnabled, setI
   };
 
   useEffect(() => {
-    axios.get(`${api.baseUrl}/country/get`)
+    axios.get(`${api.baseUrl}/country/getall`)
       .then(response => {
-        const formattedOptions = response.data.map(item => ({
+        const formattedOptions = response.data.content.map(item => ({
           value: item.id, // or any unique identifier
           label: item.countryName // or any display label you want
         }));
@@ -174,8 +179,8 @@ const Destination = ({ isOpen, onClose, destinationData, isFormEditEnabled, setI
         ipAddress: destinationData.ipAddress || "",
         status: destinationData.status || true,
       });
-      setCountryId(destinationData.countryId || null);
-      setStateId(destinationData.stateId || null);
+      setCountryId(destinationData.country.id || null);
+      setStateId(destinationData.state.id || null);
       setTags(destinationData.keyofattractions ? destinationData.keyofattractions.split(", ") : []);
       setSelectedOption({ value: destinationData.country.id, label: destinationData.countryName });
       setStateSlected({ value: destinationData.stateId, label: destinationData.stateName });
@@ -223,8 +228,8 @@ const Destination = ({ isOpen, onClose, destinationData, isFormEditEnabled, setI
     formDataToSend.append("state.id", stateId);
     formDataToSend.append("keyofattractions", tagsString);
     formDataToSend.append("image", newImage);
-    formDataToSend.append('created_by', user.username);
-    formDataToSend.append('modified_by', user.username);
+    formDataToSend.append('created_by', user.created_by);
+    formDataToSend.append('modified_by', user.name);
     formDataToSend.append('isdelete', false);
 
     if (formData.destinationName.length === 0) {

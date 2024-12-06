@@ -1,11 +1,15 @@
 import axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import api from "../apiConfig/config";
 import { toast } from "react-toastify";
+import { UserContext } from "../contexts/userContext";
+import useDecryptedToken from "../hooks/useDecryptedToken";
 
 const Designation = ({ isOpen, onClose, designationData }) => {
-  const [user, setUser] = useState({});
-  const [token, setTokens] = useState(null);
+  // const [user, setUser] = useState({});
+  // const [token, setTokens] = useState(null);
+  const {user} = useContext(UserContext);
+  const token = useDecryptedToken();
   const [ipaddress, setIpAddress] = useState("");
   const [departments, setDepartments] = useState(null);
   const [formData, setFormData] = useState({
@@ -15,71 +19,71 @@ const Designation = ({ isOpen, onClose, designationData }) => {
     departmentId: "",
   });
 
-  async function decryptToken(encryptedToken, key, iv) {
-    const dec = new TextDecoder();
+  // async function decryptToken(encryptedToken, key, iv) {
+  //   const dec = new TextDecoder();
 
-    const decrypted = await crypto.subtle.decrypt(
-      {
-        name: "AES-GCM",
-        iv: iv,
-      },
-      key,
-      encryptedToken
-    );
+  //   const decrypted = await crypto.subtle.decrypt(
+  //     {
+  //       name: "AES-GCM",
+  //       iv: iv,
+  //     },
+  //     key,
+  //     encryptedToken
+  //   );
 
-    return dec.decode(new Uint8Array(decrypted));
-  }
+  //   return dec.decode(new Uint8Array(decrypted));
+  // }
 
-  // Function to retrieve and decrypt the token
-  async function getDecryptedToken() {
-    const keyData = JSON.parse(localStorage.getItem("encryptionKey"));
-    const ivBase64 = localStorage.getItem("iv");
-    const encryptedTokenBase64 = localStorage.getItem("encryptedToken");
+  // // Function to retrieve and decrypt the token
+  // async function getDecryptedToken() {
+  //   const keyData = JSON.parse(localStorage.getItem("encryptionKey"));
+  //   const ivBase64 = localStorage.getItem("iv");
+  //   const encryptedTokenBase64 = localStorage.getItem("encryptedToken");
 
-    if (!keyData || !ivBase64 || !encryptedTokenBase64) {
-      throw new Error("No token found");
-    }
+  //   if (!keyData || !ivBase64 || !encryptedTokenBase64) {
+  //     throw new Error("No token found");
+  //   }
 
-    // Convert back from base64
-    const key = await crypto.subtle.importKey(
-      "jwk",
-      keyData,
-      { name: "AES-GCM" },
-      true,
-      ["encrypt", "decrypt"]
-    );
-    const iv = new Uint8Array(
-      atob(ivBase64)
-        .split("")
-        .map((char) => char.charCodeAt(0))
-    );
-    const encryptedToken = new Uint8Array(
-      atob(encryptedTokenBase64)
-        .split("")
-        .map((char) => char.charCodeAt(0))
-    );
+  //   // Convert back from base64
+  //   const key = await crypto.subtle.importKey(
+  //     "jwk",
+  //     keyData,
+  //     { name: "AES-GCM" },
+  //     true,
+  //     ["encrypt", "decrypt"]
+  //   );
+  //   const iv = new Uint8Array(
+  //     atob(ivBase64)
+  //       .split("")
+  //       .map((char) => char.charCodeAt(0))
+  //   );
+  //   const encryptedToken = new Uint8Array(
+  //     atob(encryptedTokenBase64)
+  //       .split("")
+  //       .map((char) => char.charCodeAt(0))
+  //   );
 
-    return await decryptToken(encryptedToken, key, iv);
-  }
+  //   return await decryptToken(encryptedToken, key, iv);
+  // }
 
   useEffect(() => {
-    getDecryptedToken()
-      .then((token) => {
-        setTokens(token);
+    // getDecryptedToken()
+    //   .then((token) => {
+    //     setTokens(token);
 
-        return axios.get(`${api.baseUrl}/username`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Access-Control-Allow-Origin": "*",
-          },
-        });
-      })
-      .then((response) => {
-        setUser(response.data);
-      })
-      .catch((error) =>
-        console.error("Error fetching protected resource:", error)
-      );
+    //     return axios.get(`${api.baseUrl}/username`, {
+    //       headers: {
+    //         Authorization: `Bearer ${token}`,
+    //         "Access-Control-Allow-Origin": "*",
+    //       },
+    //     });
+    //   })
+    //   .then((response) => {
+    //     setUser(response.data);
+    //   })
+    //   .catch((error) =>
+    //     console.error("Error fetching protected resource:", error)
+    //   );
 
     // Fetch departments
     axios
@@ -142,15 +146,15 @@ const Designation = ({ isOpen, onClose, designationData }) => {
         modifiedDate: current.getDate
       }
 
-      await axios.put(`${api.baseUrl}/designations/updatebyid/${designationData.id}`, payload, {
+      await axios.put(`${api.baseUrl}/designations/update/${designationData.id}`, payload, {
         headers: {
-          // 'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${token}`,
           'Accept': 'Application/json',
           'Access-Control-Allow-Origin': '*'
         }
       })
         .then(response => {
-          toast.success("Department updated successfully.", {
+          toast.success("Designation updated successfully.", {
             position: "top-center",
             autoClose: 5000,
             hideProgressBar: false,
@@ -164,7 +168,7 @@ const Designation = ({ isOpen, onClose, designationData }) => {
           })
         })
         .catch(error => {
-          toast.error("Error updating country...");
+          toast.error("Error updating designation...");
           console.log(error)
         });
     } else {

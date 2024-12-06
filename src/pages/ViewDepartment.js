@@ -39,6 +39,7 @@ const ViewDepartments = () => {
           response.data.content.map((dept) => ({
             ...dept,
             status: !!dept.status, // Ensure status is a boolean value
+            index: response.data.content.indexOf(dept)
           }))
         );
         setTotalPages(response.data.totalPages);
@@ -76,19 +77,23 @@ const ViewDepartments = () => {
   }
 
   const columns = [
+    // {
+    //   header: "Select",
+    //   accessor: "select",
+    //   render: () => <input type="checkbox" />,
+    // },
     {
-      header: "Select",
-      accessor: "select",
-      render: () => <input type="checkbox" />,
+      header: 'S. No.',
+      render: ({ row }) => <span>{row.index + 1}</span>,
     },
     {
       header: "Department Name",
       accessor: "departmentName",
     },
-    {
-      header: "Ip Address",
-      accessor: "ipaddress",
-    },
+    // {
+    //   header: "Ip Address",
+    //   accessor: "ipaddress",
+    // },
     {
       header: "Status",
       render: ({ row }) => (

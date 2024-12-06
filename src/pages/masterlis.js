@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import axios from 'axios';
 import Table from './TableComponent';
 import { useNavigate } from 'react-router-dom';
@@ -12,6 +12,9 @@ import State from './State';
 import Destination from './Destination';
 import Department from './Department'
 import { toast } from 'react-toastify';
+import Hotel from './Hotel';
+import { UserContext } from '../contexts/userContext';
+import useDecryptedToken from '../hooks/useDecryptedToken';
 
 
 
@@ -31,8 +34,13 @@ const MasterList = () => {
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [selectedDestination, setSelectedDestination] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
+  const [selectedHotelData, setSelectedHotelData] = useState(null);
+  const [selectedVendorData, setSelectedVendorData] = useState(null);
   const [isFormEditEnabled, setIsFormEditEnabled] = useState(false);
+  const [addButton, setAddButton] = useState(activeTab);
   const navigate = useNavigate()
+  const token = useDecryptedToken();
+  const {user} = useContext(UserContext);
 
   // Reusable ToggleSwitch Component
   const ToggleSwitch = ({ isOn, handleToggle }) => {
@@ -58,7 +66,7 @@ const MasterList = () => {
       ...item,
       status: (
         <ToggleSwitch
-          isOn={item.status === 'Active'}
+          isOn={item.status}
           handleToggle={() => updateStatus(item)}
         />
       ),
@@ -92,9 +100,16 @@ const MasterList = () => {
   };
 
   const handleStatusToggle = async (item) => {
-    const updatedStatus = item.status === 'Active' ? 'Inactive' : 'Active';  // Toggle the status
+    const updatedStatus = item.status ? false : true;  // Toggle the status
 
-    const updatedItem = { ...item, status: updatedStatus };
+    console.log(item);
+
+    const updatedItem = {
+      ...item,
+      status: updatedStatus,
+      modified_by: user.name,
+      // country: item.country ? {id: item.country.id} : null,
+    };
 
     if (activeTab === 'country') {
       setCountryData(prevData => prevData.map(i => (i.id === item.id ? updatedItem : i)));
@@ -108,11 +123,19 @@ const MasterList = () => {
       setCustomerData(prevData => prevData.map(i => (i.id === item.id ? updatedItem : i)));
     } else if (activeTab === 'vendor') {
       setVendorData(prevData => prevData.map(i => (i.id === item.id ? updatedItem : i)));
+    } else if (activeTab === 'department') {
+      setDepartmentData(prevData => prevData.map(i => (i.id === item.id ? updatedItem : i)));
     }
 
+    console.log(activeTab);
+
     try {
-      const response = await axios.put(`${api.baseUrl}/${activeTab}/updatebyid/${item.id}`, {
-        status: updatedStatus
+      const response = await axios.put(`${api.baseUrl}/${activeTab === 'department' ? 'departments' : activeTab}/updatebyid/${item.id}`, updatedItem, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+          'Access-Control-Allow-Origin': '*'
+        }
       });
 
       if (response.status === 200) {
@@ -135,6 +158,8 @@ const MasterList = () => {
         setCustomerData(prevData => prevData.map(i => (i.id === item.id ? { ...item } : i)));
       } else if (activeTab === 'vendor') {
         setVendorData(prevData => prevData.map(i => (i.id === item.id ? { ...item } : i)));
+      } else if (activeTab === 'department') {
+        setDepartmentData(prevData => prevData.map(i => (i.id === item.id ? { ...item } : i)));
       }
     }
   };
@@ -145,6 +170,7 @@ const MasterList = () => {
 
     if (activeTab === 'country') {
       setAddData(["Country"]);
+      console.log(item);
       setSelectedCountry(item);
     } else if (activeTab === 'state') {
       setSelectedState(item);
@@ -155,6 +181,13 @@ const MasterList = () => {
     } else if (activeTab === 'department') {
       setAddData(["Department"]);
       setSelectedDepartment(item);
+    } else if (activeTab === 'hotel') {
+      setAddData(["Hotel"]);
+      setSelectedHotelData(item);
+    } else if (activeTab === 'vendor') {
+      setAddData(["Vendor"]);
+      setSelectedVendorData(item);
+      console.log(`Editing`, item)
     }
   };
 
@@ -304,7 +337,7 @@ const MasterList = () => {
         const response = await axios.get(`${api.baseUrl}/country/getall`);
         const formattedData = await response.data.content.map((country) => ({
           ...country,
-          status: country.status ? 'Active' : 'Inactive'
+          status: country.status
         }));
         const sortedData = await formattedData.sort((a, b) => {
           return a.countryName.localeCompare(b.countryName);  // Replace 'name' with the key to sort by
@@ -324,7 +357,7 @@ const MasterList = () => {
         const response = await axios.get(`${api.baseUrl}/state/getall`);
         const formattedData = response.data.content.map((state) => ({
           ...state,
-          status: state.status ? 'Active' : 'Inactive',
+          status: state.status,
           countryName: state.country.countryName
         }));
         console.log('formattedData:', formattedData);
@@ -344,9 +377,9 @@ const MasterList = () => {
     const fetchDestinationData = async () => {
       try {
         const response = await axios.get(`${api.baseUrl}/destination/getall`);
-        const formattedData = response.data.map((item) => ({
+        const formattedData = response.data.content.map((item) => ({
           ...item,
-          status: item.status ? 'Active' : 'Inactive',
+          status: item.status,
           countryName: item.country.countryName,
           stateName: item.state.stateName
         }));
@@ -368,7 +401,7 @@ const MasterList = () => {
         const response = await axios.get(`${api.baseUrl}/hotel/getAll`);
         const formattedData = response.data.map((item) => ({
           ...item,
-          status: item.status ? 'Active' : 'Inactive',
+          status: item.status,
           countryName: item.country.countryName,
           stateName: item.state.stateName,
           destinationName: item.destination.destinationName,
@@ -389,9 +422,9 @@ const MasterList = () => {
     const fetchCustomerData = async () => {
       try {
         const response = await axios.get(`${api.baseUrl}/customer/getall`);
-        const formattedData = response.data.map((item) => ({
+        const formattedData = response.data.content.map((item) => ({
           ...item,
-          status: item.status ? 'Active' : 'Inactive',
+          status: item.status,
           firstName: item.fName,
           lastName: item.lName,
           email: item.emailId,
@@ -413,7 +446,7 @@ const MasterList = () => {
     const fetchVendorData = async () => {
       try {
         const response = await axios.get(`${api.baseUrl}/vendor/getAll`);
-        const sortedData = response.data.sort((a, b) => {
+        const sortedData = response.data.content.sort((a, b) => {
           return a.vendorName.localeCompare(b.vendorName);  // Replace 'name' with the key to 
         });
         const newData = sortedData.map((item, index) => ({
@@ -428,10 +461,10 @@ const MasterList = () => {
 
     const fetchDepartmentData = async () => {
       try {
-        const response = await axios.get(`${api.baseUrl}/departments/getAll`);
-        const formattedData = await response.data.map((item) => ({
+        const response = await axios.get(`${api.baseUrl}/departments/getall`);
+        const formattedData = await response.data.content.map((item) => ({
           ...item,
-          status: item.status ? 'Active' : 'Inactive'
+          status: item.status
         }));
         const sortedData = await formattedData.sort((a, b) => {
           return a.departmentName.localeCompare(b.departmentName);  // Replace 'name' with the key to sort by
@@ -471,58 +504,15 @@ const MasterList = () => {
         <div className="pb-1 flex justify-between">
           <h2 className="text-xl font-bold mb-6">Master List</h2>
           <div className="relative" ref={dropdownRef}>
-            <span
-              className="text-black text-3xl md:text-3xl cursor-pointer flex"
-              onClick={() => setDropdownOpen(!dropdownOpen)}
+          <button className="flex items-center justify-center bg-red-500  text-white p-2 rounded-md hover:bg-red-700 mt-2 md:mt-0 md:ml-2"
+            onClick={
+              () => {
+                setAddData([`${activeTab[0].toUpperCase()}${activeTab.substring(1)}`])
+              }
+            }
             >
-              +
-            </span>
-            {dropdownOpen && (
-              <div className="absolute top-10 right-0 w-48 bg-white shadow-lg rounded-md  text-black">
-                <ul className="space-y-2">
-                  <li
-                    className="hover:bg-gray-200  hover:border-l-4  border-blue-500 p-2 rounded cursor-pointer"
-                    onClick={() => {
-                      setAddData([]);
-                      setAddData(["Vendors"]);
-                    }}
-                  >
-                    New Vendors
-                  </li>
-                  <li className="hover:bg-gray-200  hover:border-l-4  border-blue-500 p-2 rounded cursor-pointer">
-                    New Customer
-                  </li>
-                  <li
-                    className="hover:bg-gray-200  hover:border-l-4  border-blue-500 p-2 rounded cursor-pointer"
-                    onClick={() => {
-                      setAddData([]);
-                      setAddData(["NewPackageForm"]);
-                    }}
-                  >
-                    New Package
-                  </li>
-                  <li
-                    className="hover:bg-gray-200  hover:border-l-4  border-blue-500 p-2 rounded cursor-pointer"
-                    onClick={() => {
-                      setAddData([]);
-                      setAddData(["Transportation"]);
-                    }}
-                  >
-                    New Transportation
-                  </li>
-                  <hr className="border-gray-300" />
-                  <li
-                    className="hover:bg-gray-200  hover:border-l-4  border-blue-500 p-2 rounded cursor-pointer"
-                    onClick={() => {
-                      setAddData([]);
-                      setAddData(["NewMember"]);
-                    }}
-                  >
-                    New Member
-                  </li>
-                </ul>
-              </div>
-            )}
+            New {`${activeTab[0].toUpperCase()}${activeTab.substring(1)}`}
+          </button>
           </div>
 
         </div>
@@ -632,6 +622,30 @@ const MasterList = () => {
           isOpen={addData[0] === "Department"}
           onClose={() => setAddData([])}
           departmentData={selectedDepartment}
+          isFormEditEnabled={isFormEditEnabled}
+          setIsFormEditEnabled={setIsFormEditEnabled}
+        />
+      </div>
+      <div
+        className="submenu-menu"
+        style={{ right: addData[0] === "Hotel" ? "0" : "-100%" }}
+      >
+        <Hotel
+          isOpen={addData[0] === "Hotel"}
+          onClose={() => setAddData([])}
+          selectedHotelData={selectedHotelData}
+          isFormEditEnabled={isFormEditEnabled}
+          setIsFormEditEnabled={setIsFormEditEnabled}
+        />
+      </div>
+      <div
+        className="submenu-menu"
+        style={{ right: addData[0] === "Vendor" ? "0" : "-100%" }}
+      >
+        <NewVendorForm
+          isOpen={addData[0] === "Vendor"}
+          onClose={() => setAddData([])}
+          selectedVendorData={selectedVendorData}
           isFormEditEnabled={isFormEditEnabled}
           setIsFormEditEnabled={setIsFormEditEnabled}
         />

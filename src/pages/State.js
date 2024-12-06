@@ -1,8 +1,10 @@
 import axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import api from "../apiConfig/config";
 import Select from 'react-select'
 import { toast } from "react-toastify";
+import { UserContext } from "../contexts/userContext";
+import useDecryptedToken from "../hooks/useDecryptedToken";
 
 const State = ({ isOpen, onClose, stateData, isFormEditEnabled, setIsFormEditEnabled }) => {
   const [countryDetails, setCountryDetails] = useState([])
@@ -13,69 +15,12 @@ const State = ({ isOpen, onClose, stateData, isFormEditEnabled, setIsFormEditEna
 
   const fileInputRef = useRef(null);
 
-  const [user, setUser] = useState({})
-  const [token, setTokens] = useState(null)
-  async function decryptToken(encryptedToken, key, iv) {
-    const dec = new TextDecoder();
-
-    const decrypted = await crypto.subtle.decrypt({
-      name: "AES-GCM",
-      iv: iv,
-    },
-      key,
-      encryptedToken
-    );
-
-    return dec.decode(new Uint8Array(decrypted));
-  }
-
-  // Function to retrieve and decrypt the token
-  async function getDecryptedToken() {
-    const keyData = JSON.parse(localStorage.getItem('encryptionKey'));
-    const ivBase64 = localStorage.getItem('iv');
-    const encryptedTokenBase64 = localStorage.getItem('encryptedToken');
-
-    if (!keyData || !ivBase64 || !encryptedTokenBase64) {
-      throw new Error('No token found');
-    }
-
-    // Convert back from base64
-    const key = await crypto.subtle.importKey('jwk', keyData, { name: "AES-GCM" }, true, ['encrypt', 'decrypt']);
-    const iv = new Uint8Array(atob(ivBase64).split('').map(char => char.charCodeAt(0)));
-    const encryptedToken = new Uint8Array(atob(encryptedTokenBase64).split('').map(char => char.charCodeAt(0)));
-
-    return await decryptToken(encryptedToken, key, iv);
-  }
-
-  // Example usage to make an authenticated request
-  useEffect(() => {
-    getDecryptedToken()
-      .then(token => {
-        setTokens(token);
-        return axios.get(`${api.baseUrl}/username`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Access-Control-Allow-Origin': '*'
-          }
-        });
-      })
-      .then(response => {
-        setUser(response.data);
-      })
-      .catch(error => console.error('Error fetching protected resource:', error))
-  }, [])
+  const {user} = useContext(UserContext);
+  const token = useDecryptedToken();
 
   useEffect(() => {
     if (stateData) {
-      setFormData({
-        stateName: stateData.stateName || "",
-        code: stateData.code || "",
-        ipAddress: stateData.ipAddress || "",
-        status: stateData.status || true,
-        image: null,
-        created_by: stateData.created_by || "",
-        modified_by: stateData.modified_by || "",
-      });
+      setFormData(stateData);
       setSelectedOption({
         value: stateData.country.id,
         label: stateData.country.countryName,
@@ -102,7 +47,7 @@ const State = ({ isOpen, onClose, stateData, isFormEditEnabled, setIsFormEditEna
   const handleFileChange = (event) => {
     setFormData({
       ...formData,
-      image: event.target.files[0],
+      simage: event.target.files[0],
     });
   };
 
@@ -133,10 +78,10 @@ const State = ({ isOpen, onClose, stateData, isFormEditEnabled, setIsFormEditEna
   });
 
   useEffect(() => {
-    axios.get(`${api.baseUrl}/country/get`
+    axios.get(`${api.baseUrl}/country/getall`
     )
       .then(response => {
-        const formattedOptions = response.data.map(item => ({
+        const formattedOptions = response.data.content.map(item => ({
           value: item.id, // or any unique identifier
           label: item.countryName // or any display label you want
         }));
@@ -158,9 +103,11 @@ const State = ({ isOpen, onClose, stateData, isFormEditEnabled, setIsFormEditEna
     formDataToSend.append('ipAddress', formData.ipAddress);
     formDataToSend.append('country.id', countryId);
     formDataToSend.append('image', formData.image); // Attach image file
-    formDataToSend.append('created_by', user.username);
-    formDataToSend.append('modified_by', user.username);
+    formDataToSend.append('created_by', formData.created_by);
+    formDataToSend.append('modified_by', user.name);
     formDataToSend.append('isdelete', false);
+
+    console.log(formData);
 
     // If state name or code is empty, show error
     if (formData.stateName.length === 0 || formData.code.length === 0) {
@@ -195,7 +142,7 @@ const State = ({ isOpen, onClose, stateData, isFormEditEnabled, setIsFormEditEna
             progress: undefined,
           });
           // Reset the form
-          handleReset();
+          // handleReset();
         })
         .catch(error => {
           toast.error("Error updating state...");

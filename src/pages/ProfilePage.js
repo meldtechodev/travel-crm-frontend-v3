@@ -1,32 +1,35 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FaFacebook, FaLinkedin, FaTwitter } from "react-icons/fa";
 import api from "../apiConfig/config";
+import { UserContext } from "../contexts/userContext";
 
 const ProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
-  const [profileData, setProfileData] = useState(null);
+  // const [profileData, setProfileData] = useState(null);
 
-  const [formData, setFormData] = useState(profileData);
+  const {user, setUser} = useContext(UserContext);
+
+  const [formData, setFormData] = useState(user);
+
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+
+  //   axios.get(`${api.baseUrl}/username`, {
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //       "Access-Control-Allow-Origin": "*",
+  //     },
+  //   }).then((response) => {
+  //     setProfileData(response.data);
+  //   });
+  // }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    axios.get(`${api.baseUrl}/username`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Access-Control-Allow-Origin": "*",
-      },
-    }).then((response) => {
-      setProfileData(response.data);
-    });
-  }, []);
-
-  useEffect(() => {
-    if (profileData) {
-      setFormData(profileData);
+    if (user) {
+      setFormData(user);
     }
-  }, [profileData]);
+  }, [user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -34,12 +37,12 @@ const ProfilePage = () => {
   };
 
   const handleSave = () => {
-    setProfileData(formData); // Save changes
+    setUser(formData); // Save changes
     setIsEditing(false); // Exit edit mode
   };
 
   const handleCancel = () => {
-    setFormData(profileData); // Revert changes
+    setFormData(user); // Revert changes
     setIsEditing(false); // Exit edit mode
   };
 
@@ -57,15 +60,15 @@ const ProfilePage = () => {
           {/* Profile Picture */}
           <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
             <span className="text-2xl font-bold text-gray-700">
-              {profileData && `${profileData.name.charAt(0).toUpperCase()}`}
+              {user && `${user.name.charAt(0).toUpperCase()}`}
             </span>
           </div>
           {/* User Info */}
           <div>
-            <h1 className="text-lg font-semibold text-gray-800">{`${profileData && profileData.name} ${profileData && profileData.lname}`}</h1>
-            <p className="text-gray-600 text-sm">{profileData && profileData.email}</p>
+            <h1 className="text-lg font-semibold text-gray-800">{`${user && user.name} ${user && user.lname}`}</h1>
+            <p className="text-gray-600 text-sm">{user && user.email}</p>
             <span className="text-xs bg-orange-100 text-orange-800 font-medium py-1 px-2 rounded inline-block mt-2">
-              {profileData && profileData.role && profileData.role.roleName}
+              {user && user.role && user.role.roleName}
             </span>
           </div>
         </div>
@@ -93,7 +96,7 @@ const ProfilePage = () => {
                 className="w-full p-2 border rounded-md mt-2"
               />
             ) : (
-              <p className="text-sm">{profileData && profileData.name}</p>
+              <p className="text-sm">{user && user.name}</p>
             )}
           </div>
           {/* Middle Name */}
@@ -108,7 +111,7 @@ const ProfilePage = () => {
                 className="w-full p-2 border rounded-md mt-2"
               />
             ) : (
-              <p className="text-sm">{profileData && profileData.mname}</p>
+              <p className="text-sm">{user && user.mname}</p>
             )}
           </div>
           {/* Last Name */}
@@ -123,7 +126,7 @@ const ProfilePage = () => {
                 className="w-full p-2 border rounded-md mt-2"
               />
             ) : (
-              <p className="text-sm">{profileData && profileData.lname}</p>
+              <p className="text-sm">{user && user.lname}</p>
             )}
           </div>
           {/* Email */}
@@ -138,7 +141,7 @@ const ProfilePage = () => {
                 className="w-full p-2 border rounded-md mt-2"
               />
             ) : (
-              <p className="text-sm">{profileData && profileData.email}</p>
+              <p className="text-sm">{user && user.email}</p>
             )}
           </div>
           {/* Mobile Number */}
@@ -153,7 +156,7 @@ const ProfilePage = () => {
                 className="w-full p-2 border rounded-md mt-2"
               />
             ) : (
-              <p className="text-sm">{profileData && profileData.mobnumber}</p>
+              <p className="text-sm">{user && user.mobnumber}</p>
             )}
           </div>
           {/* Company Name */}
@@ -168,7 +171,7 @@ const ProfilePage = () => {
                 className="w-full p-2 border rounded-md mt-2"
               />
             ) : (
-              <p className="text-sm">{profileData && profileData.companyName}</p>
+              <p className="text-sm">{user && user.companyName}</p>
             )}
           </div>
           {/* Designation */}
@@ -183,7 +186,7 @@ const ProfilePage = () => {
                 className="w-full p-2 border rounded-md mt-2"
               />
             ) : (
-              <p className="text-sm">{profileData && profileData.designation && profileData.designation.designationName}</p>
+              <p className="text-sm">{user && user.designation && user.designation.designationName}</p>
             )}
           </div>
         </div>
@@ -215,11 +218,11 @@ const ProfilePage = () => {
           <div className="grid grid-cols-2 gap-6">
             <div>
               <p className="text-sm font-bold">Language</p>
-              <p className="text-sm">{profileData && profileData.language}</p>
+              <p className="text-sm">{user && user.language}</p>
             </div>
             <div>
               <p className="text-sm font-bold">Time Zone</p>
-              <p className="text-sm">{profileData && profileData.timeZone}</p>
+              <p className="text-sm">{user && user.timeZone}</p>
             </div>
           </div>
           <div className="flex items-center space-x-4 mt-6">
