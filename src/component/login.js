@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom'; 
+import { useNavigate, Link } from 'react-router-dom';
 import api from '../apiConfig/config';
 import axios from 'axios';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
@@ -92,7 +92,7 @@ function Login() {
         password: values.password
       })
         .then(async (response) => {
-          const token = response;
+          const token = response.data;
           await saveEncryptedToken(token);
           toast.success("Logged In", {
             position: "top-center",

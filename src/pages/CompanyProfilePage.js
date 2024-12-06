@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import NewCompanyForm from "./NewCompanyForm";
 import Department from "./Department";
 import Designation from "./Designation";
+import Roles from "./Roles";
 
 const CompanyProfilePage = () => {
   const navigate = useNavigate();
@@ -78,6 +79,32 @@ const CompanyProfilePage = () => {
         {/* My Accounts Section */}
         <div className="bg-white shadow-md rounded-md p-6 mb-6">
           <h2 className="text-lg font-semibold text-gray-800 mb-3">
+            My Roles
+          </h2>
+          <p className="text-gray-600 text-sm mb-4">
+            All the accounts in this organization that you have access to. Click
+            to open.
+          </p>
+
+          {/* Account List */}
+          <div className="flex items-center space-x-4">
+            <button
+              className="border border-dashed border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-2"
+              onClick={() => setAddData(["Role"])}
+            >
+              Add Role
+            </button>
+            <button
+              className="border border-dashed border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-2"
+              onClick={() => navigate("/home/view-departments")}
+            >
+              View Role
+            </button>
+          </div>
+        </div>
+
+        <div className="bg-white shadow-md rounded-md p-6 mb-6">
+          <h2 className="text-lg font-semibold text-gray-800 mb-3">
             My Department
           </h2>
           <p className="text-gray-600 text-sm mb-4">
@@ -101,6 +128,7 @@ const CompanyProfilePage = () => {
             </button>
           </div>
         </div>
+
         {/* My Accounts Section */}
         <div className="bg-white shadow-md rounded-md p-6">
           <h2 className="text-lg font-semibold text-gray-800 mb-3">
@@ -152,6 +180,15 @@ const CompanyProfilePage = () => {
       >
         <Designation
           isOpen={addData[0] === "Designation"}
+          onClose={() => setAddData([])}
+        />
+      </div>
+      <div
+        className="submenu-menu"
+        style={{ right: addData[0] === "Role" ? "0" : "-100%" }}
+      >
+        <Roles
+          isOpen={addData[0] === "Role"}
           onClose={() => setAddData([])}
         />
       </div>

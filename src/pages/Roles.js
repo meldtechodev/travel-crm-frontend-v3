@@ -1,15 +1,68 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import Select from "react-select";
 import api from "../apiConfig/config";
 import axios from "axios";
+// import Select from "react-select/base";
 
 const Roles = ({ isOpen, onClose }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [roleName, setRoleName] = useState("");
   const [description, setDescription] = useState("");
+  const [permission, setPermission] = useState([])
+  const [module, setModule] = useState([])
+  const [designations, setDesignation] = useState([])
+  const [modulePermission, setModulePermission] = useState([])
+
+
+
   const navigate = useNavigate()
 
-  const isFormFilled = roleName && description;
+  const isFormFilled = roleName;
+
+
+  useEffect(() => {
+    axios.get(`${api.baseUrl}/designations/getall`)
+      .then(response => {
+        const format = response.data.content.map((item) => ({
+          ...item,
+          value: item.id,
+          label: item.designationName
+        }))
+        // console.log(format)
+        setDesignation(format)
+      })
+      .catch(error => console.error(error))
+
+    if (modulePermission.length === 0) {
+      axios.get(`${api.baseUrl}/modules/getall`)
+        .then(response => {
+          const moduleFormat = response.data
+          setModule(response.data)
+
+          // console.log(moduleFormat)
+          axios.get(`${api.baseUrl}/permissions/getall`)
+            .then(res => {
+              setPermission(res.data);
+              moduleFormat.forEach(items => {
+                const formatPerm = res.data.filter(item => item.modules.id === items.id)
+                if (formatPerm.length !== 0) {
+                  const formatP = formatPerm.map(item => ({ ...item, value: false }))
+                  const perm = {
+                    id: items.id,
+                    module: items.moduleName,
+                    permission: formatP
+                  }
+                  modulePermission.push(perm)
+                }
+              })
+              // console.log(modulePermission)
+            })
+            .catch(error => console.error(error));
+        })
+        .catch(error => console.error(error));
+    }
+  }, [])
 
   const [token, setTokens] = useState(null)
   async function decryptToken(encryptedToken, key, iv) {
@@ -56,163 +109,62 @@ const Roles = ({ isOpen, onClose }) => {
   }, [])
 
   // State for permissions checkboxes
-  const [permissions, setPermissions] = useState({
-    Dashboard: { selected: false, actions: { Dashboard: false } },
-    Packages: {
-      selected: false,
-      actions: {
-        View: false,
-        Add: false,
-        Edit: false,
-        Delete: false,
-      },
-    },
-    Bookings: {
-      selected: false,
-      actions: {
-        View: false,
-        Add: false,
-        Edit: false,
-        Delete: false,
-      },
-    },
-
-    MyTeams: {
-      selected: false,
-      actions: {
-        View: false,
-        Add: false,
-        Edit: false,
-        Delete: false,
-      },
-    },
-    Report: {
-      selected: false,
-      actions: {
-        View: false,
-        Add: false,
-        Edit: false,
-        Delete: false,
-      },
-    },
-    Sales: {
-      selected: false,
-      actions: {
-        View: false,
-        Add: false,
-        Edit: false,
-        Delete: false,
-      },
-    },
-    Master: {
-      selected: false,
-      actions: {
-        View: false,
-        Add: false,
-        Edit: false,
-        Delete: false,
-      },
-    },
-  });
 
   const handleReset = () => {
-    setPermissions({
-      Dashboard: { selected: false, actions: { Dashboard: false } },
-      Packages: {
-        selected: false,
-        actions: {
-          View: false,
-          Add: false,
-          Edit: false,
-          Delete: false,
-        },
-      },
-      Bookings: {
-        selected: false,
-        actions: {
-          View: false,
-          Add: false,
-          Edit: false,
-          Delete: false,
-        },
-      },
 
-      MyTeams: {
-        selected: false,
-        actions: {
-          View: false,
-          Add: false,
-          Edit: false,
-          Delete: false,
-        },
-      },
-      Report: {
-        selected: false,
-        actions: {
-          View: false,
-          Add: false,
-          Edit: false,
-          Delete: false,
-        },
-      },
-      Sales: {
-        selected: false,
-        actions: {
-          View: false,
-          Add: false,
-          Edit: false,
-          Delete: false,
-        },
-      },
-      Master: {
-        selected: false,
-        actions: {
-          View: false,
-          Add: false,
-          Edit: false,
-          Delete: false,
-        },
-      },
-    });
     setRoleName('');
     setDescription('')
     setCurrentPage(1)
   }
 
-  const handleToggle = (module, action) => {
-    setPermissions((prevPermissions) => {
-      const updatedActions = {
-        ...prevPermissions[module].actions,
-        [action]: !prevPermissions[module].actions[action],
-      };
-      return {
-        ...prevPermissions,
-        [module]: {
-          ...prevPermissions[module],
-          actions: updatedActions,
-        },
-      };
-    });
+  const handleToggle = (moduleId, perm, action) => {
+
+    const changeModule = modulePermission.filter(item => item.id === moduleId.id)
+    const permissionChange = [...changeModule[0].permission]
+    const updatedActions = permissionChange.map(item => item.id === perm.id ? { ...item, value: action } : item)
+    const final = modulePermission.map(prev => prev.id === moduleId.id ? { ...prev, permission: updatedActions } : prev)
+    setModulePermission(final)
   };
 
-  const handleSelectAll = (section) => {
-    setPermissions((prevPermissions) => {
-      const allSelected = !prevPermissions[section].selected;
-      const newActions = Object.fromEntries(
-        Object.keys(prevPermissions[section].actions).map((action) => [
-          action,
-          allSelected,
-        ])
-      );
-      return {
-        ...prevPermissions,
-        [section]: {
-          ...prevPermissions[section],
-          selected: allSelected,
-          actions: newActions,
-        },
-      };
-    });
+  const handleSelectAll = (module) => {
+
+    let selectAll = false
+    // const updatedActions = []
+    const changeModule = modulePermission.filter(item => item.id === module.id)
+    const permissionChange = [...changeModule[0].permission]
+    for (let i = 0; i < permissionChange.length; i++) {
+      if (!permissionChange[i].value) {
+        selectAll = true
+        break
+      }
+    }
+    if (selectAll) {
+      const updatedActions = permissionChange.map(item => ({ ...item, value: true }))
+      const final = modulePermission.map(prev => prev.id === module.id ? { ...prev, permission: updatedActions } : prev)
+      setModulePermission(final)
+    } else {
+      const updatedActions = permissionChange.map(item => ({ ...item, value: false }))
+      const final = modulePermission.map(prev => prev.id === module.id ? { ...prev, permission: updatedActions } : prev)
+      setModulePermission(final)
+    }
+
+    // setPermissions((prevPermissions) => {
+    //   const allSelected = !prevPermissions[section].selected;
+    //   const newActions = Object.fromEntries(
+    //     Object.keys(prevPermissions[section].actions).map((action) => [
+    //       action,
+    //       allSelected,
+    //     ])
+    //   );
+    //   return {
+    //     ...prevPermissions,
+    //     [section]: {
+    //       ...prevPermissions[section],
+    //       selected: allSelected,
+    //       actions: newActions,
+    //     },
+    //   };
+    // });
   };
 
   // Functions to navigate between pages
@@ -239,158 +191,44 @@ const Roles = ({ isOpen, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const selectedPermissions = Object.keys(permissions).reduce((acc, module) => {
-      const selectedActions = Object.entries(permissions[module].actions)
-        .filter(([_, isSelected]) => isSelected)
-        .map(([action]) => action);
+    // const selectedPermissions = Object.keys(permissions).reduce((acc, module) => {
+    //   const selectedActions = Object.entries(permissions[module].actions)
+    //     .filter(([_, isSelected]) => isSelected)
+    //     .map(([action]) => action);
 
-      if (selectedActions.length > 0) {
-        acc.push({
-          module,
-          actions: selectedActions,
-        });
-      }
-      return acc;
-    }, []);
+    //   if (selectedActions.length > 0) {
+    //     acc.push({
+    //       module,
+    //       actions: selectedActions,
+    //     });
+    //   }
+    //   return acc;
+    // }, []);
 
     const payload = {
       name: roleName.toUpperCase(),
-      description: description,
-      "permissions": selectedPermissions
+      // "permissions": selectedPermissions
     };
     console.log(payload)
-    // setPermissions({
-    //   Dashboard: { selected: false, actions: { Dashboard: false } },
-    //   Packages: {
-    //     selected: false,
-    //     actions: {
-    //       View: false,
-    //       Add: false,
-    //       Edit: false,
-    //       Delete: false,
-    //     },
-    //   },
-    //   Bookings: {
-    //     selected: false,
-    //     actions: {
-    //       View: false,
-    //       Add: false,
-    //       Edit: false,
-    //       Delete: false,
-    //     },
-    //   },
+    console.log(modulePermission)
 
-    //   MyTeams: {
-    //     selected: false,
-    //     actions: {
-    //       View: false,
-    //       Add: false,
-    //       Edit: false,
-    //       Delete: false,
-    //     },
-    //   },
-    //   Report: {
-    //     selected: false,
-    //     actions: {
-    //       View: false,
-    //       Add: false,
-    //       Edit: false,
-    //       Delete: false,
-    //     },
-    //   },
-    //   Sales: {
-    //     selected: false,
-    //     actions: {
-    //       View: false,
-    //       Add: false,
-    //       Edit: false,
-    //       Delete: false,
-    //     },
-    //   },
-    //   Master: {
-    //     selected: false,
-    //     actions: {
-    //       View: false,
-    //       Add: false,
-    //       Edit: false,
-    //       Delete: false,
-    //     },
-    //   },
-    // });
-    await axios.post(`${api.baseUrl}/all`,
-      payload, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      }
-    })
-      .then(async (response) => {
-        console.log(response.data)
-        alert(response.data.message);
-        setPermissions({
-          Dashboard: { selected: false, actions: { Dashboard: false } },
-          Packages: {
-            selected: false,
-            actions: {
-              View: false,
-              Add: false,
-              Edit: false,
-              Delete: false,
-            },
-          },
-          Bookings: {
-            selected: false,
-            actions: {
-              View: false,
-              Add: false,
-              Edit: false,
-              Delete: false,
-            },
-          },
+    // await axios.post(`${api.baseUrl}/all`,
+    //   payload, {
+    //   headers: {
+    //     'Authorization': `Bearer ${token}`,
+    //     'Content-Type': 'application/json',
+    //   }
+    // })
+    //   .then(async (response) => {
+    //     console.log(response.data)
+    //     alert(response.data.message);
+    //     setPermissions([]);
+    //     setRoleName('')
+    //     setDescription('')
+    //     setCurrentPage(1)
 
-          MyTeams: {
-            selected: false,
-            actions: {
-              View: false,
-              Add: false,
-              Edit: false,
-              Delete: false,
-            },
-          },
-          Report: {
-            selected: false,
-            actions: {
-              View: false,
-              Add: false,
-              Edit: false,
-              Delete: false,
-            },
-          },
-          Sales: {
-            selected: false,
-            actions: {
-              View: false,
-              Add: false,
-              Edit: false,
-              Delete: false,
-            },
-          },
-          Master: {
-            selected: false,
-            actions: {
-              View: false,
-              Add: false,
-              Edit: false,
-              Delete: false,
-            },
-          },
-        });
-        setRoleName('')
-        setDescription('')
-        setCurrentPage(1)
-
-      })
-      .catch(error => console.error(error));
+    //   })
+    //   .catch(error => console.error(error));
 
     // } else {
     //   alert('Role name cant be empty')
@@ -449,24 +287,27 @@ const Roles = ({ isOpen, onClose }) => {
                     onChange={(e) => setRoleName(e.target.value)}
                   />
                 </div>
+
               </div>
               <div className="flex gap-2 mb-4">
                 <div className="w-full">
                   <label
-                    htmlFor="description"
+                    htmlFor="roleName"
                     className="block text-sm font-medium"
                   >
-                    Description
+                    Designation Name
                   </label>
-                  <textarea
-                    id="description"
-                    className="mt-1 p-2 w-full border rounded "
-                    placeholder="Enter description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    rows="12"
+                  <Select
+                    className="mt-1 p-2 w-full border rounded"
+                    placeholder="Enter role name"
+                    options={designations}
+                  // styles={customStyles}
+                  // value={selectedOption}
+                  // onChange={handleChange}
+                  // options={countryDetails}
                   />
                 </div>
+
               </div>
             </form>
           ) : (
@@ -476,15 +317,15 @@ const Roles = ({ isOpen, onClose }) => {
                 Select all permissions
               </h3>
 
-              {/* Dashboard Permissions */}
-              {Object.entries(permissions).map(([section, { actions }]) => (
+
+              {modulePermission.map(items => (
                 <div className="w-full mb-2 mr-4">
                   <div className="flex items-center justify-between bg-gray-100 p-2 rounded mb-2 mr-4">
-                    <div key={section} className="w-full gap-2" style={{ marginTop: '20px' }}>
-                      <h4>Select all of {section}</h4>
+                    <div key={items.id} className="w-full gap-2" style={{ marginTop: '20px' }}>
+                      <h4>Select all of {items.module}</h4>
                       <button
                         type="button"
-                        onClick={() => handleSelectAll(section)}
+                        onClick={() => handleSelectAll(items)}
                         className="bg-red-700 text-white px-2 py-1 rounded my-2"
                       // style={{
                       //   backgroundColor: permissions[section].selected ? 'lightgreen' : 'lightcoral',
@@ -495,21 +336,22 @@ const Roles = ({ isOpen, onClose }) => {
                       {/* // style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'space-between' }} */}
 
                       <div className="flex w-full gap-4 mb-2">
-                        {Object.keys(actions).map((action) => (
+                        {items.permission.map(item => (
 
-                          <label key={action} className="flex w-full gap-2 my-2 items-center">
+                          <label key={item.id} className="flex w-full gap-2 my-2 items-center text-sm">
                             <input
                               type="checkbox"
                               className="h-4 w-5"
-                              checked={actions[action]}
-                              onChange={() => handleToggle(section, action)}
+                              checked={item.value}
+                              onChange={() => handleToggle(items, item, !item.value)}
                             />
                             {/* <input className="checkBox"
                                 type="checkbox"
                                 checked={actions[action]}
                                 onChange={() => handleToggle(section, action)}
                                 /> */}
-                            {action.replace(/([A-Z])/g, ' $1').trim()}
+                            {/* {action.replace(/([A-Z])/g, ' $1').trim()} */}
+                            {item.permissionName}
                           </label>
                         ))}
                       </div>

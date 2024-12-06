@@ -301,7 +301,7 @@ const MasterList = () => {
   useEffect(() => {
     const fetchCountryData = async () => {
       try {
-        const response = await axios.get(`${api.baseUrl}/country/get`);
+        const response = await axios.get(`${api.baseUrl}/country/getall`);
         const formattedData = await response.data.map((country) => ({
           ...country,
           status: country.status ? 'Active' : 'Inactive'

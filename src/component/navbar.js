@@ -28,7 +28,7 @@ const Navbar = () => {
   const [addData, setAddData] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false); // State for the "+" dropdown
   const [showSearchField, setShowSearchField] = useState(false); // State for the "+" dropdown
-  const [user, setUser] = useState({ username: "", email: "", roles: "" });
+  const [user, setUser] = useState({ name: "", email: "", role: {} });
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
   const isOpenRef = useRef(null);
@@ -50,7 +50,6 @@ const Navbar = () => {
       key,
       encryptedToken
     );
-
     return dec.decode(new Uint8Array(decrypted));
   }
 
@@ -77,9 +76,7 @@ const Navbar = () => {
   useEffect(() => {
     getDecryptedToken()
       .then(token => {
-        setTokens(token);
-
-        return axios.get(`${api.baseUrl}/getbytoken`, {
+        return axios.get(`${api.baseUrl}/username`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Access-Control-Allow-Origin': '*'
@@ -281,7 +278,7 @@ const Navbar = () => {
                 className="bg-green-500 text-white text-center p-2 cursor-pointer rounded-sm w-8 h-8 
                 flex items-center justify-center"
               >
-                {getFirstCharacter(user.username)}
+                {getFirstCharacter(user.name)}
               </div>
 
               {/* Dropdown Menu */}
@@ -292,12 +289,13 @@ const Navbar = () => {
                 >
                   <div className="flex items-center space-x-2 border-b border-red-500 p-2">
                     <div className="bg-green-500 h-8 w-8 text-white flex items-center justify-center rounded-full">
-                      {getFirstCharacter(user.username)}
+                      {getFirstCharacter(user.name)}
                     </div>
 
                     <div>
+                      <p>{user.name} {user.mname} {user.lname}</p>
                       <p>{user.email}</p>
-                      <p className="text-sm">{user.roles}</p>
+                      <p className="text-sm">{user.role.roleName}</p>
                     </div>
                   </div>
 

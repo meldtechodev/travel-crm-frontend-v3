@@ -9,22 +9,18 @@ const Itinerary = ({ isOpen, onClose }) => {
   const [destinationOptions, setDestinationOptions] = useState([]);
   const [editorData, setEditorData] = useState("");
   const [selectedDestination, setSelectedDestination] = useState(null);
+  // const [selectedActivity, setSelectedAct] = useState(null);
+
   const [formData, setFormData] = useState([
     {
       daytitle: "",
-      meals: {
-        breakfast: false,
-        lunch: false,
-        dinner: false,
-      },
       program: "",
+      breakfast: false,
+      lunch: false,
+      dinner: false,
       hotelOptionsIds: [null, null, null, null],
-      activities: {
-        id: null
-      },
-      sightseeing: {
-        id: null
-      }
+      activities: null,
+      sightseeing: null
     }
   ]);
   const [user, setUser] = useState({});
@@ -45,7 +41,7 @@ const Itinerary = ({ isOpen, onClose }) => {
     axios
       .get(`${api.baseUrl}/destination/getall`)
       .then((response) => {
-        const options = response.data.map((destination) => ({
+        const options = response.data.content.map((destination) => ({
           value: destination.id,
           label: destination.destinationName,
         }));
@@ -101,9 +97,9 @@ const Itinerary = ({ isOpen, onClose }) => {
   useEffect(() => {
     getDecryptedToken()
       .then((token) => {
-        return axios.get(`${api.baseUrl}/getbytoken`, {
+        return axios.get(`${api.baseUrl}/username`, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            "Authorization": `Bearer ${token}`,
             "Access-Control-Allow-Origin": "*",
           },
         });
@@ -126,7 +122,8 @@ const Itinerary = ({ isOpen, onClose }) => {
   const handleMealChange = (event, dayIndex) => {
     const { name, checked } = event.target;
 
-    setFormData((prev, i) => dayIndex === i ? { ...prev, [name]: checked } : prev)
+    const update = formData.map((prev, i) => dayIndex === i ? { ...prev, [name]: checked } : prev)
+    setFormData(update)
     // setFormData((prevState) => {
     //   const updatedDays = [...prevState.days];
     //   updatedDays[dayIndex] = {
@@ -178,7 +175,7 @@ const Itinerary = ({ isOpen, onClose }) => {
 
     axios.get(`${api.baseUrl}/roomtypes/getAll`)
       .then((response) => {
-        const formattedData = response.data.map(item => ({
+        const formattedData = response.data.content.map(item => ({
           ...item,
           value: item.id,
           label: item.bed_size,
@@ -191,7 +188,7 @@ const Itinerary = ({ isOpen, onClose }) => {
 
     axios.get(`${api.baseUrl}/sightseeing/getAll`)
       .then((response) => {
-        const formattedData = response.data.map(item => ({
+        const formattedData = response.data.content.map(item => ({
           ...item,
           value: item.id,
           label: item.title,
@@ -202,9 +199,9 @@ const Itinerary = ({ isOpen, onClose }) => {
         console.error('Error fetching country data:', error)
       )
 
-    axios.get(`${api.baseUrl}/activities/getAll`)
+    axios.get(`${api.baseUrl}/activities/getall`)
       .then((response) => {
-        const formattedData = response.data.map(item => ({
+        const formattedData = response.data.content.map(item => ({
           ...item,
           value: item.id,
           label: item.title,
@@ -217,10 +214,10 @@ const Itinerary = ({ isOpen, onClose }) => {
 
     axios.get(`${api.baseUrl}/mealspackage/getall`)
       .then((response) => {
-        const formattedData = response.data.map(item => ({
+        const formattedData = response.data.content.map(item => ({
           ...item,
           value: item.id,
-          label: item.mealstype_code,
+          label: item.mealstypeCode,
           status: item.status ? 'Active' : 'Inactive'
         }));
         setMealTypeOptions(formattedData)
@@ -229,6 +226,16 @@ const Itinerary = ({ isOpen, onClose }) => {
       )
 
   }, []);
+
+  const handleActivityChange = (selectedOption, index) => {
+    const update = formData.map((item, i) => i === index ? { ...item, activities: selectedOption } : item)
+    setFormData(update)
+  }
+
+  const handleSiteseeingChange = (selectedOption, index) => {
+    const update = formData.map((item, i) => i === index ? { ...item, sightseeing: selectedOption } : item)
+    setFormData(update)
+  }
 
   // Handle destination change
   const handleDestinationChange = (selectedOption) => {
@@ -244,7 +251,8 @@ const Itinerary = ({ isOpen, onClose }) => {
 
     hotelUpdate[hIndex] = selected
 
-    setFormData((prev, i) => mainIndex === i ? { ...prev, hotelOptionsIds: hotelUpdate } : prev)
+    const update = formData.map((prev, i) => mainIndex === i ? { ...prev, hotelOptionsIds: hotelUpdate } : prev)
+    setFormData(update)
   }
 
   // Add a new day form
@@ -252,16 +260,13 @@ const Itinerary = ({ isOpen, onClose }) => {
     setFormData([...formData,
     {
       daytitle: "",
+      program: "",
       breakfast: false,
       lunch: false,
       dinner: false,
-      description: "",
-      activities: {
-        id: null
-      },
-      sightseeing: {
-        id: null
-      }
+      activities: null,
+      sightseeing: null,
+      hotelOptionsIds: [null, null, null, null],
     }
     ]);
   };
@@ -271,59 +276,86 @@ const Itinerary = ({ isOpen, onClose }) => {
     e.preventDefault();
 
     formData.map(item => {
-      let payload = {
-        ...item,
-        destination: {
-          id: selectedDestination.value
-        },
-        ipaddress: ipaddress,
-        status: 1,
-        isdelete: 0,
+      // let payload = {
+      //   ...item,
+      //   destination: {
+      //     id: selectedDestination.value
+      //   },
+      //   ipaddress: ipaddress,
+      //   status: 1,
+      //   isdelete: 0,
+      // }
+
+      // console.log(payload)
+
+      const hotel = item.hotelOptionsIds.filter(data => data !== null)
+      const hotelList = hotel.map(item => item.id)
+
+
+      var meald = ""
+      if (item.breakfast) {
+        meald = meald + 'Breakfast'
+      }
+      if (item.lunch) {
+        meald = meald + (item.breakfast ? ', Lunch' : 'Lunch')
+      }
+      if (item.dinner) {
+        meald = meald + (item.breakfast ? ', Dinner' : 'Dinner')
       }
 
-      console.log(payload)
-    })
-
-    const dataToSend = {
-      destinationId: selectedDestination ? selectedDestination.value : null,
-      createdby: user.username,
-      modifiedby: user.username,
-      isdelete: false,
-      ipaddress: ipaddress,
-      itinerary: formData,
-    };
-
-    // console.log(dataToSend)
-    // console.log(formData)
-    // try {
-    //   await axios.post(`${api.baseUrl}/itinerary/create`, dataToSend, {
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       "Access-Control-Allow-Origin": "*",
-    //     },
-    //   });
-
-    //   alert("Itinerary created successfully");
-
-    // Reset the form and selected destination after successful submission
-    setFormData([
-      {
-        daytitle: "",
-        meals: {
-          breakfast: false,
-          lunch: false,
-          dinner: false,
+      const dataToSend = {
+        daytitle: item.daytitle,
+        program: item.program,
+        meals: meald,
+        activities: {
+          id: item.activities ? item.activities.id : null
         },
-        program: "",
-        activities: ""
-      },
+        sightseeing: {
+          id: item.sightseeing ? item.sightseeing.id : null
+        },
+        hotelOptionIds: hotelList,
+        destination: {
+          id: selectedDestination ? selectedDestination.value : null,
+        },
+        createdby: user.name,
+        modifiedby: user.name,
+        isdelete: false,
+        ipaddress: ipaddress,
+        status: 0
+        // itinerary: formData,
+      };
 
-    ]);
-    //   setSelectedDestination(null);
-    // } catch (error) {
-    //   console.error("Error creating itinerary:", error);
-    //   alert("Error creating itinerary, please try again.");
-    // }
+      console.log(dataToSend)
+      // console.log(formData)
+      try {
+        axios.post(`${api.baseUrl}/itinerarys/create`, dataToSend, {
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
+        });
+
+        alert("Itinerary created successfully");
+
+        // Reset the form and selected destination after successful submission
+        setFormData([
+          {
+            daytitle: "",
+            breakfast: false,
+            lunch: false,
+            dinner: false,
+            program: "",
+            activities: null,
+            sightseeing: null,
+            hotelOptionsIds: [null, null, null, null]
+          },
+
+        ]);
+      } catch (error) {
+        console.error("Error creating itinerary:", error);
+        alert("Error creating itinerary, please try again.");
+      }
+    })
   };
 
   // Handle form reset
@@ -687,7 +719,9 @@ const Itinerary = ({ isOpen, onClose }) => {
                     <Select
                       options={activityList}
                       placeholder="Activity"
+                      value={item.activities}
                       className="mt-1"
+                      onChange={(e) => handleActivityChange(e, index)}
                     />
                   </div>
                 </div>
@@ -709,6 +743,8 @@ const Itinerary = ({ isOpen, onClose }) => {
                       options={siteSeeingList}
                       placeholder="Site Seeing"
                       className="mt-1"
+                      value={item.sightseeing}
+                      onChange={(e) => handleSiteseeingChange(e, index)}
                     />
                   </div>
                 </div>

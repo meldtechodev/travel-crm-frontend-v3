@@ -89,7 +89,7 @@ const Hotel = ({ isOpen, onClose }) => {
     updatedPriceMaster[index] = updatedItem;
 
     setPriceMaster(updatedPriceMaster);
-    console.log(index)
+    // console.log(index) 
   };
 
 
@@ -175,7 +175,7 @@ const Hotel = ({ isOpen, onClose }) => {
       .then(token => {
         setTokens(token);
 
-        return axios.get(`${api.baseUrl}/getbytoken`, {
+        return axios.get(`${api.baseUrl}/username`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Access-Control-Allow-Origin': '*'
@@ -183,16 +183,17 @@ const Hotel = ({ isOpen, onClose }) => {
         });
       })
       .then(response => {
+        // console.log(response.data)
         setUser(response.data);
       })
       .catch(error => console.error('Error fetching protected resource:', error))
   }, [])
 
   useEffect(() => {
-    axios.get(`${api.baseUrl}/country/get`
+    axios.get(`${api.baseUrl}/country/getall`
     )
       .then(response => {
-        const formattedOptions = response.data.map(item => ({
+        const formattedOptions = response.data.content.map(item => ({
           value: item.id, // or any unique identifier
           label: item.countryName
         }));
@@ -206,11 +207,12 @@ const Hotel = ({ isOpen, onClose }) => {
   useEffect(() => {
     axios.get(`${api.baseUrl}/destination/getall`)
       .then(response => {
-        const formattedOptions = response.data.map(item => ({
+        const formattedOptions = response.data.content.map(item => ({
+          ...item,
           value: item.id,
           label: item.destinationName
         }));
-        setDestinationDetails(response.data);
+        setDestinationDetails(formattedOptions);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
@@ -302,7 +304,7 @@ const Hotel = ({ isOpen, onClose }) => {
   useEffect(() => {
     axios.get(`${api.baseUrl}/season/getAll`)
       .then(response => {
-        setSeasons(response.data);
+        setSeasons(response.data.content);
       })
       .catch((error) => {
         console.error('Error fetching Room Type Name data :', error);
@@ -312,12 +314,12 @@ const Hotel = ({ isOpen, onClose }) => {
   useEffect(() => {
     axios.get(`${api.baseUrl}/rooms/getAll`)
       .then(response => {
-        const formattedOptions = response.data.map(item => ({
+        const formattedOptions = response.data.content.map(item => ({
           value: item.id, // or any unique identifier
           label: item.roomname // or any display label you want
         }));
         setRoomMaster(formattedOptions);
-        const formatRoom = response.data.map(item => ({
+        const formatRoom = response.data.content.map(item => ({
           value: item.id,
           label: item.roomname,
           status: false
@@ -388,10 +390,10 @@ const Hotel = ({ isOpen, onClose }) => {
 
         const formDataHotelRoomType = new FormData()
 
-        formDataHotelRoomType.append('bed_size', totalRoomDetails[i].bed_size[j])
+        formDataHotelRoomType.append('bedSize', totalRoomDetails[i].bed_size[j])
         formDataHotelRoomType.append('max_person', totalRoomDetails[i].max_person)
-        formDataHotelRoomType.append('created_by', user.username)
-        formDataHotelRoomType.append('modified_by', user.username)
+        formDataHotelRoomType.append('created_by', user.name)
+        formDataHotelRoomType.append('modified_by', user.name)
         formDataHotelRoomType.append('ipaddress', ipAddress)
         formDataHotelRoomType.append('status', totalRoomDetails[i].status.value)
         formDataHotelRoomType.append('isdelete', false)
@@ -399,13 +401,13 @@ const Hotel = ({ isOpen, onClose }) => {
         formDataHotelRoomType.append('rooms.id', allSelectedRoomType[i].value)
         formDataHotelRoomType.append('image', totalRoomDetails[i].image)
 
-        // for (var pair of formDataHotelRoomType.entries()) {
-        //   console.log(pair[0] + ', ' + pair[1]);
-        // }
+        for (var pair of formDataHotelRoomType.entries()) {
+          console.log(pair[0] + ', ' + pair[1]);
+        }
 
         await axios.post(`${api.baseUrl}/roomtypes/create`, formDataHotelRoomType, {
           headers: {
-            'Authorization': `Bearer ${token}`,
+            // 'Authorization': `Bearer ${token}`,
             'Content-Type': 'multipart/form-data',
             'Access-Control-Allow-Origin': '*'
           }
@@ -435,8 +437,8 @@ const Hotel = ({ isOpen, onClose }) => {
           direct_booking_price: 0,
           third_party_price: 0,
           status: true,
-          created_by: user.username,
-          modified_by: user.username,
+          created_by: user.name,
+          modified_by: user.name,
           isdelete: 0,
           ipaddress: ipAddress,
           roomtypes: {
@@ -493,8 +495,8 @@ const Hotel = ({ isOpen, onClose }) => {
     formDataHotelMaster.append('ipaddress', ipAddress)
     formDataHotelMaster.append('status', Boolean(status.value))
     formDataHotelMaster.append('isdelete', Boolean(0))
-    formDataHotelMaster.append('created_by', user.username)
-    formDataHotelMaster.append('modified_by', user.username)
+    formDataHotelMaster.append('created_by', user.name)
+    formDataHotelMaster.append('modified_by', user.name)
     formDataHotelMaster.append('image', hImage)
 
     for (var pair of formDataHotelMaster.entries()) {
@@ -569,7 +571,7 @@ const Hotel = ({ isOpen, onClose }) => {
       //     "id": seasons[val].id
       //   }
       // }
-      // console.log(priceMaster[i])
+      console.log(priceMaster[i])
       await axios.post(`${api.baseUrl}/hotelprice/create`, priceMaster[i], {
         headers: {
           'Authorization': `Bearer ${token}`,

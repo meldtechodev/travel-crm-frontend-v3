@@ -28,21 +28,101 @@ import NewQuery from '../pages/NewQuery'
 import NewVendorForm from '../pages/NewVendorForm'
 import NewTransportationForm from '../pages/NewTransportationForm'
 import NewPolicyForm from '../pages/NewPolicyForm'
+import Roles from '../pages/Roles'
+import NewMember from '../pages/NewMember'
 
 const Sidebar = () => {
   const [homeStyle, setHomeStyle] = useState();
   const [addData, setAddData] = useState('');
   const [module, setModule] = useState([])
+  const [parentModule, setParentModule] = useState([])
+  const [childModule, setChildModule] = useState([])
+  const [modulePermission, setModulePermission] = useState([])
+
+  const [user, setUser] = useState({})
+  // const [token, setTokens] = useState(null)
+  async function decryptToken(encryptedToken, key, iv) {
+    const dec = new TextDecoder();
+
+    const decrypted = await crypto.subtle.decrypt(
+      {
+        name: "AES-GCM",
+        iv: iv,
+      },
+      key,
+      encryptedToken
+    );
+    return dec.decode(new Uint8Array(decrypted));
+  }
+
+  // Function to retrieve and decrypt the token
+  async function getDecryptedToken() {
+    const keyData = JSON.parse(localStorage.getItem('encryptionKey'));
+    const ivBase64 = localStorage.getItem('iv');
+    const encryptedTokenBase64 = localStorage.getItem('encryptedToken');
+
+
+    if (!keyData || !ivBase64 || !encryptedTokenBase64) {
+      throw new Error('No token found');
+    }
+
+    // Convert back from base64
+    const key = await crypto.subtle.importKey('jwk', keyData, { name: "AES-GCM" }, true, ['encrypt', 'decrypt']);
+    const iv = new Uint8Array(atob(ivBase64).split('').map(char => char.charCodeAt(0)));
+    const encryptedToken = new Uint8Array(atob(encryptedTokenBase64).split('').map(char => char.charCodeAt(0)));
+
+    return await decryptToken(encryptedToken, key, iv);
+  }
+
+  // Example usage to make an authenticated request
+  useEffect(() => {
+    getDecryptedToken()
+      .then(async (token) => {
+
+        return await axios.get(`${api.baseUrl}/username`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Access-Control-Allow-Origin': '*'
+          }
+        });
+      })
+      .then(response => {
+        const u = response.data
+        setUser(response.data);
+
+        axios.get(`${api.baseUrl}/designationPermission/getall`)
+          .then(response => {
+            // console.log(response.data)
+            const perm = response.data.filter(item => item.designations.id === u.designation.id);
+            const p = perm.map(item => item.permissions)
+            console.log(p)
+            setModulePermission(p)
+          })
+          .catch(error => console.error(error));
+
+      })
+      .catch(error => console.error('Error fetching protected resource:', error));
+
+
+
+    // const pModule = modulePermission.filter(item => item.modules.parentId === 0)
+    // const cModule = modulePermission.filter(item => item.modules.parentId !== 0)
+    // setParentModule(pModule)
+    // setChildModule(cModule)
+    // console.log(cModule)
+
+  }, [])
 
   const navigate = useNavigate();
-  useEffect(() => {
-    axios.get(`${api.baseUrl}/modules/getall`)
-      .then(response =>
-        setModule(response.data))
-      .catch(error =>
-        console.error(error)
-      )
-  }, [])
+  // useEffect(() => {
+  //   axios.get(`${api.baseUrl}/modules/getall`)
+  //     .then(response => {
+  //       const moduleFilter = response.data.filter(item => item.id === modulePermission.module)
+  //     }
+  //       // setModule(response.data)
+  //     )
+  //     .catch(error => console.error(error))
+  // }, [])
 
   const handlePageAndForm = (word) => {
     setAddData('');
@@ -93,10 +173,10 @@ const Sidebar = () => {
               <div className="flex flex-col">
                 <p className="font-bold text-lg">Home</p>
                 {module.map((item, i) =>
-                  (item.moduleName === 'Quickstart' || item.moduleName === 'Dashboard') ?
+                  (item.permissionName.includes('Quickstart') || item.permissionName.includes('Dashboard')) ?
                     (<Link to={`/home/${item.moduleName.toLowerCase()}`}>
                       <button class="w-[90%] mt-6 p-4 flex justify-between items-center bg-gradient-to-r from-[#FFF9F9] to-[#F7C6C6]  cursor-pointer border-none text-left shadow-md">
-                        {item.moduleName}
+                        {item.permissionName}
                       </button>
                     </Link>) : <></>
                 )}
@@ -107,22 +187,22 @@ const Sidebar = () => {
 
           {/* Sidebar Packages Item */}
           {module.map((items, i) =>
-            ((items.moduleName !== 'Quickstart' && items.moduleName !== 'Dashboard') && items.parentId === 0) ?
+            ((items.permissionName !== 'Quickstart' && items.permissionName !== 'Dashboard') && items.parentId === 0) ?
               (<div className="sidebar-item group relative hover:w-full">
                 <div
                   className="sidebar-icons flex flex-col justify-center  items-center p-2 rounded cursor-pointer hover:color-black"
                   style={{ zIndex: "2" }}
-                  onMouseEnter={() => setHomeStyle(items.moduleName)}
+                  onMouseEnter={() => setHomeStyle(items.permissionName)}
                   onMouseLeave={() => setHomeStyle()}
                 >
                   <FiPackage
                     size="30px"
-                    color={homeStyle === items.moduleName ? "#fff" : "#B4B4B8"}
+                    color={homeStyle === items.permissionName ? "#fff" : "#B4B4B8"}
                   />
                   <p
                     className={`menu-name text-[14px] mt-2 ${homeStyle === items.moduleName ? "text-white" : "text-[#B4B4B8]"} `}
                   >
-                    {items.moduleName}
+                    {items.permissionName}
                   </p>
                 </div>
                 <div className="submenu fixed left-[72px] top-10 h-screen pointer-events-none transform opacity-0 scale-95 transition-all duration-500 ease-in-out group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto bg-[#f9f9f9] text-black p-4 rounded shadow-lg space-y-2 mt-2"
@@ -684,7 +764,7 @@ const Sidebar = () => {
       >
         <Itinerary
           isOpen={addData.toLowerCase().includes("Itinerary".toLowerCase())}
-          onClose={() => setAddData()}
+          onClose={() => setAddData('')}
         />
       </div>
       <div
