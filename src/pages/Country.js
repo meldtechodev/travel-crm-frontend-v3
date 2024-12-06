@@ -1,70 +1,15 @@
 import axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import api from "../apiConfig/config";
 import { toast } from "react-toastify";
+import { UserContext } from "../contexts/userContext";
+import useDecryptedToken from "../hooks/useDecryptedToken";
 
 const Country = ({ isOpen, onClose, countryData, isFormEditEnabled, setIsFormEditEnabled }) => {
   const fileInputRef = useRef(null);
 
-  // console.log(countryData);
-
-  const [user, setUser] = useState({})
-  const [token, setTokens] = useState(null)
-  async function decryptToken(encryptedToken, key, iv) {
-    const dec = new TextDecoder();
-
-    const decrypted = await crypto.subtle.decrypt(
-      {
-        name: "AES-GCM",
-        iv: iv,
-      },
-      key,
-      encryptedToken
-    );
-
-    return dec.decode(new Uint8Array(decrypted));
-  }
-
-  // Function to retrieve and decrypt the token
-  async function getDecryptedToken() {
-    const keyData = JSON.parse(localStorage.getItem('encryptionKey'));
-    const ivBase64 = localStorage.getItem('iv');
-    const encryptedTokenBase64 = localStorage.getItem('encryptedToken');
-
-
-    if (!keyData || !ivBase64 || !encryptedTokenBase64) {
-      throw new Error('No token found');
-    }
-
-    // Convert back from base64
-    const key = await crypto.subtle.importKey('jwk', keyData, { name: "AES-GCM" }, true, ['encrypt', 'decrypt']);
-    const iv = new Uint8Array(atob(ivBase64).split('').map(char => char.charCodeAt(0)));
-    const encryptedToken = new Uint8Array(atob(encryptedTokenBase64).split('').map(char => char.charCodeAt(0)));
-
-    return await decryptToken(encryptedToken, key, iv);
-  }
-
-  // Example usage to make an authenticated request
-  useEffect(() => {
-    getDecryptedToken()
-      .then(token => {
-        setTokens(token);
-
-        return axios.get(`${api.baseUrl}/getbytoken`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Access-Control-Allow-Origin': '*'
-          }
-        });
-      })
-      .then(response => {
-        setUser(response.data);
-      })
-      .catch(error => console.error('Error fetching protected resource:', error))
-  }, [])
-
-
-
+  const {user} = useContext(UserContext);
+  const token = useDecryptedToken();
 
   const [formData, setFormData] = useState({
     countryName: "", code: "", pCode: "", ipAddress: "", status: true,
@@ -107,9 +52,11 @@ const Country = ({ isOpen, onClose, countryData, isFormEditEnabled, setIsFormEdi
     formDatasend.append('ipAddress', formData.ipAddress);
     formDatasend.append('status', formData.status);
     formDatasend.append('image', formData.image);
-    formDatasend.append('createdby', user.username);
-    formDatasend.append('modifiedby', user.username);
+    formDatasend.append('createdby', user.name);
+    formDatasend.append('modifiedby', user.name);
     formDatasend.append('isdelete', false);
+
+    console.log(formData);
 
     if (formData.countryName === '' || formData.code === '' || formData.pCode === '' || formData.image === null) {
       toast.error("Please fill all the fields...", {
@@ -142,13 +89,14 @@ const Country = ({ isOpen, onClose, countryData, isFormEditEnabled, setIsFormEdi
             draggable: true,
             progress: undefined,
           });
-          setFormData({
-            ...formData,
-            countryName: "", code: "", pCode: "", image: null, status: true
-          });
-          if (fileInputRef.current) {
-            fileInputRef.current.value = "";
-          }
+          // TODO: Refetch the country Data
+          // setFormData({
+          //   ...formData,
+          //   countryName: "", code: "", pCode: "", image: null, status: true
+          // });
+          // if (fileInputRef.current) {
+          //   fileInputRef.current.value = "";
+          // }
         })
         .catch(error => {
           toast.error("Error updating country...");
@@ -188,16 +136,7 @@ const Country = ({ isOpen, onClose, countryData, isFormEditEnabled, setIsFormEdi
   useEffect(() => {
 
     if (countryData && countryData.id) {
-      setFormData({
-        countryName: countryData.countryName || "",
-        code: countryData.code || "",
-        pCode: countryData.pCode || "",
-        ipAddress: countryData.ipAddress || "",
-        status: countryData.status || true,
-        image: null,
-        createdBy: countryData.createdBy || "",
-        modifiedBy: countryData.modifiedBy || "",
-      });
+      setFormData(countryData);
     }
   }, [countryData]);
 

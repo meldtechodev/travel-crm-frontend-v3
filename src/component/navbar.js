@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import { IoMenu, IoClose, IoSearch } from "react-icons/io5";
 import {
   FaEnvelope,
@@ -18,6 +18,7 @@ import Sidebar from "./sidebar"; // Adjust the path as needed
 import { Link, useNavigate } from "react-router-dom";
 import api from "../apiConfig/config";
 import axios from "axios";
+import { UserContext } from "../contexts/userContext";
 // import NewVendorForm from "../pages/NewVendorForm";
 // import NewPackageForm from "../pages/NewPacakgeForm";
 // import NewTransportationForm from "../pages/NewTransportationForm";
@@ -28,72 +29,101 @@ const Navbar = () => {
   const [addData, setAddData] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false); // State for the "+" dropdown
   const [showSearchField, setShowSearchField] = useState(false); // State for the "+" dropdown
-  const [user, setUser] = useState({ name: "", email: "", role: {} });
+  // const [user, setUser] = useState({ username: "", email: "", roles: "" });
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
   const isOpenRef = useRef(null);
 
+  const { user, handleLogout } = useContext(UserContext);
 
   const getFirstCharacter = (word) => {
     return word ? word.charAt(0) : "";
   };
 
-  const [token, setTokens] = useState(null)
-  async function decryptToken(encryptedToken, key, iv) {
-    const dec = new TextDecoder();
+  const [token, setTokens] = useState(null);
+  // async function decryptToken(encryptedToken, key, iv) {
+  //   const dec = new TextDecoder();
 
-    const decrypted = await crypto.subtle.decrypt(
-      {
-        name: "AES-GCM",
-        iv: iv,
-      },
-      key,
-      encryptedToken
-    );
-    return dec.decode(new Uint8Array(decrypted));
-  }
+  //   const decrypted = await crypto.subtle.decrypt(
+  //     {
+  //       name: "AES-GCM",
+  //       iv: iv,
+  //     },
+  //     key,
+  //     encryptedToken
+  //   );
 
-  // Function to retrieve and decrypt the token
-  async function getDecryptedToken() {
-    const keyData = JSON.parse(localStorage.getItem('encryptionKey'));
-    const ivBase64 = localStorage.getItem('iv');
-    const encryptedTokenBase64 = localStorage.getItem('encryptedToken');
+  //   return dec.decode(new Uint8Array(decrypted));
+  // }
 
+  // // Function to retrieve and decrypt the token
+  // async function getDecryptedToken() {
+  //   const keyData = JSON.parse(localStorage.getItem("encryptionKey"));
+  //   const ivBase64 = localStorage.getItem("iv");
+  //   const encryptedTokenBase64 = localStorage.getItem("encryptedToken");
 
-    if (!keyData || !ivBase64 || !encryptedTokenBase64) {
-      throw new Error('No token found');
-    }
+  //   if (!keyData || !ivBase64 || !encryptedTokenBase64) {
+  //     throw new Error("No token found");
+  //   }
 
-    // Convert back from base64
-    const key = await crypto.subtle.importKey('jwk', keyData, { name: "AES-GCM" }, true, ['encrypt', 'decrypt']);
-    const iv = new Uint8Array(atob(ivBase64).split('').map(char => char.charCodeAt(0)));
-    const encryptedToken = new Uint8Array(atob(encryptedTokenBase64).split('').map(char => char.charCodeAt(0)));
+  //   // Convert back from base64
+  //   const key = await crypto.subtle.importKey(
+  //     "jwk",
+  //     keyData,
+  //     { name: "AES-GCM" },
+  //     true,
+  //     ["encrypt", "decrypt"]
+  //   );
+  //   const iv = new Uint8Array(
+  //     atob(ivBase64)
+  //       .split("")
+  //       .map((char) => char.charCodeAt(0))
+  //   );
+  //   const encryptedToken = new Uint8Array(
+  //     atob(encryptedTokenBase64)
+  //       .split("")
+  //       .map((char) => char.charCodeAt(0))
+  //   );
 
-    return await decryptToken(encryptedToken, key, iv);
-  }
+  //   return await decryptToken(encryptedToken, key, iv);
+  // }
 
-  // Example usage to make an authenticated request
-  useEffect(() => {
-    getDecryptedToken()
-      .then(token => {
-        return axios.get(`${api.baseUrl}/username`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Access-Control-Allow-Origin': '*'
-          }
-        });
-      })
-      .then(response => {
-        setUser(response.data);
-      })
-      .catch(error => console.error('Error fetching protected resource:', error))
-  }, [])
+  // // // Example usage to make an authenticated request
+  // // useEffect(() => {
+  // //   getDecryptedToken()
+  // //     .then(res => {
+  // //       setTokens(res);
 
+  // //       return axios.get(`${api.baseUrl}/username`, {
+  // //         headers: {
+  // //           'Authorization': `Bearer ${token}`,
+  // //           'Access-Control-Allow-Origin': '*'
+  // //         }
+  // //       });
+  // //     })
+  // //     .then(response => {
+  // //       setUser(response.data);
+  // //     })
+  // //     .catch(error => console.error('Error fetching protected resource:', error))
+  // // }, [])
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate("/login");
-  };
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+
+  //   axios.get(`${api.baseUrl}/username`, {
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //       "Access-Control-Allow-Origin": "*",
+  //     },
+  //   }).then((response) => {
+  //     setUser(response.data);
+  //   });
+  // }, []);
+
+  // const handleLogout = () => {
+  //   localStorage.clear();
+  //   navigate("/login");
+  // };
 
   // Close the dropdown on outside click
   useEffect(() => {
@@ -120,7 +150,6 @@ const Navbar = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
 
   return (
     <div className="w-full flex flex-col md:flex-row">
@@ -278,7 +307,7 @@ const Navbar = () => {
                 className="bg-green-500 text-white text-center p-2 cursor-pointer rounded-sm w-8 h-8 
                 flex items-center justify-center"
               >
-                {getFirstCharacter(user.name)}
+                {user && user.name && getFirstCharacter(user.name.toUpperCase())}
               </div>
 
               {/* Dropdown Menu */}
@@ -289,21 +318,22 @@ const Navbar = () => {
                 >
                   <div className="flex items-center space-x-2 border-b border-red-500 p-2">
                     <div className="bg-green-500 h-8 w-8 text-white flex items-center justify-center rounded-full">
-                      {getFirstCharacter(user.name)}
+                      {user && user.name && getFirstCharacter(user.name.toUpperCase())}
                     </div>
 
                     <div>
-                      <p>{user.name} {user.mname} {user.lname}</p>
+                      <p className="text-lg">{user && user.name && `${user.name[0].toUpperCase()}${user.name.substring(1)}`}{" "}{user && user.lname}</p>
                       <p>{user.email}</p>
-                      <p className="text-sm">{user.role.roleName}</p>
+                      <p className="text-sm">{user && user.role && user.role.roleName}</p>
                     </div>
                   </div>
 
                   {/* Dropdown Links */}
                   <div className="flex flex-col p-2 space-y-2">
-                    <div className="flex items-center space-x-2 hover:bg-red-500 p-2 rounded cursor-pointer" onClick={
-                      () => navigate('/home/profile-page')
-                    }>
+                    <div
+                      className="flex items-center space-x-2 hover:bg-red-500 p-2 rounded cursor-pointer"
+                      onClick={() => navigate("/home/profile-page")}
+                    >
                       <FaUserAlt />
                       <p>My Profile</p>
                       {/* <Profile/> */}

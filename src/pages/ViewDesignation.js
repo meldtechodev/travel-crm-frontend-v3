@@ -55,10 +55,14 @@ const ViewDesignations = () => {
   }
 
   const columns = [
+    // {
+    //   header: "Select",
+    //   accessor: "select",
+    //   render: ({ row }) => <input type="checkbox" />,
+    // },
     {
-      header: "Select",
-      accessor: "select",
-      render: ({ row }) => <input type="checkbox" />,
+      header: 'S. No.',
+      render: ({ row }) => <span>{row.index + 1}</span>,
     },
     {
       header: "Designation Name",
@@ -68,13 +72,13 @@ const ViewDesignations = () => {
       header: "Department Name",
       accessor: "departmentName",
     },
-    {
-      header: "Ip Address",
-      accessor: "ipAddress",
-    },
+    // {
+    //   header: "Ip Address",
+    //   accessor: "ipAddress",
+    // },
     {
       header: "Status",
-      render: ({ row }) => (
+      render: ({ row }) => (  
         <div className="flex items-center justify-center">
           <label className="relative inline-flex items-center cursor-pointer">
             <input
@@ -118,6 +122,7 @@ const ViewDesignations = () => {
             ...designation,
             departmentName: designation.departments.departmentName,
             status: designation.status ? "Active" : "Inactive",
+            index: response.data.content.indexOf(designation),
           }))
         );
       })
@@ -145,7 +150,7 @@ const ViewDesignations = () => {
               <FiFilter />
             </button>
           </div>
-            <button className="flex items-center justify-center bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mt-2 md:mt-0 md:ml-2" onClick={() => setAddData(['Designation'])}>Add new +</button>
+            <button className="flex items-center justify-center  bg-red-500  text-white p-2 rounded-md hover:bg-red-700 mt-2 md:mt-0 md:ml-2" onClick={() => setAddData(['Designation'])}>New Designation +</button>
         </div>
         <hr className="my-4" />
         <div className="w-full overflow-auto">
@@ -153,7 +158,7 @@ const ViewDesignations = () => {
         </div>
 
         {/* Pagination */}
-        <div className="flex justify-center items-center mt-4 space-x-4">
+        <div className="flex justify-start items-center mt-4 space-x-4">
           {/* Previous Page Button */}
           <button
             className={`text-xl text-blue-500 hover:text-blue-700 ${currentPage === 1 && "opacity-50 cursor-not-allowed"

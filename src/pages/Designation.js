@@ -1,12 +1,15 @@
 import axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import api from "../apiConfig/config";
 import { toast } from "react-toastify";
+import { UserContext } from "../contexts/userContext";
+import useDecryptedToken from "../hooks/useDecryptedToken";
 
 const Designation = ({ isOpen, onClose, designationData }) => {
-  const [user, setUser] = useState({});
-  const [token, setTokens] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
+  // const [user, setUser] = useState({});
+  // const [token, setTokens] = useState(null);
+  const { user } = useContext(UserContext);
+  const token = useDecryptedToken();
   const [ipaddress, setIpAddress] = useState("");
   const [departments, setDepartments] = useState(null);
   const [permission, setPermission] = useState([])
@@ -105,71 +108,71 @@ const Designation = ({ isOpen, onClose, designationData }) => {
     setCurrentPage(1);
   };
 
-  async function decryptToken(encryptedToken, key, iv) {
-    const dec = new TextDecoder();
+  // async function decryptToken(encryptedToken, key, iv) {
+  //   const dec = new TextDecoder();
 
-    const decrypted = await crypto.subtle.decrypt(
-      {
-        name: "AES-GCM",
-        iv: iv,
-      },
-      key,
-      encryptedToken
-    );
+  //   const decrypted = await crypto.subtle.decrypt(
+  //     {
+  //       name: "AES-GCM",
+  //       iv: iv,
+  //     },
+  //     key,
+  //     encryptedToken
+  //   );
 
-    return dec.decode(new Uint8Array(decrypted));
-  }
+  //   return dec.decode(new Uint8Array(decrypted));
+  // }
 
-  // Function to retrieve and decrypt the token
-  async function getDecryptedToken() {
-    const keyData = JSON.parse(localStorage.getItem("encryptionKey"));
-    const ivBase64 = localStorage.getItem("iv");
-    const encryptedTokenBase64 = localStorage.getItem("encryptedToken");
+  // // Function to retrieve and decrypt the token
+  // async function getDecryptedToken() {
+  //   const keyData = JSON.parse(localStorage.getItem("encryptionKey"));
+  //   const ivBase64 = localStorage.getItem("iv");
+  //   const encryptedTokenBase64 = localStorage.getItem("encryptedToken");
 
-    if (!keyData || !ivBase64 || !encryptedTokenBase64) {
-      throw new Error("No token found");
-    }
+  //   if (!keyData || !ivBase64 || !encryptedTokenBase64) {
+  //     throw new Error("No token found");
+  //   }
 
-    // Convert back from base64
-    const key = await crypto.subtle.importKey(
-      "jwk",
-      keyData,
-      { name: "AES-GCM" },
-      true,
-      ["encrypt", "decrypt"]
-    );
-    const iv = new Uint8Array(
-      atob(ivBase64)
-        .split("")
-        .map((char) => char.charCodeAt(0))
-    );
-    const encryptedToken = new Uint8Array(
-      atob(encryptedTokenBase64)
-        .split("")
-        .map((char) => char.charCodeAt(0))
-    );
+  //   // Convert back from base64
+  //   const key = await crypto.subtle.importKey(
+  //     "jwk",
+  //     keyData,
+  //     { name: "AES-GCM" },
+  //     true,
+  //     ["encrypt", "decrypt"]
+  //   );
+  //   const iv = new Uint8Array(
+  //     atob(ivBase64)
+  //       .split("")
+  //       .map((char) => char.charCodeAt(0))
+  //   );
+  //   const encryptedToken = new Uint8Array(
+  //     atob(encryptedTokenBase64)
+  //       .split("")
+  //       .map((char) => char.charCodeAt(0))
+  //   );
 
-    return await decryptToken(encryptedToken, key, iv);
-  }
+  //   return await decryptToken(encryptedToken, key, iv);
+  // }
 
   useEffect(() => {
-    getDecryptedToken()
-      .then((token) => {
-        setTokens(token);
+    // getDecryptedToken()
+    //   .then((token) => {
+    //     setTokens(token);
 
-        return axios.get(`${api.baseUrl}/getbytoken`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Access-Control-Allow-Origin": "*",
-          },
-        });
-      })
-      .then((response) => {
-        setUser(response.data);
-      })
-      .catch((error) =>
-        console.error("Error fetching protected resource:", error)
-      );
+    //     return axios.get(`${api.baseUrl}/username`, {
+    //       headers: {
+    //         Authorization: `Bearer ${token}`,
+    //         "Access-Control-Allow-Origin": "*",
+    //       },
+    //     });
+    //   })
+    //   .then((response) => {
+    //     setUser(response.data);
+    //   })
+    //   .catch((error) =>
+    //     console.error("Error fetching protected resource:", error)
+    //   );
 
     // Fetch departments
     axios.get(`${api.baseUrl}/departments/getall`)
@@ -216,80 +219,80 @@ const Designation = ({ isOpen, onClose, designationData }) => {
       return;
     }
 
-    // if (designationData && designationData.id) {
-    //   const payload = {
-    //     designationName: formData.designationName,
-    //     departments: {
-    //       id: formData.departmentId,
-    //     },
-    //     createdBy: formData.createdBy,
-    //     modifiedBy: user.username,
-    //     ipaddress: ipaddress,
-    //     status: formData.status ? 1 : 0,
-    //     isdelete: 0,
-    //     createdDate: designationData.createdDate,
-    //     modifiedDate: current.getDate
-    //   }
+    if (designationData && designationData.id) {
+      const payload = {
+        designationName: formData.designationName,
+        departments: {
+          id: formData.departmentId,
+        },
+        createdBy: formData.createdBy,
+        modifiedBy: user.username,
+        ipaddress: ipaddress,
+        status: formData.status ? 1 : 0,
+        isdelete: 0,
+        createdDate: designationData.createdDate,
+        modifiedDate: current.getDate
+      }
 
-    //   await axios.put(`${api.baseUrl}/designations/updatebyid/${designationData.id}`, payload, {
-    //     headers: {
-    // 'Authorization': `Bearer ${token}`,
-    //       'Accept': 'Application/json',
-    //       'Access-Control-Allow-Origin': '*'
-    //     }
-    //   })
-    //     .then(response => {
-    //       toast.success("Department updated successfully.", {
-    //         position: "top-center",
-    //         autoClose: 5000,
-    //         hideProgressBar: false,
-    //         closeOnClick: true,
-    //         pauseOnHover: true,
-    //         draggable: true,
-    //         progress: undefined,
-    //       });
-    //       setFormData({
-    //         departmentName: "", status: true
-    //       })
-    //     })
-    //     .catch(error => {
-    //       toast.error("Error updating country...");
-    //       console.log(error)
-    //     });
-    // } else {
-    //   const payload = {
-    //     designationName: formData.designationName,
-    //     createdBy: user.username,
-    //     modifiedBy: user.username,
-    //     ipaddress: ipaddress,
-    //     status: formData.status ? 1 : 0,
-    //     isdelete: 0,
-    //     departments: {
-    //       id: formData.departmentId,
-    //     },
-    //   };
+      await axios.put(`${api.baseUrl}/designations/update/${designationData.id}`, payload, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'Application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
+      })
+        .then(response => {
+          toast.success("Designation updated successfully.", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          setFormData({
+            departmentName: "", status: true
+          })
+        })
+        .catch(error => {
+          toast.error("Error updating designation...");
+          console.log(error)
+        });
+    } else {
+      const payload = {
+        designationName: formData.designationName,
+        createdBy: user.username,
+        modifiedBy: user.username,
+        ipaddress: ipaddress,
+        status: formData.status ? 1 : 0,
+        isdelete: 0,
+        departments: {
+          id: formData.departmentId,
+        },
+      };
 
-    //   await axios
-    //     .post(`${api.baseUrl}/designations/create`, payload, {
-    //       headers: {
-    //         Accept: "Application/json",
-    //         "Access-Control-Allow-Origin": "*",
-    //       },
-    //     })
-    //     .then((response) => {
-    //       toast.success("Designation saved successfully.", {
-    //         position: "top-center",
-    //         autoClose: 5000,
-    //         hideProgressBar: false,
-    //         closeOnClick: true,
-    //         pauseOnHover: true,
-    //         draggable: true,
-    //         progress: undefined,
-    //       });
-    //       handleReset();
-    //     })
-    //     .catch((error) => console.log(error));
-    // }
+      await axios
+        .post(`${api.baseUrl}/designations/create`, payload, {
+          headers: {
+            Accept: "Application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
+        })
+        .then((response) => {
+          toast.success("Designation saved successfully.", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          handleReset();
+        })
+        .catch((error) => console.log(error));
+    }
 
     setCurrentPage(2)
   };
