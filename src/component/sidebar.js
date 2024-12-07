@@ -78,6 +78,11 @@ const Sidebar = () => {
   useEffect(() => {
     getDecryptedToken()
       .then(async (token) => {
+        axios.get(`${api.baseUrl}/modules/getall`)
+          .then(response =>
+            setModule(response.data)
+          )
+          .catch(error => console.error(error))
 
         return await axios.get(`${api.baseUrl}/username`, {
           headers: {
@@ -95,7 +100,49 @@ const Sidebar = () => {
             // console.log(response.data)
             const perm = response.data.filter(item => item.designations.id === u.designation.id);
             const p = perm.map(item => item.permissions)
-            console.log(p)
+            let arr = new Set(p.map(item => item.modules.parentId))
+            let moduleList = [...arr]
+            // console.log(p)
+
+            let subModuleSet = new Set(p.map(items => items.modules.id))
+
+
+            let subModuleArr = [...subModuleSet]
+            // console.log(subModuleArr)
+
+            module.forEach(items => {
+              // console.log(items)
+              if (items.parentId !== 0) {
+                for (let i = 0; i < subModuleArr.length; i++) {
+                  if (subModuleArr[i] === items.id) {
+                    // console.log(items)
+                    let check = childModule.filter(it => it.id === items.id)
+                    if (check.length === 0) {
+                      // console.log(items)
+                      childModule.push(items)
+                    }
+                  }
+                }
+              }
+              // console.log(items)
+            })
+            // console.log(childModule)
+            // console.log(childModule)
+
+
+
+            module.forEach(items => {
+              if (items.parentId === 0 && (items.moduleName !== 'Quickstart' || items.moduleName !== 'Dashboard')) {
+                for (let i = 0; i < moduleList.length; i++) {
+                  if (moduleList[i] === items.id) {
+                    let check = parentModule.filter(it => it.id === items.id)
+                    if (check.length === 0) {
+                      parentModule.push(items)
+                    }
+                  }
+                }
+              }
+            })
             setModulePermission(p)
           })
           .catch(error => console.error(error));
@@ -172,11 +219,11 @@ const Sidebar = () => {
             >
               <div className="flex flex-col">
                 <p className="font-bold text-lg">Home</p>
-                {module.map((item, i) =>
-                  (item.permissionName.includes('Quickstart') || item.permissionName.includes('Dashboard')) ?
-                    (<Link to={`/home/${item.moduleName.toLowerCase()}`}>
+                {modulePermission.map((item, i) =>
+                  (item.modules.moduleName === 'Quickstart' || item.modules.moduleName === 'Dashboard') ?
+                    (<Link to={`/home/${item.modules.moduleName.toLowerCase()}`}>
                       <button class="w-[90%] mt-6 p-4 flex justify-between items-center bg-gradient-to-r from-[#FFF9F9] to-[#F7C6C6]  cursor-pointer border-none text-left shadow-md">
-                        {item.permissionName}
+                        {item.modules.moduleName}
                       </button>
                     </Link>) : <></>
                 )}
@@ -187,22 +234,22 @@ const Sidebar = () => {
 
           {/* Sidebar Packages Item */}
           {module.map((items, i) =>
-            ((items.permissionName !== 'Quickstart' && items.permissionName !== 'Dashboard') && items.module.parentId === 0) ?
+            (items.moduleName !== 'Quickstart' && items.moduleName !== 'Dashboard' && items.parentId === 0) ?
               (<div className="sidebar-item group relative hover:w-full">
                 <div
                   className="sidebar-icons flex flex-col justify-center  items-center p-2 rounded cursor-pointer hover:color-black"
                   style={{ zIndex: "2" }}
-                  onMouseEnter={() => setHomeStyle(items.permissionName)}
+                  onMouseEnter={() => setHomeStyle(items.moduleName)}
                   onMouseLeave={() => setHomeStyle()}
                 >
                   <FiPackage
                     size="30px"
-                    color={homeStyle === items.permissionName ? "#fff" : "#B4B4B8"}
+                    color={homeStyle === items.moduleName ? "#fff" : "#B4B4B8"}
                   />
                   <p
                     className={`menu-name text-[14px] mt-2 ${homeStyle === items.moduleName ? "text-white" : "text-[#B4B4B8]"} `}
                   >
-                    {items.permissionName}
+                    {items.moduleName}
                   </p>
                 </div>
                 <div className="submenu fixed left-[72px] top-10 h-screen pointer-events-none transform opacity-0 scale-95 transition-all duration-500 ease-in-out group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto bg-[#f9f9f9] text-black p-4 rounded shadow-lg space-y-2 mt-2"
@@ -218,6 +265,15 @@ const Sidebar = () => {
                       </h6>
                     </div>
                     <div className="mt-6 flex flex-col justify-center items-center overflow-y-scroll">
+
+                      {/* {childModule.map(item => (items.id === item.parentId) ? (<button
+                        class="w-[90%] p-4 flex justify-between items-center bg-gradient-to-r from-[#FFF9F9] to-[#F7C6C6]  cursor-pointer border-none text-left shadow-md my-2"
+                        onClick={() => handlePageAndForm(item.moduleName)}>
+                        {item.moduleName}
+                        <span>
+                          <IoMdAdd size="16px" />
+                        </span>
+                      </button>) : <></>)} */}
 
                       {module.map(item => (items.id === item.parentId) ? (<button
                         class="w-[90%] p-4 flex justify-between items-center bg-gradient-to-r from-[#FFF9F9] to-[#F7C6C6]  cursor-pointer border-none text-left shadow-md my-2"

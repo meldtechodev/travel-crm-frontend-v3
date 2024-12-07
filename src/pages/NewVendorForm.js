@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import api from "../apiConfig/config";
 import axios from "axios";
-import {UserContext} from "../contexts/userContext";
+import { UserContext } from "../contexts/userContext";
 import useDecryptedToken from "../hooks/useDecryptedToken";
 
 const NewVendorForm = ({ isOpen, onClose, selectedVendorData }) => {
@@ -15,7 +15,7 @@ const NewVendorForm = ({ isOpen, onClose, selectedVendorData }) => {
     ipAddress: ""
   });
 
-  const {user} = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const token = useDecryptedToken();
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -43,7 +43,7 @@ const NewVendorForm = ({ isOpen, onClose, selectedVendorData }) => {
     }
   }, [selectedVendorData])
 
-  console.log(formData);
+  // console.log(formData);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -89,31 +89,31 @@ const NewVendorForm = ({ isOpen, onClose, selectedVendorData }) => {
         .catch(error => console.error(error));
     } else {
       await axios.post(`${api.baseUrl}/vendor/create`, payload, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Access-Control-Allow-Origin': '*'
-      }
-    })
-      .then(async (response) => {
-        toast.success('Vendor saved Successfully.', {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-        setFormData({
-          ...formData,
-          vendorName: "",
-          vendorContactNo: "",
-          vendorEmail: "",
-          vendorAddress: "",
-          status: true,
-        })
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Access-Control-Allow-Origin': '*'
+        }
       })
-      .catch(error => console.error(error));
+        .then(async (response) => {
+          toast.success('Vendor saved Successfully.', {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          setFormData({
+            ...formData,
+            vendorName: "",
+            vendorContactNo: "",
+            vendorEmail: "",
+            vendorAddress: "",
+            status: true,
+          })
+        })
+        .catch(error => console.error(error));
     }
   };
 

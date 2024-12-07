@@ -8,7 +8,7 @@ const ProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
   // const [profileData, setProfileData] = useState(null);
 
-  const {user, setUser} = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
 
   const [formData, setFormData] = useState(user);
 
@@ -50,8 +50,8 @@ const ProfilePage = () => {
     <div className="min-h-screen bg-gray-200 p-4 overflow-auto">
       {/* Header */}
       <div className="flex justify-between items-center w-full h-16 bg-white shadow-md mb-4 px-6">
-        <h1 className="text-lg font-bold">Profile</h1>
-        <div className="w-4 h-4 bg-red-500 rounded-full"></div>
+        <h1 className="text-lg font-bold">Profile Information</h1>
+        {/* <div className="w-4 h-4 bg-red-500 rounded-full"></div> */}
       </div>
 
       {/* Profile Header */}
@@ -65,10 +65,10 @@ const ProfilePage = () => {
           </div>
           {/* User Info */}
           <div>
-            <h1 className="text-lg font-semibold text-gray-800">{`${user && user.name} ${user && user.lname}`}</h1>
+            <h1 className="text-lg font-semibold text-gray-800">{`${user && user.name} ${user && user.lname} ${user && user.mname}`}</h1>
             <p className="text-gray-600 text-sm">{user && user.email}</p>
             <span className="text-xs bg-orange-100 text-orange-800 font-medium py-1 px-2 rounded inline-block mt-2">
-              {user && user.role && user.role.roleName}
+              {user && user.designation && user.designation.designationName}
             </span>
           </div>
         </div>
@@ -86,7 +86,7 @@ const ProfilePage = () => {
         <div className="grid grid-cols-3 gap-6">
           {/* First Name */}
           <div>
-            <p className="text-sm font-bold">First Name *</p>
+            <p className="text-sm font-bold">First Name</p>
             {isEditing ? (
               <input
                 type="text"
@@ -116,7 +116,7 @@ const ProfilePage = () => {
           </div>
           {/* Last Name */}
           <div>
-            <p className="text-sm font-bold">Last Name *</p>
+            <p className="text-sm font-bold">Last Name</p>
             {isEditing ? (
               <input
                 type="text"
@@ -171,7 +171,7 @@ const ProfilePage = () => {
                 className="w-full p-2 border rounded-md mt-2"
               />
             ) : (
-              <p className="text-sm">{user && user.companyName}</p>
+              <p className="text-sm">{user && user.company && user.company.companyname}</p>
             )}
           </div>
           {/* Designation */}
@@ -222,7 +222,7 @@ const ProfilePage = () => {
             </div>
             <div>
               <p className="text-sm font-bold">Time Zone</p>
-              <p className="text-sm">{user && user.timeZone}</p>
+              <p className="text-sm">{user && user.timezone}</p>
             </div>
           </div>
           <div className="flex items-center space-x-4 mt-6">
