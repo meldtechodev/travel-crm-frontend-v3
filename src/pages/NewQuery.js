@@ -9,6 +9,7 @@ const NewQuery = ({ isOpen, onClose }) => {
   const [destination, setDestination] = useState("");
   const [status, setStatus] = useState(true);
   const [user, setUser] = useState({});
+  const [b2b, setB2b] = useState({ value: "B2C", label: "B2C" });
 
   const RoomTypeOptions = [
     { value: "budget", label: "Budget" },
@@ -88,6 +89,10 @@ const NewQuery = ({ isOpen, onClose }) => {
       .catch((error) =>
         console.error("Error fetching protected resource:", error)
       );
+
+
+    // axios.get(`${api.baseUrl}/customer/getall`)
+    // .then(response => (response.data))
   }, []);
 
   const [formData, setFormData] = useState({
@@ -329,7 +334,7 @@ const NewQuery = ({ isOpen, onClose }) => {
   useEffect(() => {
     axios.get(`${api.baseUrl}/customer/getall`)
       .then((response) => {
-        const formated = response.data.map((item) => ({
+        const formated = response.data.content.map((item) => ({
           ...item,
           value: item.id,
           label: item.salutation + " " + item.fName + " " + item.lName,
@@ -406,20 +411,20 @@ const NewQuery = ({ isOpen, onClose }) => {
       emailStatus: 0,
       leadStatus: 0,
       pkg: {
-        // id: formData.pkg.id
-        id: 1
+        id: formData.pkg.id
+        // id: 1
       },
       did: {
-        // id: formData.did 
-        id: 1
+        id: formData.did
+        // id: 1
       },
       fromcityid: {
-        // id: formData.fromcityid 
-        id: 1
+        id: formData.fromcityid
+        // id: 1
       },
       userId: {
-        // id: user.id || 1
-        id: 1
+        id: user.id || 1
+        // id: 1
       }
     }
 
@@ -443,7 +448,7 @@ const NewQuery = ({ isOpen, onClose }) => {
       })
       .catch(error => console.error(error));
 
-    console.log(payload)
+    //   console.log(payload)
 
   }
 
@@ -485,14 +490,18 @@ const NewQuery = ({ isOpen, onClose }) => {
               Package
             </label>
           </div>
-          <div className="">
+          <div className="w-60">
             <Select
               options={[
                 { value: "B2B", label: "B2B" },
                 { value: "B2C", label: "B2C" },
 
               ]}
-              onChange={(selected) => setFormData(prev => ({ ...prev, queryType: selected.label }))}
+              value={b2b}
+              onChange={(selected) => {
+                setFormData(prev => ({ ...prev, queryType: selected.label }));
+                setB2b(selected)
+              }}
               placeholder="Select"
             />
           </div>
