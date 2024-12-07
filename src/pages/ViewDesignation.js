@@ -7,6 +7,7 @@ import TableComponent from "../component/TableComponent";
 import api from "../apiConfig/config";
 import Designation from "./Designation";
 import { toast } from "react-toastify";
+import Permission from "./Permission";
 
 const ViewDesignations = () => {
   const [data, setData] = useState([]);
@@ -38,6 +39,11 @@ const ViewDesignations = () => {
     setSelectedDesignation(item);
   }
 
+  const handlePermission = (item) => {
+    setAddData(['Permission'])
+    setSelectedDesignation(item);
+  }
+
   const handleDelete = async (item) => {
     console.log("Deleting:", item);
 
@@ -55,11 +61,6 @@ const ViewDesignations = () => {
   }
 
   const columns = [
-    // {
-    //   header: "Select",
-    //   accessor: "select",
-    //   render: ({ row }) => <input type="checkbox" />,
-    // },
     {
       header: 'S. No.',
       render: ({ row }) => <span>{row.index + 1}</span>,
@@ -72,13 +73,9 @@ const ViewDesignations = () => {
       header: "Department Name",
       accessor: "departmentName",
     },
-    // {
-    //   header: "Ip Address",
-    //   accessor: "ipAddress",
-    // },
     {
       header: "Status",
-      render: ({ row }) => (  
+      render: ({ row }) => (
         <div className="flex items-center justify-center">
           <label className="relative inline-flex items-center cursor-pointer">
             <input
@@ -102,6 +99,9 @@ const ViewDesignations = () => {
       accessor: "actions",
       render: ({ row }) => (
         <div className="flex justify-center items-center space-x-2">
+          <button className="text-blue-500 hover:text-blue-700" onClick={() => handlePermission(row)}>
+            <FaEdit />
+          </button>
           <button className="text-blue-500 hover:text-blue-700" onClick={() => handleEdit(row)}>
             <FaEdit />
           </button>
@@ -117,14 +117,14 @@ const ViewDesignations = () => {
     axios
       .get(`${api.baseUrl}/designations/getall`)
       .then((response) => {
-        setData(
-          response.data.content.map((designation) => ({
-            ...designation,
-            departmentName: designation.departments.departmentName,
-            status: designation.status ? "Active" : "Inactive",
-            index: response.data.content.indexOf(designation),
-          }))
-        );
+        const formatData = response.data.content.map((designation) => ({
+          ...designation,
+          departmentName: designation.departments.departmentName,
+          status: designation.status ? "Active" : "Inactive",
+          index: response.data.content.indexOf(designation),
+        }))
+        // console.log(response.data.content)
+        setData(formatData);
       })
       .catch((error) => console.error("Error fetching designations:", error));
   }, []);
@@ -150,7 +150,8 @@ const ViewDesignations = () => {
               <FiFilter />
             </button>
           </div>
-            <button className="flex items-center justify-center  bg-red-500  text-white p-2 rounded-md hover:bg-red-700 mt-2 md:mt-0 md:ml-2" onClick={() => setAddData(['Designation'])}>New Designation +</button>
+          {/* <p onClick={() => setAddData(['Permission'])}>View Permission</p> */}
+          <button className="flex items-center justify-center  bg-red-500  text-white p-2 rounded-md hover:bg-red-700 mt-2 md:mt-0 md:ml-2" onClick={() => setAddData(['Designation'])}>New Designation +</button>
         </div>
         <hr className="my-4" />
         <div className="w-full overflow-auto">
@@ -175,8 +176,8 @@ const ViewDesignations = () => {
               <button
                 key={index}
                 className={`px-2 py-1 border rounded ${currentPage === index + 1
-                    ? "bg-blue-500 text-white"
-                    : "text-blue-500 hover:bg-blue-100"
+                  ? "bg-blue-500 text-white"
+                  : "text-blue-500 hover:bg-blue-100"
                   }`}
                 onClick={() => setCurrentPage(index + 1)}
               >
@@ -202,6 +203,16 @@ const ViewDesignations = () => {
       >
         <Designation
           isOpen={addData[0] === "Designation"}
+          onClose={() => setAddData([])}
+          designationData={selectedDesignation}
+        />
+      </div>
+      <div
+        className="submenu-menu"
+        style={{ right: addData[0] === "Permission" ? "0" : "-100%" }}
+      >
+        <Permission
+          isOpen={addData[0] === "Permission"}
           onClose={() => setAddData([])}
           designationData={selectedDesignation}
         />

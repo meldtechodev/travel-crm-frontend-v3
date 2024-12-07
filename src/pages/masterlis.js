@@ -15,6 +15,7 @@ import { toast } from 'react-toastify';
 import Hotel from './Hotel';
 import { UserContext } from '../contexts/userContext';
 import useDecryptedToken from '../hooks/useDecryptedToken';
+import { IoArrowBack, IoArrowForward } from 'react-icons/io5';
 
 
 
@@ -39,6 +40,8 @@ const MasterList = () => {
   const [isFormEditEnabled, setIsFormEditEnabled] = useState(false);
   const [addButton, setAddButton] = useState(activeTab);
   const navigate = useNavigate()
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   const token = useDecryptedToken();
   const { user } = useContext(UserContext);
 
@@ -208,33 +211,33 @@ const MasterList = () => {
     };
   }, []);
 
-  useEffect(() => {
-    switch (activeTab) {
-      case 'country':
-        fetchData('country/getall', setCountryData, handleStatusToggle);
-        break;
-      case 'state':
-        fetchData('state/getall', setStateData, handleStatusToggle);
-        break;
-      case 'destination':
-        fetchData('destination/get', setDestinationData, handleStatusToggle);
-        break;
-      case 'hotel':
-        fetchData('hotel/get', setHotelData, handleStatusToggle);
-        break;
-      case 'customer':
-        fetchData('customer/get', setCustomerData, handleStatusToggle);
-        break;
-      case 'vendor':
-        fetchData('vendor/get', setVendorData, handleStatusToggle);
-        break;
-      case 'department':
-        fetchData('department/get', setVendorData, handleStatusToggle);
-        break;
-      default:
-        break;
-    }
-  }, [activeTab]);
+  // useEffect(() => {
+  //   switch (activeTab) {
+  //     case 'country':
+  //       fetchData('country/getall', setCountryData, handleStatusToggle);
+  //       break;
+  //     case 'state':
+  //       fetchData('state/getall', setStateData, handleStatusToggle);
+  //       break;
+  //     case 'destination':
+  //       fetchData('destination/get', setDestinationData, handleStatusToggle);
+  //       break;
+  //     case 'hotel':
+  //       fetchData('hotel/get', setHotelData, handleStatusToggle);
+  //       break;
+  //     case 'customer':
+  //       fetchData('customer/get', setCustomerData, handleStatusToggle);
+  //       break;
+  //     case 'vendor':
+  //       fetchData('vendor/get', setVendorData, handleStatusToggle);
+  //       break;
+  //     case 'department':
+  //       fetchData('department/get', setVendorData, handleStatusToggle);
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // }, [activeTab]);
 
 
   const tabs = [
@@ -334,19 +337,17 @@ const MasterList = () => {
   useEffect(() => {
     const fetchCountryData = async () => {
       try {
-        const response = await axios.get(`${api.baseUrl}/country/getall`);
+        const response = await axios.get(`${api.baseUrl}/country/getall?page=${currentPage}&size=10`);
         const formattedData = await response.data.content.map((country) => ({
           ...country,
           status: country.status
         }));
-        const sortedData = await formattedData.sort((a, b) => {
-          return a.countryName.localeCompare(b.countryName);  // Replace 'name' with the key to sort by
-        });
-        const newData = await sortedData.map((item, index) => ({
+        const newData = await formattedData.map((item, index) => ({
           ...item,
           index: index + 1
         }))
         setCountryData(newData);
+        setTotalPages(response.data.totalPages);
       } catch (error) {
         console.error('Error fetching country data:', error);
       }
@@ -354,21 +355,18 @@ const MasterList = () => {
 
     const fetchStateData = async () => {
       try {
-        const response = await axios.get(`${api.baseUrl}/state/getall`);
+        const response = await axios.get(`${api.baseUrl}/state/getall?page=${currentPage}&size=10`);
         const formattedData = response.data.content.map((state) => ({
           ...state,
           status: state.status,
           countryName: state.country.countryName
         }));
-        console.log('formattedData:', formattedData);
-        const sortedData = formattedData.sort((a, b) => {
-          return a.stateName.localeCompare(b.stateName);  // Replace 'name' with the key to sort by
-        });
-        const newData = sortedData.map((item, index) => ({
+        const newData = formattedData.map((item, index) => ({
           ...item,
           index: index + 1
         }))
         setStateData(newData);
+        setTotalPages(response.data.totalPages);
       } catch (error) {
         console.error('Error fetching state data:', error);
       }
@@ -376,21 +374,19 @@ const MasterList = () => {
 
     const fetchDestinationData = async () => {
       try {
-        const response = await axios.get(`${api.baseUrl}/destination/getall`);
+        const response = await axios.get(`${api.baseUrl}/destination/getall?page=${currentPage}&size=10`);
         const formattedData = response.data.content.map((item) => ({
           ...item,
           status: item.status,
           countryName: item.country.countryName,
           stateName: item.state.stateName
         }));
-        const sortedData = formattedData.sort((a, b) => {
-          return a.destinationName.localeCompare(b.destinationName);  // Replace 'name' with the key to sort by
-        });
-        const newData = sortedData.map((item, index) => ({
+        const newData = formattedData.map((item, index) => ({
           ...item,
           index: index + 1
         }))
         setDestinationData(newData);
+        setTotalPages(response.data.totalPages);
       } catch (error) {
         console.error('Error fetching state data:', error);
       }
@@ -398,7 +394,7 @@ const MasterList = () => {
 
     const fetchHotelData = async () => {
       try {
-        const response = await axios.get(`${api.baseUrl}/hotel/getAll`);
+        const response = await axios.get(`${api.baseUrl}/hotel/getAll?page=${currentPage}&size=10`);
         const formattedData = response.data.map((item) => ({
           ...item,
           status: item.status,
@@ -406,14 +402,12 @@ const MasterList = () => {
           stateName: item.state.stateName,
           destinationName: item.destination.destinationName,
         }));
-        const sortedData = formattedData.sort((a, b) => {
-          return a.hname.localeCompare(b.hname);  // Replace 'name' with the key to 
-        });
-        const newData = sortedData.map((item, index) => ({
+        const newData = formattedData.map((item, index) => ({
           ...item,
           index: index + 1
         }))
         setHotelData(newData);
+        setTotalPages(response.data.totalPages);
       } catch (error) {
         console.error('Error fetching state data:', error);
       }
@@ -421,7 +415,7 @@ const MasterList = () => {
 
     const fetchCustomerData = async () => {
       try {
-        const response = await axios.get(`${api.baseUrl}/customer/getall`);
+        const response = await axios.get(`${api.baseUrl}/customer/getall?page=${currentPage}&size=10`);
         const formattedData = response.data.content.map((item) => ({
           ...item,
           status: item.status,
@@ -430,14 +424,12 @@ const MasterList = () => {
           email: item.emailId,
           leadSource: item.leadSource,
         }));
-        const sortedData = formattedData.sort((a, b) => {
-          return a.firstName.localeCompare(b.firstName);  // Replace 'name' with the key to 
-        });
-        const newData = sortedData.map((item, index) => ({
+        const newData = formattedData.map((item, index) => ({
           ...item,
           index: index + 1
         }))
         setCustomerData(newData);
+        setTotalPages(response.data.totalPages);
       } catch (error) {
         console.error('Error fetching state data:', error);
       }
@@ -445,15 +437,13 @@ const MasterList = () => {
 
     const fetchVendorData = async () => {
       try {
-        const response = await axios.get(`${api.baseUrl}/vendor/getAll`);
-        const sortedData = response.data.content.sort((a, b) => {
-          return a.vendorName.localeCompare(b.vendorName);  // Replace 'name' with the key to 
-        });
-        const newData = sortedData.map((item, index) => ({
+        const response = await axios.get(`${api.baseUrl}/vendor/getAll?page=${currentPage}&size=10`);
+        const newData = response.data.content.map((item, index) => ({
           ...item,
           index: index + 1
         }))
         setVendorData(newData);
+        setTotalPages(response.data.totalPages);
       } catch (error) {
         console.error('Error fetching state data:', error);
       }
@@ -461,19 +451,17 @@ const MasterList = () => {
 
     const fetchDepartmentData = async () => {
       try {
-        const response = await axios.get(`${api.baseUrl}/departments/getall`);
+        const response = await axios.get(`${api.baseUrl}/departments/getall?page=${currentPage}&size=10`);
         const formattedData = await response.data.content.map((item) => ({
           ...item,
           status: item.status
         }));
-        const sortedData = await formattedData.sort((a, b) => {
-          return a.departmentName.localeCompare(b.departmentName);  // Replace 'name' with the key to sort by
-        });
-        const newData = await sortedData.map((item, index) => ({
+        const newData = await formattedData.map((item, index) => ({
           ...item,
           index: index + 1
         }))
         setDepartmentData(newData);
+        setTotalPages(response.data.totalPages);
       } catch (error) {
         console.error('Error fetching country data:', error);
       }
@@ -496,7 +484,7 @@ const MasterList = () => {
     } else if (activeTab === 'department') {
       fetchDepartmentData()
     }
-  }, [activeTab]);
+  }, [activeTab, currentPage]);
 
   return (
     <>
@@ -538,6 +526,44 @@ const MasterList = () => {
               columns={tableData[activeTab].columns}
               data={tableData[activeTab].data}
             />
+                    {/* Pagination */}
+        <div className="flex justify-start items-center mt-4 space-x-4">
+          {/* Previous Page Button */}
+          <button
+            className={`text-xl text-blue-500 hover:text-blue-700 ${currentPage === 0 && "opacity-50 cursor-not-allowed"
+              }`}
+            disabled={currentPage === 0}
+            onClick={() => setCurrentPage((prev) => prev - 1)}
+          >
+            <IoArrowBack />
+          </button>
+
+          {/* Page Numbers */}
+          <div className="flex space-x-2">
+            {Array.from({ length: totalPages }, (_, index) => (
+              <button
+                key={index}
+                className={`px-2 py-1 border rounded ${currentPage === index
+                  ? "bg-blue-500 text-white"
+                  : "text-blue-500 hover:bg-blue-100"
+                  }`}
+                onClick={() => setCurrentPage(index)}
+              >
+                {index + 1}
+              </button>
+            ))}
+          </div>
+
+          {/* Next Page Button */}
+          <button
+            className={`text-xl text-blue-500 hover:text-blue-700 ${currentPage === totalPages - 1 && "opacity-50 cursor-not-allowed"
+              }`}
+            disabled={currentPage === totalPages - 1}
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+          >
+            <IoArrowForward />
+          </button>
+        </div>
           </div>
         </div>
       </div>

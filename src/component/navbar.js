@@ -153,9 +153,9 @@ const Navbar = () => {
 
   return (
     <div className="w-full flex flex-col md:flex-row">
-      <div className="w-full h-12 z-20 bg-gradient-to-r from-[#db272e] to-[#5b2727] p-2 flex justify-between items-center">
+      <div className="w-full h-12 z-20 bg-gradient-to-r from-[#db272e] to-[#5b2727] p-5 flex justify-between items-center">
         <div className="flex-1 flex justify-between items-center">
-          <div className="flex items-center ml-6 space-x-4 md:space-x-8">
+          <div className="flex items-center space-x-4 md:space-x-8">
             <Link to="/home">
               <img
                 src="/assets/images/motherson_logo.png"

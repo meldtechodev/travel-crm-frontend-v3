@@ -61,7 +61,8 @@ const CompanyProfilePage = () => {
           {/* Left Section (Profile Picture and Info) */}
           <div className="flex items-center space-x-4 w-full md:w-1/2">
             <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
-              <span className="text-3xl font-semibold text-gray-700">A</span>
+              <span className="text-3xl font-semibold text-gray-700">
+                {user && `${user.name.charAt(0).toUpperCase()}`}</span>
             </div>
             <div>
               <h2 className="text-xl font-semibold text-gray-800">
@@ -117,16 +118,16 @@ const CompanyProfilePage = () => {
           {/* Account List */}
           <div className="flex items-center space-x-4">
             <button
-              className="border border-dashed border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-2"
+              className="border border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-2"
               onClick={() => setAddData(["Role"])}
             >
-              Add Role
+              Add Roles
             </button>
             <button
-              className="border border-dashed border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-2"
+              className="border bg-red-500  text-white  text-sm py-2 px-4 rounded mb-2"
               onClick={() => navigate("/home/view-departments")}
             >
-              View Role
+              View Roles
             </button>
           </div>
         </div>
@@ -146,13 +147,13 @@ const CompanyProfilePage = () => {
               className="border border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-2"
               onClick={() => setAddData(["Department"])}
             >
-              Add Department
+              Add Departments
             </button>
             <button
               className="border bg-red-500  text-white text-sm py-2 px-4 rounded mb-2"
               onClick={() => navigate("/home/view-departments")}
             >
-              View Department
+              View Departments
             </button>
           </div>
         </div>
@@ -173,13 +174,13 @@ const CompanyProfilePage = () => {
               className="border border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-2"
               onClick={() => setAddData(["Designation"])}
             >
-              Add Designation
+              Add Designations
             </button>
             <button
               className="border bg-red-500  text-white  text-sm py-2 px-4 rounded mb-2"
               onClick={() => navigate("/home/view-designations")}
             >
-              View Designation
+              View Designations
             </button>
           </div>
         </div>

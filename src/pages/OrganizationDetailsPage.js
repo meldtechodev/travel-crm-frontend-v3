@@ -110,7 +110,7 @@ const OrganizationDetailsPage = () => {
     <div className="min-h-screen bg-gray-200 p-6">
       <div className="bg-white shadow-md rounded-md p-8 max-w-full mb-10">
         <h1 className="text-2xl font-semibold text-gray-800 mb-6">
-          Organization details
+          Organization Information
         </h1>
         <p className="text-sm text-gray-600 mb-6">
           You can use your organization's branding by customizing the settings
