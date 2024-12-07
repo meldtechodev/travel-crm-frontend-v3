@@ -74,7 +74,7 @@ const NewMember = ({ isOpen, onClose }) => {
       }
     }
     ).then(response => {
-      const formattedOptions = response.data.map(item => ({
+      const formattedOptions = response.data.content.map(item => ({
         value: item.id, // or any unique identifier
         label: item.roleName, // or any display label you want
       }));

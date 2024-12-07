@@ -165,7 +165,7 @@ const Dashboard = () => {
     <div className="w-full mt-0">
       <BodyHeader />
       <div className="bg-gray-200 m-0 py-4 h-full">
-        <div className="dashboard ml-10 mr-10">
+        <div className="dashboard ml-4 mr-4">
           {/* Period Dropdown */}
           <div className="dashboard-periods relative mb-8" style={{ zIndex: "1" }}>
             <button

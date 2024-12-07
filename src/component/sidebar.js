@@ -219,11 +219,11 @@ const Sidebar = () => {
             >
               <div className="flex flex-col">
                 <p className="font-bold text-lg">Home</p>
-                {modulePermission.map((item, i) =>
-                  (item.modules.moduleName === 'Quickstart' || item.modules.moduleName === 'Dashboard') ?
-                    (<Link to={`/home/${item.modules.moduleName.toLowerCase()}`}>
+                {module.map((item, i) =>
+                  (item.moduleName === 'Quickstart' || item.moduleName === 'Dashboard') ?
+                    (<Link to={`/home/${item.moduleName.toLowerCase()}`}>
                       <button class="w-[90%] mt-6 p-4 flex justify-between items-center bg-gradient-to-r from-[#FFF9F9] to-[#F7C6C6]  cursor-pointer border-none text-left shadow-md">
-                        {item.modules.moduleName}
+                        {item.moduleName}
                       </button>
                     </Link>) : <></>
                 )}

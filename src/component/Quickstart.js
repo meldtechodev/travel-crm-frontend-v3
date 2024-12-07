@@ -19,7 +19,7 @@ const Quickstart = () => {
           <div className="welcome-box bg-white p-4 mb-4 rounded-lg shadow-md">
             <h1 className="text-2xl font-bold text-red-500">Welcome to Motherson</h1>
             <p className="mt-2 text-gray-600">
-              Motherson is designed to transform the way you manage your business. Here are some simple steps to get you started.
+              Motherson Travel CRM is designed to transform the way you manage your business. Here are some simple steps to get you started
             </p>
           </div>
 
@@ -52,7 +52,7 @@ const Quickstart = () => {
               <div>
                 <h3 className="text-lg font-semibold">Set Up Your Organisation Profile</h3>
                 <p className="text-gray-600">
-                  Add your personal details to the profile, upload your photo, and customize how your account looks.
+                  Update and manage your organization's details and key information in one place.
                 </p>
                 <Link to='/home/organization-details/1'>
                   <button className="mt-2 border bg-red-500  text-white  text-sm py-2 px-4 rounded mb-2">
@@ -71,7 +71,7 @@ const Quickstart = () => {
               <div>
                 <h3 className="text-lg font-semibold">Invite Your Teammates</h3>
                 <p className="text-gray-600">
-                  Add your personal details to the profile, upload your photo, and customize how your account looks.
+                  Add new members to your team and assign roles for seamless collaboration.
                 </p>
                 <button className="mt-2 border bg-red-500  text-white  text-sm py-2 px-4 rounded mb-2"
                   onClick={() => setAddData('New Member')}>
@@ -87,9 +87,9 @@ const Quickstart = () => {
                 <span className="text-gray-800 font-semibold">4</span>
               </div>
               <div>
-                <h3 className="text-lg font-semibold">Set Up Your Role</h3>
+                <h3 className="text-lg font-semibold">Set Up Your Roles</h3>
                 <p className="text-gray-600">
-                  Add your personal details to the profile, upload your photo, and customize how your account looks.
+                  Define specific permissions and responsibilities for system users.
                 </p>
                 <button className="mt-2 border bg-red-500  text-white  text-sm py-2 px-4 rounded mb-2"
                   onClick={() => setAddData('Roles')}
@@ -108,7 +108,7 @@ const Quickstart = () => {
               <div>
                 <h3 className="text-lg font-semibold">Set Up Your Departments</h3>
                 <p className="text-gray-600">
-                  Add your personal details to the profile, upload your photo, and customize how your account looks.
+                  Organize your workforce into distinct functional areas for better management.
                 </p>
                 <button className="mt-2 border bg-red-500  text-white  text-sm py-2 px-4 rounded mb-2"
                   onClick={() => setAddData('Department')}>
@@ -124,9 +124,9 @@ const Quickstart = () => {
                 <span className="text-gray-800 font-semibold">5</span>
               </div>
               <div>
-                <h3 className="text-lg font-semibold">Set Up Your Designation</h3>
+                <h3 className="text-lg font-semibold">Set Up Your Designations</h3>
                 <p className="text-gray-600">
-                  Add your personal details to the profile, upload your photo, and customize how your account looks.
+                  Specify titles and roles within the organization to streamline reporting.
                 </p>
                 <button className="mt-2 border bg-red-500  text-white  text-sm py-2 px-4 rounded mb-2"
                   onClick={() => setAddData('Designation')}>

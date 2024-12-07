@@ -338,14 +338,18 @@ const Navbar = () => {
                       <p>My Profile</p>
                       {/* <Profile/> */}
                     </div>
-                    <div className="flex items-center space-x-2 hover:bg-red-500 p-2 rounded cursor-pointer">
-                      <FaCog />
-                      <p>Personalization</p>
-                    </div>
-                    <div className="flex items-center space-x-2 hover:bg-red-500 p-2 rounded cursor-pointer">
-                      <FaCog />
-                      <p>Portal Settings</p>
-                    </div>
+                    <Link to={`/home/company-profile`}>
+                      <div className="flex items-center space-x-2 hover:bg-red-500 p-2 rounded cursor-pointer">
+                        <FaCog />
+                        <p>Personalization</p>
+                      </div>
+                    </Link>
+                    <Link to={`/home/organization-details/${user.company.id}`}>
+                      <div className="flex items-center space-x-2 hover:bg-red-500 p-2 rounded cursor-pointer">
+                        <FaCog />
+                        <p>Portal Settings</p>
+                      </div>
+                    </Link>
                     <div className="flex items-center space-x-2 hover:bg-red-500 p-2 rounded cursor-pointer">
                       <FaUserCircle />
                       <p>My Accounts</p>

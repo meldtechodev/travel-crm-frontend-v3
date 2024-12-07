@@ -111,8 +111,7 @@ const CompanyProfilePage = () => {
             My Roles
           </h2>
           <p className="text-gray-600 text-sm mb-4">
-            All the accounts in this organization that you have access to. Click
-            to open.
+            Define specific permissions and responsibilities for system users.
           </p>
 
           {/* Account List */}
@@ -137,8 +136,7 @@ const CompanyProfilePage = () => {
             My Department
           </h2>
           <p className="text-gray-600 text-sm mb-4">
-            All the accounts in this organization that you have access to. Click
-            to open.
+            Organize your workforce into distinct functional areas for better management.
           </p>
 
           {/* Account List */}
@@ -164,8 +162,8 @@ const CompanyProfilePage = () => {
             My Designation
           </h2>
           <p className="text-gray-600 text-sm mb-4">
-            All the accounts in this organization that you have access to. Click
-            to open.
+            Specify titles and roles within the organization to streamline reporting.
+
           </p>
 
           {/* Account List */}
