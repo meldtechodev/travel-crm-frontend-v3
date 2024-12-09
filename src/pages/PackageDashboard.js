@@ -502,9 +502,9 @@ const PackageDashboardTab = ({ isListViewSelected, setIsListViewSelected }) => {
   return (
     <>
       <div className="flex flex-col gap-3 justify-between items-center py-4 bg-white shadow-md px-6 rounded-md lg:flex-row sm:flex-col">
-        <h2 className="text-xl font-bold">Packages</h2>
 
-        <div className="flex items-center">
+        <h2 className="text-xl font-bold text-left">Packages</h2>
+        <div className="flex items-center m-auto">
           <button
             className={`btn ${!isListViewSelected
               ? "bg-blue-500 text-white"
@@ -525,7 +525,7 @@ const PackageDashboardTab = ({ isListViewSelected, setIsListViewSelected }) => {
           </button>
         </div>
 
-        <div className="flex items-center">
+        {/* <div className="flex items-center">
 
           <div className="relative ml-2" ref={createTaskRef}>
             <button
@@ -552,7 +552,7 @@ const PackageDashboardTab = ({ isListViewSelected, setIsListViewSelected }) => {
               </div>
             )}
           </div>
-        </div>
+        </div> */}
       </div>
     </>
   );
