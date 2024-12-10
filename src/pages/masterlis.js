@@ -3,11 +3,12 @@ import axios from 'axios';
 import Table from './TableComponent';
 import { useNavigate } from 'react-router-dom';
 import api from '../apiConfig/config';
-import { FaEdit, FaTrashAlt } from 'react-icons/fa';
+import { FaEdit, FaSearch, FaTrashAlt } from 'react-icons/fa';
 import NewVendorForm from "../pages/NewVendorForm";
 import NewPackageForm from "../pages/NewPackageForm";
 import NewTransportationForm from "../pages/NewTransportationForm";
 import Country from './Country';
+import Customer from './Customer';
 import State from './State';
 import Destination from './Destination';
 import Department from './Department'
@@ -16,6 +17,7 @@ import Hotel from './Hotel';
 import { UserContext } from '../contexts/userContext';
 import useDecryptedToken from '../hooks/useDecryptedToken';
 import { IoArrowBack, IoArrowForward } from 'react-icons/io5';
+import { FiFilter } from 'react-icons/fi';
 
 
 
@@ -126,9 +128,10 @@ const MasterList = () => {
       setCustomerData(prevData => prevData.map(i => (i.id === item.id ? updatedItem : i)));
     } else if (activeTab === 'vendor') {
       setVendorData(prevData => prevData.map(i => (i.id === item.id ? updatedItem : i)));
-    } else if (activeTab === 'department') {
-      setDepartmentData(prevData => prevData.map(i => (i.id === item.id ? updatedItem : i)));
-    }
+    } 
+    // else if (activeTab === 'department') {
+    //   setDepartmentData(prevData => prevData.map(i => (i.id === item.id ? updatedItem : i)));
+    // }
 
     console.log(activeTab);
 
@@ -161,8 +164,9 @@ const MasterList = () => {
         setCustomerData(prevData => prevData.map(i => (i.id === item.id ? { ...item } : i)));
       } else if (activeTab === 'vendor') {
         setVendorData(prevData => prevData.map(i => (i.id === item.id ? { ...item } : i)));
-      } else if (activeTab === 'department') {
-        setDepartmentData(prevData => prevData.map(i => (i.id === item.id ? { ...item } : i)));
+      // } else if (activeTab === 'department') {
+      //   setDepartmentData(prevData => prevData.map(i => (i.id === item.id ? { ...item } : i)));
+      // }
       }
     }
   };
@@ -191,6 +195,8 @@ const MasterList = () => {
       setAddData(["Vendor"]);
       setSelectedVendorData(item);
       console.log(`Editing`, item)
+    } else if (activeTab === 'customer') {
+      setAddData(["Customer"]);
     }
   };
 
@@ -248,7 +254,7 @@ const MasterList = () => {
     { key: 'hotel', label: 'Hotel' },
     { key: 'customer', label: 'Customer' },
     { key: 'vendor', label: 'Vendor' },
-    { key: 'department', label: 'Department' },
+    // { key: 'department', label: 'Department' },
   ];
 
   const tableData = {
@@ -323,15 +329,15 @@ const MasterList = () => {
       ],
       data: addIconsToData(vendorData, handleStatusToggle),
     },
-    department: {
-      columns: [
-        { header: 'S.No.', accessor: 'index' },
-        { header: 'Name', accessor: 'departmentName' },
-        { header: 'Status', accessor: 'status' },
-        { header: 'Action', accessor: 'Action' },
-      ],
-      data: addIconsToData(departmentData, handleStatusToggle)
-    },
+    // department: {
+    //   columns: [
+    //     { header: 'S.No.', accessor: 'index' },
+    //     { header: 'Name', accessor: 'departmentName' },
+    //     { header: 'Status', accessor: 'status' },
+    //     { header: 'Action', accessor: 'Action' },
+    //   ],
+    //   data: addIconsToData(departmentData, handleStatusToggle)
+    // },
   };
 
   useEffect(() => {
@@ -449,23 +455,23 @@ const MasterList = () => {
       }
     }
 
-    const fetchDepartmentData = async () => {
-      try {
-        const response = await axios.get(`${api.baseUrl}/departments/getall?page=${currentPage}&size=10`);
-        const formattedData = await response.data.content.map((item) => ({
-          ...item,
-          status: item.status
-        }));
-        const newData = await formattedData.map((item, index) => ({
-          ...item,
-          index: index + 1
-        }))
-        setDepartmentData(newData);
-        setTotalPages(response.data.totalPages);
-      } catch (error) {
-        console.error('Error fetching country data:', error);
-      }
-    };
+    // const fetchDepartmentData = async () => {
+    //   try {
+    //     const response = await axios.get(`${api.baseUrl}/departments/getall?page=${currentPage}&size=10`);
+    //     const formattedData = await response.data.content.map((item) => ({
+    //       ...item,
+    //       status: item.status
+    //     }));
+    //     const newData = await formattedData.map((item, index) => ({
+    //       ...item,
+    //       index: index + 1
+    //     }))
+    //     setDepartmentData(newData);
+    //     setTotalPages(response.data.totalPages);
+    //   } catch (error) {
+    //     console.error('Error fetching country data:', error);
+    //   }
+    // };
 
 
 
@@ -481,9 +487,10 @@ const MasterList = () => {
       fetchCustomerData()
     } else if (activeTab === 'vendor') {
       fetchVendorData()
-    } else if (activeTab === 'department') {
-      fetchDepartmentData()
     }
+    // } else if (activeTab === 'department') {
+    //   fetchDepartmentData()
+    // }
   }, [activeTab, currentPage]);
 
   return (
@@ -492,7 +499,7 @@ const MasterList = () => {
         <div className="pb-1 flex justify-between">
           <h2 className="text-xl font-bold mb-6">Master List</h2>
           <div className="relative" ref={dropdownRef}>
-            <button className="flex items-center justify-center bg-red-500  text-white p-2 rounded-md hover:bg-red-700 mt-2 md:mt-0 md:ml-2"
+            {/* <button className="flex items-center justify-center bg-red-500  text-white p-2 rounded-md hover:bg-red-700 mt-2 md:mt-0 md:ml-2"
               onClick={
                 () => {
                   setAddData([`${activeTab[0].toUpperCase()}${activeTab.substring(1)}`])
@@ -500,11 +507,11 @@ const MasterList = () => {
               }
             >
               New {`${activeTab[0].toUpperCase()}${activeTab.substring(1)}`}
-            </button>
+            </button> */}
           </div>
 
         </div>
-        <div className="relative inline-block w-full  border-b">
+        <div className="relative inline-block w-full">
           <ul className="flex gap-4 py-0 border-gray-300 mb-6">
             {tabs.map((tab) => (
               <li
@@ -520,8 +527,34 @@ const MasterList = () => {
         </div>
 
         <div className="mt-4 mb-6">
+          <div className="flex items-center justify-between gap-2 w-full flex-col md:flex-row mb-6">
+            <div className="flex justify-between">
+              <div className="flex items-center bg-white border border-gray-300 rounded-md px-3 py-2 w-full">
+                <FaSearch className="text-gray-500 mr-2" />
+                <input
+                  type="text"
+                  placeholder="Search"
+                  className="w-full outline-none text-gray-700"
+                />
+              </div>
+
+              {/* Filter Button */}
+              <button className="flex items-center justify-center bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mt-2 md:mt-0 md:ml-2">
+                <FiFilter />
+              </button>
+            </div>
+            <button className="flex items-center justify-center bg-red-500  text-white p-2 rounded-md hover:bg-red-700 mt-2 md:mt-0 md:ml-2"
+              onClick={
+                () => {
+                  setAddData([`${activeTab[0].toUpperCase()}${activeTab.substring(1)}`])
+                }
+              }
+            >
+              New {`${activeTab[0].toUpperCase()}${activeTab.substring(1)}`}
+            </button>
+          </div>
           <hr />
-          <div className='w-full  overflow-auto'>
+          <div className='w-full  overflow-auto mt-6'>
             <Table
               columns={tableData[activeTab].columns}
               data={tableData[activeTab].data}
@@ -646,6 +679,18 @@ const MasterList = () => {
       >
         <Department
           isOpen={addData[0] === "Department"}
+          onClose={() => setAddData([])}
+          departmentData={selectedDepartment}
+          isFormEditEnabled={isFormEditEnabled}
+          setIsFormEditEnabled={setIsFormEditEnabled}
+        />
+      </div>
+      <div
+        className="submenu-menu"
+        style={{ right: addData[0] === "Customer" ? "0" : "-100%" }}
+      >
+        <Customer
+          isOpen={addData[0] === "Customer"}
           onClose={() => setAddData([])}
           departmentData={selectedDepartment}
           isFormEditEnabled={isFormEditEnabled}

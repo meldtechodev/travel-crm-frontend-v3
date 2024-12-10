@@ -10,7 +10,8 @@ import { data } from "autoprefixer";
 import { toast } from "react-toastify";
 import e from "cors";
 
-const NewPackageForm = ({ isOpen, onClose }) => {
+const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
+  console.log(editablePackageData);
   const [nights, setNights] = useState(0);
   const [days, setDays] = useState(0);
   const [page, setPage] = useState(1);
