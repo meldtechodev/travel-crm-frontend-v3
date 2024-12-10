@@ -785,7 +785,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
 
     await axios.post(`${api.baseUrl}/packages/create`, formDataPackageMaster, {
       headers: {
-        'Authorization': `Bearer ${token}`,
+        // 'Authorization': `Bearer ${token}`,
         'Content-Type': 'multipart/form-data',
         'Access-Control-Allow-Origin': '*'
       }

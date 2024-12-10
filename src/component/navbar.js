@@ -19,6 +19,13 @@ import { Link, useNavigate } from "react-router-dom";
 import api from "../apiConfig/config";
 import axios from "axios";
 import { UserContext } from "../contexts/userContext";
+import NewVendorForm from "../pages/NewVendorForm";
+import NewPackageForm from "../pages/NewPackageForm";
+import NewTransportationForm from "../pages/NewTransportationForm";
+import NewMember from "../pages/NewMember";
+import NewQuery from "../pages/NewQuery";
+import Hotel from "../pages/Hotel";
+import AddCustomerPopup from "../pages/AddCustomerPopup";
 // import NewVendorForm from "../pages/NewVendorForm";
 // import NewPackageForm from "../pages/NewPacakgeForm";
 // import NewTransportationForm from "../pages/NewTransportationForm";
@@ -175,18 +182,6 @@ const Navbar = () => {
                   <div className="absolute top-10 left-0 w-48 bg-white shadow-lg rounded-md  text-black">
                     <ul className="space-y-2">
                       <li
-                        className="hover:bg-gray-200  hover:border-l-4  border-blue-500 p-2  rounded cursor-pointer"
-                        onClick={() => {
-                          setAddData([]);
-                          setAddData(["Vendors"]);
-                        }}
-                      >
-                        New Vendors
-                      </li>
-                      <li className="hover:bg-gray-200  hover:border-l-4  border-blue-500 p-2 rounded cursor-pointer">
-                        New Customer
-                      </li>
-                      <li
                         className="hover:bg-gray-200  hover:border-l-4  border-blue-500 p-2 rounded cursor-pointer"
                         onClick={() => {
                           setAddData([]);
@@ -199,35 +194,43 @@ const Navbar = () => {
                         className="hover:bg-gray-200  hover:border-l-4  border-blue-500 p-2 rounded cursor-pointer"
                         onClick={() => {
                           setAddData([]);
-                          setAddData(["Transportation"]);
+                          setAddData(["NewQuery"]);
                         }}
                       >
-                        New Transportation
+                        New Query
                       </li>
-                      <hr className="border-gray-300" />
+                      <li className="hover:bg-gray-200  hover:border-l-4  border-blue-500 p-2 rounded cursor-pointer"
+                      onClick={() => {
+                        setAddData([]);
+                        setAddData(["AddCustomerPopup"]);
+                      }}
+                      >
+                        New Customer
+                      </li>
                       <li
-                        className="hover:bg-gray-200 hover:border-l-4  border-blue-500 p-2 rounded cursor-pointer"
+                        className="hover:bg-gray-200  hover:border-l-4  border-blue-500 p-2 rounded cursor-pointer"
+                        onClick={() => {
+                          setAddData([]);
+                          setAddData(["Hotel"]);
+                        }}
+                      >
+                        New Hotels
+                      </li>
+                      <li
+                        className="relative hover:bg-gray-200 hover:border-l-4 border-blue-500 p-2 rounded cursor-pointer"
                         onClick={() => {
                           setAddData([]);
                           setAddData(["NewMember"]);
                         }}
                       >
-                        New Member
+                        <hr className="absolute top-0 left-0 w-full border-gray-300 m-0" />
+                        <span className="block mt-1">New Member</span>
                       </li>
                     </ul>
                   </div>
                 )}
               </div>
               {/* Submenu Components */}
-              {/* <div
-                className="submenu-menu"
-                style={{ right: addData[0] === "Vendors" ? "0" : "-100%" }}
-              >
-                <NewVendorForm
-                  isOpen={addData[0] === "Vendors"}
-                  onClose={() => setAddData([])}
-                />
-              </div>
               <div
                 className="submenu-menu"
                 style={{
@@ -242,11 +245,33 @@ const Navbar = () => {
               <div
                 className="submenu-menu"
                 style={{
-                  right: addData[0] === "Transportation" ? "0" : "-100%",
+                  right: addData[0] === "NewQuery" ? "0" : "-100%",
                 }}
               >
-                <NewTransportationForm
-                  isOpen={addData[0] === "Transportation"}
+                <NewQuery
+                  isOpen={addData[0] === "NewQuery"}
+                  onClose={() => setAddData([])}
+                />
+              </div>
+              <div
+                className="submenu-menu"
+                style={{
+                  right: addData[0] === "AddCustomerPopup" ? "0" : "-100%",
+                }}
+              >
+                <AddCustomerPopup
+                  isOpen={addData[0] === "AddCustomerPopup"}
+                  onClose={() => setAddData([])}
+                />
+              </div>
+              <div
+                className="submenu-menu"
+                style={{
+                  right: addData[0] === "Hotel" ? "0" : "-100%",
+                }}
+              >
+                <Hotel
+                  isOpen={addData[0] === "Hotel"}
                   onClose={() => setAddData([])}
                 />
               </div>
@@ -258,7 +283,7 @@ const Navbar = () => {
                   isOpen={addData[0] === "NewMember"}
                   onClose={() => setAddData([])}
                 />
-              </div> */}
+              </div>
               <div
                 className="hidden md:flex items-center cursor-pointer"
                 onClick={() => setShowSearchField(!showSearchField)}
@@ -307,7 +332,9 @@ const Navbar = () => {
                 className="bg-green-500 text-white text-center p-2 cursor-pointer rounded-sm w-8 h-8 
                 flex items-center justify-center"
               >
-                {user && user.name && getFirstCharacter(user.name.toUpperCase())}
+                {user &&
+                  user.name &&
+                  getFirstCharacter(user.name.toUpperCase())}
               </div>
 
               {/* Dropdown Menu */}
@@ -318,13 +345,24 @@ const Navbar = () => {
                 >
                   <div className="flex items-center space-x-2 border-b border-red-500 p-2">
                     <div className="bg-green-500 h-8 w-8 text-white flex items-center justify-center rounded-full">
-                      {user && user.name && getFirstCharacter(user.name.toUpperCase())}
+                      {user &&
+                        user.name &&
+                        getFirstCharacter(user.name.toUpperCase())}
                     </div>
 
                     <div>
-                      <p className="text-lg">{user && user.name && `${user.name[0].toUpperCase()}${user.name.substring(1)}`}{" "}{user && user.lname}</p>
+                      <p className="text-lg">
+                        {user &&
+                          user.name &&
+                          `${user.name[0].toUpperCase()}${user.name.substring(
+                            1
+                          )}`}{" "}
+                        {user && user.lname}
+                      </p>
                       <p>{user.email}</p>
-                      <p className="text-sm">{user && user.role && user.role.roleName}</p>
+                      <p className="text-sm">
+                        {user && user.role && user.role.roleName}
+                      </p>
                     </div>
                   </div>
 

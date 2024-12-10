@@ -11,23 +11,25 @@ const Customer = ({ isOpen, onClose, customerData, isFormEditEnabled, setIsFormE
   const { user } = useContext(UserContext);
   const token = useDecryptedToken();
 
+  console.log(token);
+
   const [formData, setFormData] = useState({
     salutation: "",
     fName: "",
     lName: "",
     emailId: "",
     contactNo: "",
-    maritalStatus: "",
+    marritalStatus: "",
     customerType: "",
     leadSource: "",
     adharNo: "",
     passportId: "",
-    createdby: "",
-    modifiedby: "",
+    createdby: user.name,
+    modifiedby: user.name,
     ipaddress: "",
     status: 1,
     isdelete: 0,
-    user: { userId: '' },
+    user: { userId: user.userId },
   });
 
   const handleReset = () => {
@@ -37,17 +39,17 @@ const Customer = ({ isOpen, onClose, customerData, isFormEditEnabled, setIsFormE
       lName: "",
       emailId: "",
       contactNo: "",
-      maritalStatus: "",
+      marritalStatus: "",
       customerType: "",
       leadSource: "",
       adharNo: "",
       passportId: "",
-      createdby: "",
-      modifiedby: "",
+      createdby: user.name,
+      modifiedby: user.name,
       ipaddress: "",
       status: 1,
       isdelete: 0,
-      user: { userId: '' }
+      user: { userId: user.userId },
     });
     if (fileInputRef.current) {
       fileInputRef.current.value = "";  // Clear the file input
@@ -72,23 +74,25 @@ const Customer = ({ isOpen, onClose, customerData, isFormEditEnabled, setIsFormE
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const formDatasend = new FormData();
-    formDatasend.append('salutation', formData.salutation);
-    formDatasend.append('fName', formData.fName);
-    formDatasend.append('lName', formData.lName);
-    formDatasend.append('emailId', formData.emailId);
-    formDatasend.append('contactNo', formData.contactNo);
-    formDatasend.append('marritalStatus', formData.maritalStatus);
-    formDatasend.append('customerType', formData.customerType);
-    formDatasend.append('leadSource', formData.leadSource);
-    formDatasend.append('adharNo', formData.adharNo);
-    formDatasend.append('passportId', formData.passportId);
-    formDatasend.append('createdby', user.name);
-    formDatasend.append('modifiedby', user.name);
-    formDatasend.append('ipaddress', formData.ipaddress);
-    formDatasend.append('status', formData.status);
-    formDatasend.append('isdelete', formData.isdelete);
-    formDatasend.append('user.userId', user.userId);
+    // const formDatasend = new FormData();
+    // formDatasend.append('salutation', formData.salutation);
+    // formDatasend.append('fName', formData.fName);
+    // formDatasend.append('lName', formData.lName);
+    // formDatasend.append('emailId', formData.emailId);
+    // formDatasend.append('contactNo', formData.contactNo);
+    // formDatasend.append('marritalStatus', formData.maritalStatus);
+    // formDatasend.append('customerType', formData.customerType);
+    // formDatasend.append('leadSource', formData.leadSource);
+    // formDatasend.append('adharNo', formData.adharNo);
+    // formDatasend.append('passportId', formData.passportId);
+    // formDatasend.append('createdby', user.name);
+    // formDatasend.append('modifiedby', user.name);
+    // formDatasend.append('ipaddress', formData.ipaddress);
+    // formDatasend.append('status', formData.status);
+    // formDatasend.append('isdelete', formData.isdelete);
+    // formDatasend.append('user.userId', user.userId);
+
+    console.log('FORM DATA:', formData);
 
     if (
       !formData.salutation ||
@@ -96,7 +100,7 @@ const Customer = ({ isOpen, onClose, customerData, isFormEditEnabled, setIsFormE
       !formData.lName ||
       !formData.emailId ||
       !formData.contactNo ||
-      !formData.maritalStatus ||
+      !formData.marritalStatus ||
       !formData.customerType ||
       !formData.leadSource ||
       !formData.adharNo ||
@@ -115,7 +119,7 @@ const Customer = ({ isOpen, onClose, customerData, isFormEditEnabled, setIsFormE
     }
 
     if (customerData && customerData.id) {
-      await axios.put(`${api.baseUrl}/customer/updatebyid/${customerData.id}`, formDatasend, {
+      await axios.put(`${api.baseUrl}/customer/updatebyid/${customerData.id}`, formData, {
         headers: {
           // 'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -139,7 +143,7 @@ const Customer = ({ isOpen, onClose, customerData, isFormEditEnabled, setIsFormE
         });
     } else {
       // Create new customer
-      await axios.post(`${api.baseUrl}/customer/create`, formDatasend, {
+      await axios.post(`${api.baseUrl}/customer/create`, formData, {
         headers: {
           // 'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -147,6 +151,7 @@ const Customer = ({ isOpen, onClose, customerData, isFormEditEnabled, setIsFormE
         }
       })
         .then(response => {
+          console.log(response);
           toast.success("Customer saved successfully.", {
             position: "top-center",
             autoClose: 5000,
@@ -162,23 +167,34 @@ const Customer = ({ isOpen, onClose, customerData, isFormEditEnabled, setIsFormE
             lName: "",
             emailId: "",
             contactNo: "",
-            maritalStatus: "",
+            marritalStatus: "",
             customerType: "",
             leadSource: "",
             adharNo: "",
             passportId: "",
-            createdby: "",
-            modifiedby: "",
+            createdby: user.name,
+            modifiedby: user.name,
             ipaddress: "",
             status: 1,
             isdelete: 0,
-            user: { userId: '' }
+            user: { userId: user.userId },
           });
           if (fileInputRef.current) {
             fileInputRef.current.value = "";
           }
         })
-        .catch(error => console.log(error));
+        .catch(error => {
+          console.error(error);
+          toast.error(error.response.data, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        });
     }
   };
 
@@ -327,14 +343,14 @@ const Customer = ({ isOpen, onClose, customerData, isFormEditEnabled, setIsFormE
           </div>
 
           <div className="w-1/2">
-            <label htmlFor="maritalStatus" className="block text-sm font-medium">
+            <label htmlFor="marritalStatus" className="block text-sm font-medium">
               Marital Status
             </label>
             <select
-              id="maritalStatus"
+              id="marritalStatus"
               className="mt-1 p-2 w-full border rounded"
-              name="maritalStatus"
-              value={formData.maritalStatus}
+              name="marritalStatus"
+              value={formData.marritalStatus}
               onChange={handleInputChange}
             >
               <option value="">Select Marital Status</option>
