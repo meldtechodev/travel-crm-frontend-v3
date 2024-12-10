@@ -30,6 +30,7 @@ import NewTransportationForm from '../pages/NewTransportationForm'
 import NewPolicyForm from '../pages/NewPolicyForm'
 import Roles from '../pages/Roles'
 import NewMember from '../pages/NewMember'
+import Customer from "../pages/Customer";
 
 const Sidebar = () => {
   const [homeStyle, setHomeStyle] = useState();
@@ -865,6 +866,15 @@ const Sidebar = () => {
       >
         <NewPolicyForm
           isOpen={addData.toLowerCase().includes("Policies".toLowerCase())}
+          onClose={() => setAddData('')}
+        />
+      </div>
+      <div
+        className="submenu-menu"
+        style={{ right: addData.toLowerCase().includes("Customer".toLowerCase()) ? "0" : "-100%" }}
+      >
+        <Customer
+          isOpen={addData.toLowerCase().includes("Customer".toLowerCase())}
           onClose={() => setAddData('')}
         />
       </div>

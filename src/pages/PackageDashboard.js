@@ -98,6 +98,7 @@ const ListView = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [addData, setAddData] = useState([])
   const [toggleSwitch, setToggleSwitch] = useState(true);
+  const [selectedPackage, setSelectedPackage] = useState(null);
 
   const handleStatusToggle = (id) => {
     setPackageList((prevData) =>
@@ -114,22 +115,24 @@ const ListView = () => {
     { header: "To City", render: ({ row }) => ViewDestination(row.toCityId) },
     { header: "Category", accessor: "pkCategory" },
     { header: "Type", accessor: "packageType" },
-    { header: 'Status', render: (({row}) => <div className="flex items-center justify-center">
-    <label className="relative inline-flex items-center cursor-pointer">
-      <input
-        type="checkbox"
-        className="sr-only peer"
-        checked={row.status}
-        onChange={() => handleStatusToggle(row.id)}
-      />
-      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:bg-green-500 dark:bg-gray-300 dark:peer-focus:ring-green-800">
-        <div
-          className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${row.status ? "translate-x-5" : ""
-            }`}
-        ></div>
-      </div>
-    </label>
-  </div> ) },
+    {
+      header: 'Status', render: (({ row }) => <div className="flex items-center justify-center">
+        <label className="relative inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            className="sr-only peer"
+            checked={row.status}
+            onChange={() => handleStatusToggle(row.id)}
+          />
+          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:bg-green-500 dark:bg-gray-300 dark:peer-focus:ring-green-800">
+            <div
+              className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${row.status ? "translate-x-5" : ""
+                }`}
+            ></div>
+          </div>
+        </label>
+      </div>)
+    },
     { header: "Days/Nights", render: ({ row }) => `${row.days}/${row.nights}` },
     {
       header: "Action",
@@ -137,7 +140,10 @@ const ListView = () => {
         <div className="flex gap-2 justify-center">
           <FaEdit
             className="text-purple-600 cursor-pointer"
-          onClick={() => setAddData(['New Package'])}
+            onClick={() => {
+              setAddData(['New Package'])
+              setSelectedPackage(row)
+            }}
           />
           <FaTrashAlt
             className="text-red-600 cursor-pointer"
@@ -314,79 +320,80 @@ const ListView = () => {
   return (
     <>
 
-    <div className='mt-4'>
-      <div className="flex items-center justify-between gap-2 w-full flex-col md:flex-row">
-        <div className="flex justify-between">
-          <div className="flex items-center bg-white border border-gray-300 rounded-md px-3 py-2 w-full">
-            <FaSearch className="text-gray-500 mr-2" />
-            <input
-              type="text"
-              placeholder="Search"
-              className="w-full outline-none text-gray-700"
-            />
-          </div>
-
-          {/* Filter Button */}
-          <button className="flex items-center justify-center bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mt-2 md:mt-0 md:ml-2">
-            <FiFilter />
-          </button>
-        </div>
-        <button className="flex items-center justify-center bg-blue-500  text-white p-2 rounded-md hover:bg-blue-600 mt-2 md:mt-0 md:ml-2" onClick={() => setAddData(['New Package'])}>New Package +</button>
-      </div>
-
-      <hr className="my-4" />
       <div className='mt-4'>
-        <TableComponent
-          columns={columns}
-          data={packageList}
-        />
-        {/* Pagination */}
-        <div className="flex justify-start items-center mt-4 space-x-4">
-          {/* Previous Page Button */}
-          <button
-            className={`text-xl text-blue-500 hover:text-blue-700 ${currentPage === 0 && "opacity-50 cursor-not-allowed"
-              }`}
-            disabled={currentPage === 0}
-            onClick={() => setCurrentPage((prev) => prev - 1)}
-          >
-            <IoArrowBack />
-          </button>
+        <div className="flex items-center justify-between gap-2 w-full flex-col md:flex-row">
+          <div className="flex justify-between">
+            <div className="flex items-center bg-white border border-gray-300 rounded-md px-3 py-2 w-full">
+              <FaSearch className="text-gray-500 mr-2" />
+              <input
+                type="text"
+                placeholder="Search"
+                className="w-full outline-none text-gray-700"
+              />
+            </div>
 
-          {/* Page Numbers */}
-          <div className="flex space-x-2">
-            {Array.from({ length: totalPages }, (_, index) => (
-              <button
-                key={index}
-                className={`px-2 py-1 border rounded ${currentPage === index
-                  ? "bg-blue-500 text-white"
-                  : "text-blue-500 hover:bg-blue-100"
-                  }`}
-                onClick={() => setCurrentPage(index)}
-              >
-                {index + 1}
-              </button>
-            ))}
+            {/* Filter Button */}
+            <button className="flex items-center justify-center bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mt-2 md:mt-0 md:ml-2">
+              <FiFilter />
+            </button>
           </div>
+          <button className="flex items-center justify-center bg-red-500  text-white p-2 rounded-md hover:bg-red-700 mt-2 md:mt-0 md:ml-2" onClick={() => setAddData(['New Package'])}>New Package +</button>
+        </div>
 
-          {/* Next Page Button */}
-          <button
-            className={`text-xl text-blue-500 hover:text-blue-700 ${currentPage === totalPages - 1 && "opacity-50 cursor-not-allowed"
-              }`}
-            disabled={currentPage === totalPages - 1}
-            onClick={() => setCurrentPage((prev) => prev + 1)}
-          >
-            <IoArrowForward />
-          </button>
+        <hr className="my-4" />
+        <div className='mt-4'>
+          <TableComponent
+            columns={columns}
+            data={packageList}
+          />
+          {/* Pagination */}
+          <div className="flex justify-start items-center mt-4 space-x-4">
+            {/* Previous Page Button */}
+            <button
+              className={`text-xl text-blue-500 hover:text-blue-700 ${currentPage === 0 && "opacity-50 cursor-not-allowed"
+                }`}
+              disabled={currentPage === 0}
+              onClick={() => setCurrentPage((prev) => prev - 1)}
+            >
+              <IoArrowBack />
+            </button>
+
+            {/* Page Numbers */}
+            <div className="flex space-x-2">
+              {Array.from({ length: totalPages }, (_, index) => (
+                <button
+                  key={index}
+                  className={`px-2 py-1 border rounded ${currentPage === index
+                    ? "bg-blue-500 text-white"
+                    : "text-blue-500 hover:bg-blue-100"
+                    }`}
+                  onClick={() => setCurrentPage(index)}
+                >
+                  {index + 1}
+                </button>
+              ))}
+            </div>
+
+            {/* Next Page Button */}
+            <button
+              className={`text-xl text-blue-500 hover:text-blue-700 ${currentPage === totalPages - 1 && "opacity-50 cursor-not-allowed"
+                }`}
+              disabled={currentPage === totalPages - 1}
+              onClick={() => setCurrentPage((prev) => prev + 1)}
+            >
+              <IoArrowForward />
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-    <div
+      <div
         className="submenu-menu"
         style={{ right: addData[0] === 'New Package' ? "0" : "-100%" }}
       >
         <NewPackageForm
           isOpen={addData[0] === 'New Package'}
           onClose={() => setAddData('')}
+          editablePackageData={selectedPackage}
         />
       </div>
     </>
@@ -502,9 +509,9 @@ const PackageDashboardTab = ({ isListViewSelected, setIsListViewSelected }) => {
   return (
     <>
       <div className="flex flex-col gap-3 justify-between items-center py-4 bg-white shadow-md px-6 rounded-md lg:flex-row sm:flex-col">
-        <h2 className="text-xl font-bold">Packages</h2>
 
-        <div className="flex items-center">
+        <h2 className="text-xl font-bold text-left">Packages</h2>
+        <div className="flex items-center m-auto">
           <button
             className={`btn ${!isListViewSelected
               ? "bg-blue-500 text-white"
@@ -525,7 +532,7 @@ const PackageDashboardTab = ({ isListViewSelected, setIsListViewSelected }) => {
           </button>
         </div>
 
-        <div className="flex items-center">
+        {/* <div className="flex items-center">
 
           <div className="relative ml-2" ref={createTaskRef}>
             <button
@@ -552,7 +559,7 @@ const PackageDashboardTab = ({ isListViewSelected, setIsListViewSelected }) => {
               </div>
             )}
           </div>
-        </div>
+        </div> */}
       </div>
     </>
   );
