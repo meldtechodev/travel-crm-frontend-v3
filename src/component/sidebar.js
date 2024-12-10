@@ -172,11 +172,17 @@ const Sidebar = () => {
   //     .catch(error => console.error(error))
   // }, [])
 
+  const handleModuleList = (moduleName) => {
+    navigate(`/home/${moduleName.toLowerCase() === 'packages' ? 'packageDashboard' : moduleName.toLowerCase()}`)
+  }
+
   const handlePageAndForm = (word) => {
     setAddData('');
     if (word.toLowerCase().includes('Dashboard'.toLowerCase())) {
 
       let wd = word.trim().split(/\s+/);
+
+      console.log(wd)
       let firstWord = wd[0].toLowerCase();
       const remainingWords = wd.slice(1).join('');
       const result = firstWord + remainingWords;
@@ -257,12 +263,10 @@ const Sidebar = () => {
                   style={{ width: "340px" }} >
                   <div className="flex flex-col">
                     <p className="font-bold text-lg">{items.moduleName}</p>
-                    <div className="mt-4 border-b-2">
+                    <div className="mt-4 border-b-2" onClick={() => handleModuleList(items.moduleName)}>
                       <h6 className="flex  gap-4 items-center">
                         <FaListUl size="18px" />
-                        <Link to={`/home/${items.moduleName.toLowerCase()}`}>
-                          {items.moduleName} List
-                        </Link>
+                        {items.moduleName} List
                       </h6>
                     </div>
                     <div className="mt-6 flex flex-col justify-center items-center overflow-y-scroll">

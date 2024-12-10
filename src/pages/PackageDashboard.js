@@ -9,8 +9,8 @@ import { FiFilter } from "react-icons/fi";
 import NewPackageForm from "./NewPackageForm";
 
 // The main dashboard component
-const PackageDashboard = () => {
-  const [isListViewSelected, setIsListViewSelected] = useState(false);
+const PackageDashboard = ({ isListView }) => {
+  const [isListViewSelected, setIsListViewSelected] = useState(isListView);
 
   return (
     <div
@@ -94,6 +94,8 @@ const ListView = () => {
   const [packageTheme, setPackageTheme] = useState([])
   const [packD, setPackD] = useState([])
   const [siteSeeings, setSiteSeeings] = useState([])
+  const [activitiesList, setActivitiesList] = useState([])
+  const [activities, setActivities] = useState([])
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [addData, setAddData] = useState([])
@@ -138,12 +140,10 @@ const ListView = () => {
       header: "Action",
       render: (row) => (
         <div className="flex gap-2 justify-center">
+          <button onClick={() => handleView(row.row)}>view</button>
           <FaEdit
             className="text-purple-600 cursor-pointer"
-            onClick={() => {
-              setAddData(['New Package'])
-              setSelectedPackage(row)
-            }}
+            onClick={() => setAddData(['New Package'])}
           />
           <FaTrashAlt
             className="text-red-600 cursor-pointer"
@@ -155,20 +155,24 @@ const ListView = () => {
   ]
 
   const handleView = (option) => {
+    // console.log(option)
     const pack = packIti.filter(item => option.id === item.packid)
     option.itinary = pack
 
     let p = []
     for (let i = 0; i < pack.length; i++) {
       let k = packItiDetail.filter(item => item.packitid.id === pack[i].id)
+      // console.log(k)
       p.push(k[0])
     }
 
+    setActivities([])
     let k = p.filter(item => item !== undefined)
     let site = []
     for (let i = 0; i < k.length; i++) {
       site.push(...k[i].sightseeingIds)
     }
+    console.log(k)
 
     let newSet = new Set(site)
     let siteSeeing = []
@@ -187,20 +191,44 @@ const ListView = () => {
       let newFilRoom = filRoom
       h.push(newH[0])
     }
+    for (let i = 0; i < k.length; i++) {
+      for (let j = 0; j < k[i].activitiesIds; j++) {
+        let a = activitiesList.filter(item => item.id === k[i].activitiesIds[j])
+        activities.push(a[0])
+
+
+      }
+    }
+    let newAct = new Set(activities.map(item => item.title))
+
+
     let hset = new Set(h)
     let harr = [...hset]
     option.packItiDetail = k
     option.sightseeingIds = newSet
     option.sightseeings = siteSeeing
+    option.activities = [...newAct]
     option.hotels = harr
     navigate(`/home/package-list/${option.id}`, { state: { option } })
   }
 
   useEffect(() => {
+    const fetchActivityData = async () => {
+      await axios.get(`${api.baseUrl}/activities/getall`)
+        .then((response) => {
+          setActivitiesList(response.data.content)
+        })
+        .catch((error) => {
+          console.error('Error fetching data:', error);
+        });
+      return
+    }
+    fetchActivityData()
+
     const fetchData = async () => {
       await axios.get(`${api.baseUrl}/sightseeing/getAll`)
         .then((response) => {
-          setSiteSeeings(response.data)
+          setSiteSeeings(response.data.content)
         })
         .catch((error) => {
           console.error('Error fetching data:', error);
@@ -235,7 +263,7 @@ const ListView = () => {
     const fetchData = async () => {
       await axios.get(`${api.baseUrl}/packageitinerary/getAll`)
         .then((response) => {
-          setPackIti(response.data)
+          setPackIti(response.data.content)
         })
         .catch((error) => {
           console.error('Error fetching data:', error);

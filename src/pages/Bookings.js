@@ -1,8 +1,11 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { FaEye } from 'react-icons/fa6'
 import TableComponent from '../component/TableComponent';
+import axios from 'axios';
+import api from '../apiConfig/config';
 
 const Bookings = () => {
+  const [query, setQuery] = useState([])
   const data = [
     {
       queryDate: "18-Jan-21",
@@ -86,6 +89,12 @@ const Bookings = () => {
     }
   ]
 
+  useEffect(() => {
+    axios.get(`${api.baseUrl}/query/getall`)
+      .then(respose => setQuery(respose.data))
+      .catch(error => console.error(error))
+  }, [])
+
   const columns = [
     {
       header: 'Select',
@@ -96,23 +105,23 @@ const Bookings = () => {
         </div>
       ),
     },
-    { header: 'Query Date', accessor: 'queryDate' },
+    { header: 'Query Date', accessor: 'query_Date' },
     {
       header: 'Name/Mobile',
       render: (row) => (
         <>
-          <div>{row.name}</div>
-          <div>{row.mobile}</div>
-          <div>{row.email}</div>
+          <div>{row.fname}</div>
+          <div>{row.contactNo}</div>
+          <div>{row.emailId}</div>
         </>
       ),
     },
-    { header: 'Type', accessor: 'type' },
-    { header: 'Description', accessor: 'description' },
+    { header: 'Type', accessor: 'queryType' },
+    // { header: 'Description', accessor: 'description' },
     { header: 'Travel Date', accessor: 'travelDate' },
-    { header: 'No. of Pax', accessor: 'pax' },
+    { header: 'No. of Pax', accessor: 'totalTravellers' },
     { header: 'Destinations', accessor: 'destinations' },
-    { header: 'Proposal', accessor: 'proposal' },
+    { header: 'Proposal', accessor: 'proposalId' },
     {
       header: 'Lead Stage',
       render: () => (
@@ -133,7 +142,7 @@ const Bookings = () => {
         </div>
       ),
     },
-    { header: 'Last Updated', accessor: 'lastUpdated' },
+    { header: 'Last Updated', accessor: 'lastUpdated_Date' },
     { header: 'Owner', accessor: 'owner' },
     {
       header: 'Action',
@@ -198,7 +207,7 @@ const Bookings = () => {
 
       <div className="w-full overflow-auto">
 
-        <TableComponent columns={columns} data={data} />
+        <TableComponent columns={columns} data={query} />
       </div>
       {/* <table className="min-w-full bg-white">
         <thead>
