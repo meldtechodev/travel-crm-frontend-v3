@@ -267,14 +267,14 @@ const NewPackageForm = ({ isOpen, onClose }) => {
       setSiteSeeingData(formattedSiteSeeing);
 
       const formattedPolicy = response[10].data.content.map((item) => ({
-
         value: item.id,
         label: item.policyName,
         description: item.policyDescription
       }));
       // console.log(first)
       setPolicyList(response[10].data.content);
-    });
+    })
+      .catch(error => console.error(error));
   }, []);
 
   const [itinerariesList, setItinerayList] = useState([

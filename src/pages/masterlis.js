@@ -211,33 +211,33 @@ const MasterList = () => {
     };
   }, []);
 
-  // useEffect(() => {
-  //   switch (activeTab) {
-  //     case 'country':
-  //       fetchData('country/getall', setCountryData, handleStatusToggle);
-  //       break;
-  //     case 'state':
-  //       fetchData('state/getall', setStateData, handleStatusToggle);
-  //       break;
-  //     case 'destination':
-  //       fetchData('destination/get', setDestinationData, handleStatusToggle);
-  //       break;
-  //     case 'hotel':
-  //       fetchData('hotel/get', setHotelData, handleStatusToggle);
-  //       break;
-  //     case 'customer':
-  //       fetchData('customer/get', setCustomerData, handleStatusToggle);
-  //       break;
-  //     case 'vendor':
-  //       fetchData('vendor/get', setVendorData, handleStatusToggle);
-  //       break;
-  //     case 'department':
-  //       fetchData('department/get', setVendorData, handleStatusToggle);
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  // }, [activeTab]);
+  useEffect(() => {
+    switch (activeTab) {
+      case 'country':
+        fetchData('country/getall', setCountryData, handleStatusToggle);
+        break;
+      case 'state':
+        fetchData('state/getall', setStateData, handleStatusToggle);
+        break;
+      case 'destination':
+        fetchData('destination/get', setDestinationData, handleStatusToggle);
+        break;
+      case 'hotel':
+        fetchData('hotel/get', setHotelData, handleStatusToggle);
+        break;
+      case 'customer':
+        fetchData('customer/get', setCustomerData, handleStatusToggle);
+        break;
+      case 'vendor':
+        fetchData('vendor/get', setVendorData, handleStatusToggle);
+        break;
+      case 'department':
+        fetchData('department/get', setVendorData, handleStatusToggle);
+        break;
+      default:
+        break;
+    }
+  }, [activeTab]);
 
 
   const tabs = [
@@ -526,44 +526,44 @@ const MasterList = () => {
               columns={tableData[activeTab].columns}
               data={tableData[activeTab].data}
             />
-                    {/* Pagination */}
-        <div className="flex justify-start items-center mt-4 space-x-4">
-          {/* Previous Page Button */}
-          <button
-            className={`text-xl text-blue-500 hover:text-blue-700 ${currentPage === 0 && "opacity-50 cursor-not-allowed"
-              }`}
-            disabled={currentPage === 0}
-            onClick={() => setCurrentPage((prev) => prev - 1)}
-          >
-            <IoArrowBack />
-          </button>
-
-          {/* Page Numbers */}
-          <div className="flex space-x-2">
-            {Array.from({ length: totalPages }, (_, index) => (
+            {/* Pagination */}
+            <div className="flex justify-start items-center mt-4 space-x-4">
+              {/* Previous Page Button */}
               <button
-                key={index}
-                className={`px-2 py-1 border rounded ${currentPage === index
-                  ? "bg-blue-500 text-white"
-                  : "text-blue-500 hover:bg-blue-100"
+                className={`text-xl text-blue-500 hover:text-blue-700 ${currentPage === 0 && "opacity-50 cursor-not-allowed"
                   }`}
-                onClick={() => setCurrentPage(index)}
+                disabled={currentPage === 0}
+                onClick={() => setCurrentPage((prev) => prev - 1)}
               >
-                {index + 1}
+                <IoArrowBack />
               </button>
-            ))}
-          </div>
 
-          {/* Next Page Button */}
-          <button
-            className={`text-xl text-blue-500 hover:text-blue-700 ${currentPage === totalPages - 1 && "opacity-50 cursor-not-allowed"
-              }`}
-            disabled={currentPage === totalPages - 1}
-            onClick={() => setCurrentPage((prev) => prev + 1)}
-          >
-            <IoArrowForward />
-          </button>
-        </div>
+              {/* Page Numbers */}
+              <div className="flex space-x-2">
+                {Array.from({ length: totalPages }, (_, index) => (
+                  <button
+                    key={index}
+                    className={`px-2 py-1 border rounded ${currentPage === index
+                      ? "bg-blue-500 text-white"
+                      : "text-blue-500 hover:bg-blue-100"
+                      }`}
+                    onClick={() => setCurrentPage(index)}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+              </div>
+
+              {/* Next Page Button */}
+              <button
+                className={`text-xl text-blue-500 hover:text-blue-700 ${currentPage === totalPages - 1 && "opacity-50 cursor-not-allowed"
+                  }`}
+                disabled={currentPage === totalPages - 1}
+                onClick={() => setCurrentPage((prev) => prev + 1)}
+              >
+                <IoArrowForward />
+              </button>
+            </div>
           </div>
         </div>
       </div>
