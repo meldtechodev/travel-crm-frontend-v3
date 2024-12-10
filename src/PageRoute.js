@@ -14,10 +14,10 @@ import ViewDesignations from './pages/ViewDesignation'
 import MasterList from './pages/masterlis'
 
 
-// import Packages from './components/Packages'
+// import Packages from './component/Packages'
 // import CountryMaster from './pages/CountryMaster'
 import PackageDashboard from './pages/PackageDashboard'
-// import CustomerProfile from './pages/CustomerProfile'
+import CustomerProfile from './pages/CustomerProfile'
 // import HotelMaster from './pages/HotelMaster'
 import Bookings from './pages/Bookings'
 import PdfFile from './pages/PdfFile'
@@ -129,14 +129,14 @@ const PageRoute = () => {
             <Route path='/' element={<Quickstart />} />
             <Route path="/dashboard" element={<Dashboard />} />
             {/* <Route path="/packages" element={<Packages />} /> */}
-            <Route path="/packageDashboard" element={<PackageDashboard />} />
-            {/* <Route path={'/package-list/:id'} element={<CustomerProfile />} /> */}
+            <Route path="/packageDashboard" element={<PackageDashboard isListView={true} />} />
+            <Route path={'/package-list/:id'} element={<CustomerProfile />} />
             <Route path="/masters" element={<MasterList />} />
             {/* <Route path="/master-list/hotel" element={<HotelMaster />} />
             <Route path="/master-list/hotel" element={<HotelMaster />} /> */}
             {/* <Route path='/master-list/hotel/:id' element={<HotelMasterAddRoom />} /> */}
             {/* <Route path="/package-view" element={<CustomerProfile />} /> */}
-            <Route path="/bookingsDashboard" element={<Bookings />} />
+            <Route path="/queryDashboard" element={<Bookings />} />
             {/* <Route path="/all-members" element={<AllMembers />} /> */}
             <Route path="/profile-page" element={<ProfilePage />} />
             {/* <Route path="/department-dashboard" element={<CompanyHierarchy />} /> */}

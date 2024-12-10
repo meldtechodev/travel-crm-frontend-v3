@@ -1,15 +1,24 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import api from "../apiConfig/config";
 import Select from "react-select";
 import { toast } from "react-toastify";
+import PdfFile from "./PdfFile";
+import jsPDF from "jspdf";
+import html2canvas from 'html2canvas';
 
 const NewQuery = ({ isOpen, onClose }) => {
   const [customer, setCustomer] = useState([]);
   const [destination, setDestination] = useState("");
   const [status, setStatus] = useState(true);
   const [user, setUser] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [queryData, setQueryData] = useState();
+
+
   const [b2b, setB2b] = useState({ value: "B2C", label: "B2C" });
+
+  const pdfRef = useRef();
 
   const RoomTypeOptions = [
     { value: "budget", label: "Budget" },
@@ -94,6 +103,59 @@ const NewQuery = ({ isOpen, onClose }) => {
     // axios.get(`${api.baseUrl}/customer/getall`)
     // .then(response => (response.data))
   }, []);
+
+  // const generatePDF = async () => {
+  //   const element = pdfRef.current; // The HTML content to convert into a PDF
+
+  //   const modalContent = document.getElementById("modal-content");
+
+  //   // if (modalContent) {
+  //   const canvas = await html2canvas(modalContent, {
+  //     scale: 2, // Improves quality
+  //   });
+
+  //   const imgData = canvas.toDataURL("image/png");
+  //   const pdf = new jsPDF("p", "mm", "a4");
+
+  //   // Adjust image dimensions for A4 size
+  //   const imgWidth = 190; // A4 width in mm (with margins)
+  //   const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+  //   pdf.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
+  //   pdf.save("data-summary.pdf");
+  // }
+
+  // html2canvas(element).then((canvas) => {
+  //   const imgData = canvas.toDataURL('image/png');
+  //   const pdf = new jsPDF();
+  //   const imgWidth = 190;
+  //   const pageHeight = 295;
+  //   const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  //   let heightLeft = imgHeight;
+  //   let position = 0;
+
+  //   // pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+  //   heightLeft -= pageHeight;
+
+  //   while (heightLeft >= 0) {
+  //     position = heightLeft - imgHeight;
+  //     pdf.addPage();
+  //     pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+  //     heightLeft -= pageHeight;
+  // }
+
+  //   pdf.save('generated.pdf');
+
+  // });
+  // const doc = new jsPDF();
+  // doc.text(`Data Summary`, 10, 10);
+  // Object.entries(formData).forEach(([key, value], index) => {
+  //   doc.text(`${key}: ${value}`, 10, 20 + index * 10);
+  // });
+  // doc.save("data-summary.pdf");
+  // };
+
+
 
   const [formData, setFormData] = useState({
     customer,
@@ -290,7 +352,7 @@ const NewQuery = ({ isOpen, onClose }) => {
   useEffect(() => {
     axios.get(`${api.baseUrl}/packages/getAll`)
       .then((response) => {
-        const formated = response.data.map((item) => ({
+        const formated = response.data.content.map((item) => ({
           ...item,
           value: item.id,
           label: item.pkName,
@@ -411,8 +473,8 @@ const NewQuery = ({ isOpen, onClose }) => {
       emailStatus: 0,
       leadStatus: 0,
       pkg: {
-        id: formData.pkg.id
-        // id: 1
+        // id: formData.pkg.id
+        id: 1
       },
       did: {
         id: formData.did
@@ -428,161 +490,163 @@ const NewQuery = ({ isOpen, onClose }) => {
       }
     }
 
-    await axios.post(`${api.baseUrl}/query/create`, payload, {
-      headers: {
-        // 'Authorization': `Bearer ${token}`,
-        'Access-Control-Allow-Origin': '*'
-      }
-    })
-      .then((response) => {
-        // setPackageItinerayData(response.data)
-        toast.success("Query saved Successfully.", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-      })
-      .catch(error => console.error(error));
+    // await axios.post(`${api.baseUrl}/query/create`, payload, {
+    //   headers: {
+    //     // 'Authorization': `Bearer ${token}`,
+    //     'Access-Control-Allow-Origin': '*'
+    //   }
+    // })
+    //   .then((response) => {
+    //     setQueryData(response.data)
+    //     toast.success("Query saved Successfully.", {
+    //       position: "top-center",
+    //       autoClose: 5000,
+    //       hideProgressBar: false,
+    //       closeOnClick: true,
+    //       pauseOnHover: true,
+    //       draggable: true,
+    //       progress: undefined,
+    //     });
+    //   })
+    //   .catch(error => console.error(error));
 
     //   console.log(payload)
 
+    setIsModalOpen(true)
   }
 
   return (
-    <div
-      className={`fixed top-0 right-0 h-full bg-gray-200 shadow-lg transform transition-transform duration-500 ${isOpen ? "translate-x-0" : "translate-x-[1050px]"
-        } mt-4 sm:mt-8 md:mt-12 w-full sm:w-[calc(100%-120px)] md:w-[800px] lg:w-[1000px] z-30`}
-    >
-      {/* "X" button positioned outside the form box */}
-      <button
-        onClick={() => onClose(true)}
-        className="absolute top-[12px] left-[-22px] font-semibold text-white text-sm bg-red-700 square px-3  py-1.5 border border-1 border-transparent hover:border-red-700 hover:bg-white hover:text-red-700"
+    <>
+      <div
+        className={`fixed top-0 right-0 h-full bg-gray-200 shadow-lg transform transition-transform duration-500 ${isOpen ? "translate-x-0" : "translate-x-[1050px]"
+          } mt-4 sm:mt-8 md:mt-12 w-full sm:w-[calc(100%-120px)] md:w-[800px] lg:w-[1000px] z-30`}
       >
-        X
-      </button>
-      <div className="flex justify-between items-center p-4 pl-8 bg-white shadow-md">
-        <h2 className="text-lg font-bold text-black">New Query</h2>
-      </div>
-      {/* Line below the title with shadow */}
-      <div className="border-b border-gray-300 shadow-sm"></div>
+        {/* "X" button positioned outside the form box */}
+        <button
+          onClick={() => onClose(true)}
+          className="absolute top-[12px] left-[-22px] font-semibold text-white text-sm bg-red-700 square px-3  py-1.5 border border-1 border-transparent hover:border-red-700 hover:bg-white hover:text-red-700"
+        >
+          X
+        </button>
+        <div className="flex justify-between items-center p-4 pl-8 bg-white shadow-md">
+          <h2 className="text-lg font-bold text-black">New Query</h2>
+        </div>
+        {/* Line below the title with shadow */}
+        <div className="border-b border-gray-300 shadow-sm"></div>
 
-      <form className="p-4 mb-4 h-[calc(100vh-160px)] overflow-y-auto">
-        <div className="mb-6">
-          <h3 className="bg-red-700 text-white p-2 rounded mb-6">
-            Basic Informations
-          </h3>
-        </div>
-        <div className="flex gap-4 mb-6 justify-between">
-          <div className="flex items-center">
-            <input
-              type="radio"
-              id="readymadePackage"
-              name="packageOption"
-              value={true}
-              className="mr-2"
-              checked={true}
-            />
-            <label htmlFor="readymadePackage" className="text-sm font-medium">
-              Package
-            </label>
+        <form className="p-4 mb-4 h-[calc(100vh-160px)] overflow-y-auto">
+          <div className="mb-6">
+            <h3 className="bg-red-700 text-white p-2 rounded mb-6">
+              Basic Informations
+            </h3>
           </div>
-          <div className="w-60">
-            <Select
-              options={[
-                { value: "B2B", label: "B2B" },
-                { value: "B2C", label: "B2C" },
+          <div className="flex gap-4 mb-6 justify-between">
+            <div className="flex items-center">
+              <input
+                type="radio"
+                id="readymadePackage"
+                name="packageOption"
+                value={true}
+                className="mr-2"
+                checked={true}
+              />
+              <label htmlFor="readymadePackage" className="text-sm font-medium">
+                Package
+              </label>
+            </div>
+            <div className="w-60">
+              <Select
+                options={[
+                  { value: "B2B", label: "B2B" },
+                  { value: "B2C", label: "B2C" },
 
-              ]}
-              value={b2b}
-              onChange={(selected) => {
-                setFormData(prev => ({ ...prev, queryType: selected.label }));
-                setB2b(selected)
-              }}
-              placeholder="Select"
-            />
+                ]}
+                value={b2b}
+                onChange={(selected) => {
+                  setFormData(prev => ({ ...prev, queryType: selected.label }));
+                  setB2b(selected)
+                }}
+                placeholder="Select"
+              />
+            </div>
           </div>
-        </div>
-        <div className="mb-6">
-          <h3 className="bg-red-700 text-white p-2 rounded">
-            Customer Details
-          </h3>
-        </div>
+          <div className="mb-6">
+            <h3 className="bg-red-700 text-white p-2 rounded">
+              Customer Details
+            </h3>
+          </div>
 
-        <div className="flex gap-2 mb-4">
-          <div className="w-1/3">
-            <label htmlFor="country" className="block text-sm font-medium mb-1">
-              Customer Name
-            </label>
-            <Select
-              options={customer}
-              value={formData.customer}
-              onChange={(selected) => setFormData(prev => ({ ...prev, customer: selected }))}
-              placeholder="Select Customer"
-            />
+          <div className="flex gap-2 mb-4">
+            <div className="w-1/3">
+              <label htmlFor="country" className="block text-sm font-medium mb-1">
+                Customer Name
+              </label>
+              <Select
+                options={customer}
+                value={formData.customer}
+                onChange={(selected) => setFormData(prev => ({ ...prev, customer: selected }))}
+                placeholder="Select Customer"
+              />
+            </div>
+            <div className="w-1/3">
+              <label htmlFor="code" className="block text-sm font-medium">
+                Email
+              </label>
+              <input
+                type="text"
+                id="code"
+                className="mt-1 p-2 w-full border rounded"
+                placeholder=" ******@.com"
+                name="code"
+                value={formData.customer.emailId}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="w-1/3">
+              <label htmlFor="countryName" className="block text-sm font-medium">
+                Phone no.
+              </label>
+              <input
+                type="text"
+                id="countryName"
+                className="mt-1 p-2 w-full border rounded"
+                placeholder=" +91..."
+                name="pCode"
+                value={formData.customer.contactNo}
+                onChange={
+                  handleInputChange
+                  // (e) => setCode(e.target.value)
+                }
+              />
+            </div>
           </div>
-          <div className="w-1/3">
-            <label htmlFor="code" className="block text-sm font-medium">
-              Email
-            </label>
-            <input
-              type="text"
-              id="code"
-              className="mt-1 p-2 w-full border rounded"
-              placeholder=" ******@.com"
-              name="code"
-              value={formData.customer.emailId}
-              onChange={handleInputChange}
-            />
+          <div className="flex gap-2 mb-4">
+            <div className="w-1/3">
+              <label htmlFor="countryName" className="block text-sm font-medium">
+                Lead Source
+              </label>
+              <Select
+                className="mt-1"
+                options={[
+                  { value: "Website", label: "Website" },
+                  { value: "LinkedIn", label: "LinkedIn" },
+                  { value: "Facebook", label: "Facebook" },
+                  { value: "Instagram", label: "Instagram" },
+                ]}
+                onChange={(selected) => setFormData(prev => ({ ...prev, leadSource: selected.value }))}
+                placeholder="Select"
+              />
+            </div>
           </div>
-          <div className="w-1/3">
-            <label htmlFor="countryName" className="block text-sm font-medium">
-              Phone no.
-            </label>
-            <input
-              type="text"
-              id="countryName"
-              className="mt-1 p-2 w-full border rounded"
-              placeholder=" +91..."
-              name="pCode"
-              value={formData.customer.contactNo}
-              onChange={
-                handleInputChange
-                // (e) => setCode(e.target.value)
-              }
-            />
+          <div className="mb-6">
+            <h3 className="bg-red-700 text-white p-2 rounded">Package Details</h3>
           </div>
-        </div>
-        <div className="flex gap-2 mb-4">
-          <div className="w-1/3">
-            <label htmlFor="countryName" className="block text-sm font-medium">
-              Lead Source
-            </label>
-            <Select
-              className="mt-1"
-              options={[
-                { value: "Website", label: "Website" },
-                { value: "LinkedIn", label: "LinkedIn" },
-                { value: "Facebook", label: "Facebook" },
-                { value: "Instagram", label: "Instagram" },
-              ]}
-              onChange={(selected) => setFormData(prev => ({ ...prev, leadSource: selected.value }))}
-              placeholder="Select"
-            />
-          </div>
-        </div>
-        <div className="mb-6">
-          <h3 className="bg-red-700 text-white p-2 rounded">Package Details</h3>
-        </div>
-        <div className="flex gap-2 mb-4">
-          <div className="w-1/2">
-            <label htmlFor="countryName" className="block text-sm font-medium mb-1">
-              From
-            </label>
-            {/* <input
+          <div className="flex gap-2 mb-4">
+            <div className="w-1/2">
+              <label htmlFor="countryName" className="block text-sm font-medium mb-1">
+                From
+              </label>
+              {/* <input
               type="text"
               id="countryName"
               className="mt-1 p-2 w-full border rounded"
@@ -591,230 +655,230 @@ const NewQuery = ({ isOpen, onClose }) => {
               value={formData.pCode}
               onChange={
                 handleInputChange */}
-            {/* }
+              {/* }
             /> */}
-            <Select
-              options={destination}
-              value={formData.fromcityid}
-              onChange={(selected) => setFormData(prev => ({ ...prev, fromcityid: selected }))}
-              placeholder="Select"
-            />
-          </div>
-          <div className="w-1/2">
-            <label
-              htmlFor="destination"
-              className="block text-sm font-medium mb-1"
-            >
-              Destination
-            </label>
-            <Select
-              options={destination}
-              value={formData.did}
-              onChange={handleDestinationChange}
-              placeholder="Select"
-            />
-          </div>
-        </div>
-        <div className="flex gap-2 mb-2">
-          <div className="w-1/2">
-            <label
-              htmlFor="destination"
-              className="block text-sm font-medium mb-1"
-            >
-              Package Name
-            </label>
-            <Select
-              options={viewPackage}
-              value={formData.pkg}
-              onChange={handlePackageChange}
-              placeholder="Select"
-            />
+              <Select
+                options={destination}
+                value={formData.fromcityid}
+                onChange={(selected) => setFormData(prev => ({ ...prev, fromcityid: selected }))}
+                placeholder="Select"
+              />
+            </div>
+            <div className="w-1/2">
+              <label
+                htmlFor="destination"
+                className="block text-sm font-medium mb-1"
+              >
+                Destination
+              </label>
+              <Select
+                options={destination}
+                value={formData.did}
+                onChange={handleDestinationChange}
+                placeholder="Select"
+              />
+            </div>
           </div>
           <div className="flex gap-2 mb-2">
-            <div className="w-1/3">
-              <label htmlFor="code" className="block text-sm font-medium">
-                Number of Paxs
-              </label>
-              <input
-                type="text"
-                id="code"
-                className="mt-1 p-2 w-full border rounded"
-                placeholder="where to start"
-                name="code"
-                value={formData.totalTravellers}
-                onChange={(e) => setFormData(prev => ({ ...prev, totalTravellers: e.target.value }))}
-              />
-            </div>
-            <div className="w-1/3">
+            <div className="w-1/2">
               <label
-                htmlFor="countryName"
-                className="block text-sm font-medium"
+                htmlFor="destination"
+                className="block text-sm font-medium mb-1"
               >
-                No of Days
+                Package Name
               </label>
-              <input
-                type="text"
-                id="countryName"
-                className="mt-1 p-2 w-full border rounded"
-                placeholder=" No of Days"
-                name="pCode"
-                value={formData.days}
-                onChange={(e) => setFormData(prev => ({ ...prev, days: e.target.value }))}
+              <Select
+                options={viewPackage}
+                value={formData.pkg}
+                onChange={handlePackageChange}
+                placeholder="Select"
               />
             </div>
-            <div className="w-1/3">
-              <label
-                htmlFor="countryName"
-                className="block text-sm font-medium"
-              >
-                No of Nights
+            <div className="flex gap-2 mb-2">
+              <div className="w-1/3">
+                <label htmlFor="code" className="block text-sm font-medium">
+                  Number of Paxs
+                </label>
+                <input
+                  type="text"
+                  id="code"
+                  className="mt-1 p-2 w-full border rounded"
+                  placeholder="where to start"
+                  name="code"
+                  value={formData.totalTravellers}
+                  onChange={(e) => setFormData(prev => ({ ...prev, totalTravellers: e.target.value }))}
+                />
+              </div>
+              <div className="w-1/3">
+                <label
+                  htmlFor="countryName"
+                  className="block text-sm font-medium"
+                >
+                  No of Days
+                </label>
+                <input
+                  type="text"
+                  id="countryName"
+                  className="mt-1 p-2 w-full border rounded"
+                  placeholder=" No of Days"
+                  name="pCode"
+                  value={formData.days}
+                  onChange={(e) => setFormData(prev => ({ ...prev, days: e.target.value }))}
+                />
+              </div>
+              <div className="w-1/3">
+                <label
+                  htmlFor="countryName"
+                  className="block text-sm font-medium"
+                >
+                  No of Nights
+                </label>
+                <input
+                  type="text"
+                  id="countryName"
+                  className="mt-1 p-2 w-full border rounded"
+                  placeholder="No of Nights"
+                  name="pCode"
+                  value={formData.nights}
+                  onChange={(e) => setFormData(prev => ({ ...prev, nights: e.target.value }))}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-between mb-6 gap-2">
+            <div className="w-1/2">
+              <label htmlFor="destinations" className="block text-sm font-medium">
+                Travel Date From
               </label>
               <input
-                type="text"
-                id="countryName"
+                type="date"
+                id="noOfNights"
+                name="travelDate"
+                value={formData.travelDate}
+                onChange={handleDateChange}
                 className="mt-1 p-2 w-full border rounded"
-                placeholder="No of Nights"
-                name="pCode"
-                value={formData.nights}
-                onChange={(e) => setFormData(prev => ({ ...prev, nights: e.target.value }))}
+                placeholder=""
+              />
+            </div>
+            <div className="w-1/2">
+              <label htmlFor="destinations" className="block text-sm font-medium">
+                Travel Date To
+              </label>
+              <input
+                type="date"
+                id="noOfNights"
+                name="toTravelDate"
+                value={formData.toTravelDate}
+                onChange={handleDateChange}
+                className="mt-1 p-2 w-full border rounded"
+                placeholder=""
               />
             </div>
           </div>
-        </div>
-        <div className="flex justify-between mb-6 gap-2">
-          <div className="w-1/2">
-            <label htmlFor="destinations" className="block text-sm font-medium">
-              Travel Date From
-            </label>
-            <input
-              type="date"
-              id="noOfNights"
-              name="travelDate"
-              value={formData.travelDate}
-              onChange={handleDateChange}
-              className="mt-1 p-2 w-full border rounded"
-              placeholder=""
-            />
-          </div>
-          <div className="w-1/2">
-            <label htmlFor="destinations" className="block text-sm font-medium">
-              Travel Date To
-            </label>
-            <input
-              type="date"
-              id="noOfNights"
-              name="toTravelDate"
-              value={formData.toTravelDate}
-              onChange={handleDateChange}
-              className="mt-1 p-2 w-full border rounded"
-              placeholder=""
-            />
-          </div>
-        </div>
-        <div className="mb-4">
-          <h3 className="bg-red-700 text-white p-2 rounded">
-            Itinerary
-          </h3>
-          <table className="min-w-full bg-white mb-4 border">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="py-2 px-4 border-r">Day</th>
-                <th className="py-2 px-4 border-r">Title</th>
-                <th className="py-2 px-4 border-r">City Name</th>
-                <th className="py-2 px-4">Meals</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Array.isArray(iti) && iti.slice(0, formData.days).map(item => (
-
-                <tr>
-                  <td className="py-2 px-4 border">
-                    {item.daynumber}
-                  </td>
-
-                  <td className="py-2 px-4 border">
-                    {item.daytitle}
-                  </td>
-
-                  <td className="py-2 px-4 border">
-                    {item.cityname}
-                  </td>
-
-                  <td className="py-2 px-4 border">
-                    {item.meals}
-                  </td>
+          <div className="mb-4">
+            <h3 className="bg-red-700 text-white p-2 rounded">
+              Itinerary
+            </h3>
+            <table className="min-w-full bg-white mb-4 border">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="py-2 px-4 border-r">Day</th>
+                  <th className="py-2 px-4 border-r">Title</th>
+                  <th className="py-2 px-4 border-r">City Name</th>
+                  <th className="py-2 px-4">Meals</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="mb-4">
-          <h3 className="bg-red-700 text-white p-2 rounded">
-            Hotel
-          </h3>
-          <table className="min-w-full bg-white mb-4 border">
-            <thead>
-              <tr className="bg-gray-100">
-                {viewHotel.map(item =>
-                  <th className="py-2 px-4 border-r">{item.category}</th>
-                )}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                {viewHotel.map(item =>
-                  <td className="py-2 px-4 border-r">
-                    <label className="block text-sm font-medium">
-                      Hotel Name
-                    </label>
-                    <p>{item.hotel?.hname}</p>
-                    <label className="block text-sm font-medium">
-                      Hotel Rating
-                    </label>
-                    <p>{item.hotel?.star_ratings}</p>
-                    <label className="block text-sm font-medium">
-                      Room Type
-                    </label>
-                    <p>{item.roomtypes?.bed_size}</p>
-                    <label className="block text-sm font-medium">
-                      Room Type
-                    </label>
-                    {/* <Select
+              </thead>
+              <tbody>
+                {Array.isArray(iti) && iti.slice(0, formData.days).map(item => (
+
+                  <tr>
+                    <td className="py-2 px-4 border">
+                      {item.daynumber}
+                    </td>
+
+                    <td className="py-2 px-4 border">
+                      {item.daytitle}
+                    </td>
+
+                    <td className="py-2 px-4 border">
+                      {item.cityname}
+                    </td>
+
+                    <td className="py-2 px-4 border">
+                      {item.meals}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="mb-4">
+            <h3 className="bg-red-700 text-white p-2 rounded">
+              Hotel
+            </h3>
+            <table className="min-w-full bg-white mb-4 border">
+              <thead>
+                <tr className="bg-gray-100">
+                  {viewHotel.map(item =>
+                    <th className="py-2 px-4 border-r">{item.category}</th>
+                  )}
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  {viewHotel.map(item =>
+                    <td className="py-2 px-4 border-r">
+                      <label className="block text-sm font-medium">
+                        Hotel Name
+                      </label>
+                      <p>{item.hotel?.hname}</p>
+                      <label className="block text-sm font-medium">
+                        Hotel Rating
+                      </label>
+                      <p>{item.hotel?.star_ratings}</p>
+                      <label className="block text-sm font-medium">
+                        Room Type
+                      </label>
+                      <p>{item.roomtypes?.bed_size}</p>
+                      <label className="block text-sm font-medium">
+                        Room Type
+                      </label>
+                      {/* <Select
                     /> */}
-                  </td>
-                )}
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div className="mb-6">
-          <h3 className="bg-red-700 text-white p-2 rounded">Booking Price</h3>
-        </div>
+                    </td>
+                  )}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="mb-6">
+            <h3 className="bg-red-700 text-white p-2 rounded">Booking Price</h3>
+          </div>
 
-        <div className="flex gap-10 mb-4">
-          <label>Basic Cost: {viewPrice.basiccost}</label>
-          <label>GST: {viewPrice.gst}</label>
-        </div>
+          <div className="flex gap-10 mb-4">
+            <label>Basic Cost: {viewPrice.basiccost}</label>
+            <label>GST: {viewPrice.gst}</label>
+          </div>
 
 
-        <div className="mb-6">
-          <h3 className="bg-red-700 text-white p-2 rounded">Policy</h3>
-        </div>
+          <div className="mb-6">
+            <h3 className="bg-red-700 text-white p-2 rounded">Policy</h3>
+          </div>
 
-        {/* Add the checkboxes below the status field */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium">Include Policies</label>
-          <div className="flex flex-col">
-            {viewPolicy.map(item =>
-              <label className="flex items-center">
-                <input type="checkbox" className="mr-2" />{item.policytitle}
-              </label>
-            )}
-            {/* <label className="flex items-center">
+          {/* Add the checkboxes below the status field */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium">Include Policies</label>
+            <div className="flex flex-col">
+              {viewPolicy.map(item =>
+                <label className="flex items-center">
+                  <input type="checkbox" className="mr-2" />{item.policytitle}
+                </label>
+              )}
+              {/* <label className="flex items-center">
               <input type="checkbox" className="mr-2" />
               Include Terms and Conditions
             </label> */}
-            {/* <label className="flex items-center">
+              {/* <label className="flex items-center">
               <input type="checkbox" className="mr-2" />
               Include Booking policy
             </label>
@@ -830,28 +894,38 @@ const NewQuery = ({ isOpen, onClose }) => {
               <input type="checkbox" className="mr-2" />
               Include Booking Person Details
             </label> */}
+            </div>
+          </div>
+        </form >
+        {/* Line with shadow above the buttons */}
+        < div className="flex justify-between items-center p-3 bg-white shadow-lg rounded w-full fixed bottom-10" >
+          <div className="flex justify-start space-x-4">
+            <button
+              type="button"
+              className="bg-red-700 text-white px-4 py-2 rounded shadow"
+              onClick={handleSubmit}
+            >
+              Submit
+            </button>
+            <button
+              type="button"
+              className="bg-red-700 text-white px-4 py-2 rounded shadow"
+            >
+              Reset
+            </button>
+          </div>
+        </div >
+      </div >
+      {isModalOpen &&
+
+        <div className="fixed inset-0 flex bg-black bg-opacity-50 w-full z-50 overflow-y-scroll  justify-center">
+          <div className="bg-white rounded-lg shadow-lg w-2/3">
+            <PdfFile data={queryData} isModalOpen={() => setIsModalOpen(false)} />
+
           </div>
         </div>
-      </form >
-      {/* Line with shadow above the buttons */}
-      < div className="flex justify-between items-center p-3 bg-white shadow-lg rounded w-full fixed bottom-10" >
-        <div className="flex justify-start space-x-4">
-          <button
-            type="button"
-            className="bg-red-700 text-white px-4 py-2 rounded shadow"
-            onClick={handleSubmit}
-          >
-            Submit
-          </button>
-          <button
-            type="button"
-            className="bg-red-700 text-white px-4 py-2 rounded shadow"
-          >
-            Reset
-          </button>
-        </div>
-      </div >
-    </div >
+      }
+    </>
   );
 };
 
