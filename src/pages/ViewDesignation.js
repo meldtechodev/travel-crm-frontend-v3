@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FaEdit, FaTrashAlt, FaSearch } from "react-icons/fa";
+import { MdOutlineSecurityUpdateGood } from "react-icons/md";
 import { FiFilter } from "react-icons/fi";
 import { IoArrowBack, IoArrowForward } from "react-icons/io5";
 import axios from "axios";
@@ -13,6 +14,11 @@ const ViewDesignations = () => {
   const [data, setData] = useState([]);
   const [selectedDesignation, setSelectedDesignation] = useState(null);
   const [addData, setAddData] = useState([]);
+  const [module, setModule] = useState([])
+  const [permissionData, setPermissionData] = useState([])
+
+  const [allDesignationModules, setAllDesignationModules] = useState([])
+  const [designationModules, setDesignationModules] = useState([])
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10); // Set the number of items per page
@@ -40,8 +46,24 @@ const ViewDesignations = () => {
   }
 
   const handlePermission = (item) => {
-    setAddData(['Permission'])
+    let sendUpdate = module.map(item => item.moduleName === 'Quickstart' || item.moduleName === 'Dashboard' ? { ...item, parentId: item.id, value: false, selectAll: false } : { ...item, value: false, selectAll: false })
+    setPermissionData(sendUpdate)
+
     setSelectedDesignation(item);
+    let update = allDesignationModules.filter(items => items.designations.id === item.id)
+    setDesignationModules(update)
+    let changeUpdate = update.map(item => item.modules)
+
+    for (let i = 0; i < changeUpdate.length; i++) {
+      let update = sendUpdate.map(item => item.id === changeUpdate[i].id ? { ...item, value: true } : item)
+      sendUpdate = [...update]
+    }
+    setDesignationModules(sendUpdate)
+    // console.log(designationModules)
+
+    setModule(sendUpdate)
+
+    setAddData(['Permission'])
   }
 
   const handleDelete = async (item) => {
@@ -52,12 +74,12 @@ const ViewDesignations = () => {
       return;
     }
 
-    await axios
-      .delete(`${api.baseUrl}/designations/deletebyid/${item.id}`)
-      .then((response) => {
-        toast.success("Designation deleted successfully.");
-      })
-      .catch((error) => console.error("Error fetching designations:", error));
+    await
+      axios.delete(`${api.baseUrl}/designations/deletebyid/${item.id}`)
+        .then((response) => {
+          toast.success("Designation deleted successfully.");
+        })
+        .catch((error) => console.error("Error fetching designations:", error));
   }
 
   const columns = [
@@ -100,7 +122,7 @@ const ViewDesignations = () => {
       render: ({ row }) => (
         <div className="flex justify-center items-center space-x-2">
           <button className="text-blue-500 hover:text-blue-700" onClick={() => handlePermission(row)}>
-            <FaEdit />
+            <MdOutlineSecurityUpdateGood />
           </button>
           <button className="text-blue-500 hover:text-blue-700" onClick={() => handleEdit(row)}>
             <FaEdit />
@@ -114,8 +136,7 @@ const ViewDesignations = () => {
   ];
 
   useEffect(() => {
-    axios
-      .get(`${api.baseUrl}/designations/getall`)
+    axios.get(`${api.baseUrl}/designations/getall`)
       .then((response) => {
         const formatData = response.data.content.map((designation) => ({
           ...designation,
@@ -123,10 +144,38 @@ const ViewDesignations = () => {
           status: designation.status ? "Active" : "Inactive",
           index: response.data.content.indexOf(designation),
         }))
-        // console.log(response.data.content)
         setData(formatData);
       })
       .catch((error) => console.error("Error fetching designations:", error));
+
+    axios.get(`${api.baseUrl}/modules/getall`)
+      .then(response => {
+        // let mod = response.data.filter(item => item.parentId === 0);
+        let perms = response.data.map(item => item.moduleName === 'Quickstart' || item.moduleName === 'Dashboard' ? { ...item, parentId: item.id, value: false, selectAll: false } : { ...item, value: false, selectAll: false })
+
+        setModule(perms)
+        // let update = []
+        // for (let i = 0; i < designationModules.length; i++) {
+        //   update = perms.map(item => item.id === designationModules[i].id ? { ...item, value: true } : item)
+        // }
+
+        // console.log(perms)
+      })
+      .catch(error => console.error(error));
+
+    axios.get(`${api.baseUrl}/designationModules/getall`)
+      .then((response) => {
+        // console.log(response.data)
+        // console.log(designationData.id)
+        // let updateData = response.data.filter(item => item.designations.id === designationData.id)
+        // console.log(updateData)
+        setAllDesignationModules(response.data)
+        // let sendUpdate = module.map(item => item.moduleName === 'Quickstart' || item.moduleName === 'Dashboard' ? { ...item, parentId: item.id, value: false, selectAll: false } : { ...item, value: false, selectAll: false })
+        // setDesignationModules(sendUpdate)
+      })
+      .catch((error) => {
+        console.error('Error fetching designation modules:', error);
+      });
   }, []);
 
   return (
@@ -215,6 +264,8 @@ const ViewDesignations = () => {
           isOpen={addData[0] === "Permission"}
           onClose={() => setAddData([])}
           designationData={selectedDesignation}
+          designationModules={designationModules}
+          setDesignationModules={setDesignationModules}
         />
       </div>
     </>

@@ -2,30 +2,25 @@ import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react'
 import api from '../apiConfig/config';
 import { UserContext } from "../contexts/userContext";
+import { valueOrDefault } from 'chart.js/helpers';
+import { upload } from '@testing-library/user-event/dist/upload';
 
-const Permission = ({ isOpen, onClose, designationData, designationModules }) => {
+const Permission = ({ isOpen, onClose, designationData, designationModules, setDesignationModules }) => {
 
   const [permissionData, setPermissionData] = useState([])
   const [ipAddress, setIpAddress] = useState()
   const [module, setModule] = useState([])
   const { user } = useContext(UserContext);
 
+  // setPermissionData(designationModules)
+  // console.log(designationModules)
+
 
   const handleToggle = (moduleId, action) => {
 
-    // console.log(moduleId, action)
-
-    // const changeModule = modulesPermission.filter(item => item.module.id === moduleId.module.id)
-    // // console.log(changeModule)
-    // const permissionChange = [...changeModule[0].permission]
-    // console.log(permissionChange)
-    // console.log(perm)
-    // const updatedActions = permissionChange.map(item => item.id === perm.id ? { ...item, value: action } : item)
-    // const final = modulesPermission.map(prev => prev.module.id === moduleId.module.id ? { ...prev, permission: updatedActions } : prev)
-    // setModulesPermission(final)
-
-    let mod = permissionData.map(item => item.id === moduleId ? { ...item, value: action } : item)
-    setPermissionData(mod)
+    let mod = designationModules.map(item => item.id === moduleId ? { ...item, value: action } : item)
+    // setDesignationModules(mod)
+    setDesignationModules(mod)
   };
 
   const handleSelectAll = (moduleId) => {
@@ -52,7 +47,7 @@ const Permission = ({ isOpen, onClose, designationData, designationModules }) =>
     // console.log(moduleId)
     // console.log(permissionData[moduleId.id].selectAll)
     // console.log(moduleId)
-    let selectval = permissionData.filter(item => item.id === moduleId.id && item.selectAll ? true : false)
+    let selectval = designationModules.filter(item => item.id === moduleId.id && item.selectAll ? true : false)
     // console.log(selectval)
     // let val = 0
     // for (let i = 0; i < selectAll.length; i++) {
@@ -63,18 +58,19 @@ const Permission = ({ isOpen, onClose, designationData, designationModules }) =>
     let data = []
     let update = []
     if (!selectval[0]) {
-      data = permissionData.map(item => item.parentId === moduleId.id ? { ...item, value: true, selectAll: true } : item)
+      data = designationModules.map(item => item.parentId === moduleId.id ? { ...item, value: true, selectAll: true } : item)
       update = data.map(item => item.id === moduleId.id ? { ...item, selectAll: true } : item)
     } else {
-      data = permissionData.map(item => item.parentId === moduleId.id || item.parentId === 0 ? { ...item, value: false, selectAll: false } : item)
+      data = designationModules.map(item => item.parentId === moduleId.id || item.parentId === 0 ? { ...item, value: false, selectAll: false } : item)
       update = data.map(item => item.id === moduleId.id ? { ...item, selectAll: false } : item)
       // console.log(data)
     }
-    setPermissionData(update)
+    setDesignationModules(update)
   };
 
 
   useEffect(() => {
+    // setPermissionData(permissionData)
     axios.get(`${api.baseUrl}/ipAddress`)
       .then(response => setIpAddress(response.data))
       .catch((error) => {
@@ -82,29 +78,22 @@ const Permission = ({ isOpen, onClose, designationData, designationModules }) =>
       });
 
     axios.get(`${api.baseUrl}/modules/getall`)
-      .then(response => {
-        let mod = response.data.filter(item => item.parentId === 0);
-        setModule(mod)
-        let perms = response.data.map(item => item.moduleName === 'Quickstart' || item.moduleName === 'Dashboard' ? { ...item, parentId: item.id, value: false, selectAll: false } : { ...item, value: false, selectAll: false })
+      .then(response =>
+        // let perms = response.data.map(item => item.moduleName === 'Quickstart' || item.moduleName === 'Dashboard' ? { ...item, parentId: item.id, value: false, selectAll: false } : { ...item, value: false, selectAll: false })
 
-        let update = []
-        for (let i = 0; i < designationModules.length; i++) {
-          update = perms.map(item => item.id === designationModules[i].id ? { ...item, value: true } : item)
-        }
-
-        console.log(update)
-        setPermissionData(update)
-      })
-      .catch(error => console.error(error));
+        setModule(response.data.filter(item => item.parentId === 0)))
+      .catch(error => console.error(error))
   }, [])
 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // console.log(designationModules)
 
-    for (let i = 0; i < permissionData.length; i++) {
+    for (let i = 0; i < designationModules.length; i++) {
       // for (let j = 0; j < modulesPermission[i].permission.length; j++) {
-      if (permissionData[i].value) {
+      if (designationModules[i].value) {
+        // console.log(designationModules[i])
         axios.post(`${api.baseUrl}/designationModules/create`, {
           "createdBy": user.name,
           "modifiedBy": user.name,
@@ -115,7 +104,7 @@ const Permission = ({ isOpen, onClose, designationData, designationModules }) =>
             "id": designationData.id
           },
           "modules": {
-            "id": permissionData[i].id
+            "id": designationModules[i].id
           }
         }
         )
@@ -125,8 +114,9 @@ const Permission = ({ isOpen, onClose, designationData, designationModules }) =>
             setPermissionData(data)
             console.log(response.data)
           })
-          .catch(error => console.error(error))
+          .catch(error => console.error(error));
       }
+
     }
   }
 
@@ -157,8 +147,8 @@ const Permission = ({ isOpen, onClose, designationData, designationModules }) =>
         </h3>
 
 
-        <div className="w-full h-full mb-2 mr-4 p-4 overflow-y-scroll ">
-          {module.map(items => (
+        <div className="w-full mb-2 mr-4 p-4 overflow-y-scroll ">
+          {module.map(items =>
             <div className="flex items-center justify-between bg-gray-100 p-2 rounded mb-2 mr-4 ">
               <div key={items.id} className="w-full gap-2 " style={{ marginTop: '20px' }}>
                 <h4>Select all of {items.moduleName}</h4>
@@ -170,7 +160,7 @@ const Permission = ({ isOpen, onClose, designationData, designationModules }) =>
                   Select All
                 </button>
                 <div className="flex w-full gap-4 mb-2">
-                  {permissionData.map(item => (item.parentId === items.id)
+                  {designationModules.map(item => item.parentId === items.id
                     && (
                       <label key={item.id} className="flex max-w-fit gap-2 my-2 items-center text-sm">
 
@@ -192,7 +182,7 @@ const Permission = ({ isOpen, onClose, designationData, designationModules }) =>
                 </div>
               </div>
             </div>
-          ))}
+          )}
         </div>
         {/* <div className="flex gap-2">
           <div className="w-1/2 mb-4">

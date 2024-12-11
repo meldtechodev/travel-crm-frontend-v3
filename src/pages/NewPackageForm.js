@@ -11,8 +11,9 @@ import { toast } from "react-toastify";
 import e from "cors";
 
 const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
-  console.log(editablePackageData);
+  // console.log(editablePackageData);
   const [nights, setNights] = useState(0);
+  const [isOverNight, setIsOverNight] = useState(false);
   const [days, setDays] = useState(0);
   const [page, setPage] = useState(1);
   const [selectedDestinations, setSelectedDestinations] = useState([]);
@@ -126,6 +127,16 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
       })
       .catch(error => console.error('Error fetching protected resource:', error))
   }, [])
+
+
+  const handleNightChange = (e) => {
+    if (packageData.nights >= e.target.value) {
+      setNights(e.target.value)
+      setIsOverNight(false)
+    } else {
+      setIsOverNight(true)
+    }
+  }
 
 
   const [formData, setFormData] = useState({
@@ -308,7 +319,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
     }))
     updatedHotels[i].hotelName = selectedOption;
     updatedHotels[i].roomTypeData = formatRoomType;
-    console.log(formatRoomType)
+    // console.log(formatRoomType)
 
     const updateVal = formItinaryData.map((prev, list) => index === list ? { ...prev, hotel: updatedHotels } : prev)
     setFormItinaryData(updateVal)
@@ -792,7 +803,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
     })
       .then((response) => {
         setPackageData(response.data)
-        console.log(response.data)
+        // console.log(response.data)
         toast.success("Package Created...", {
           position: "top-center",
           autoClose: 5000,
@@ -1429,7 +1440,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                   name="noOFDays"
                   value={nights}
                   min={0}
-                  onChange={(e) => setNights(e.target.value)}
+                  onChange={(e) => handleNightChange(e)}
                   className="mt-1 h-[38px] p-2 w-full border border-1 border-[#e5e7eb] rounded"
                   placeholder="No. of night..."
                 />
@@ -1445,6 +1456,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                 </button>
               </div>
             </div>
+            {isOverNight && <div className="flex justify-center"><p className="text-red-600">You can't add more than { } nights</p></div>}
             <div className="mb-6 gap-2">
               <label
                 htmlFor="destinations"
