@@ -12,6 +12,7 @@ import Sidebar from './component/sidebar'
 import ViewDepartments from './pages/ViewDepartment'
 import ViewDesignations from './pages/ViewDesignation'
 import MasterList from './pages/masterlis'
+import CustomerProfilePopup from './pages/CustomerProfilePopup'
 
 
 // import Packages from './component/Packages'
@@ -154,6 +155,10 @@ const PageRoute = () => {
             <Route
               path="/view-designations"
               element={<ViewDesignations />}
+            />
+             <Route
+              path="/customer-profile-popup"
+              element={<CustomerProfilePopup/>}
             />
             {/* <Route path='/' /> */}
             {/* Add other routes as needed */}
