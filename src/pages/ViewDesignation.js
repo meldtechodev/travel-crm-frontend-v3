@@ -14,9 +14,14 @@ const ViewDesignations = () => {
   const [data, setData] = useState([]);
   const [selectedDesignation, setSelectedDesignation] = useState(null);
   const [addData, setAddData] = useState([]);
+  const [module, setModule] = useState([])
+  const [permissionData, setPermissionData] = useState([])
 
   const [allDesignationModules, setAllDesignationModules] = useState([])
   const [designationModules, setDesignationModules] = useState([])
+
+  // const [allDesignationModules, setAllDesignationModules] = useState([])
+  // const [designationModules, setDesignationModules] = useState([])
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10); // Set the number of items per page
@@ -44,14 +49,23 @@ const ViewDesignations = () => {
   }
 
   const handlePermission = (item) => {
+    let sendUpdate = module.map(item => item.moduleName === 'Quickstart' || item.moduleName === 'Dashboard' ? { ...item, parentId: item.id, value: false, selectAll: false } : { ...item, value: false, selectAll: false })
+    setPermissionData(sendUpdate)
+
     setSelectedDesignation(item);
     let update = allDesignationModules.filter(items => items.designations.id === item.id)
     setDesignationModules(update)
     let changeUpdate = update.map(item => item.modules)
-    //(changeUpdate)
-    let sendUpdate = changeUpdate.map(item => item.moduleName === 'Quickstart' || item.moduleName === 'Dashboard' ? { ...item, parentId: item.id, value: false, selectAll: false } : { ...item, value: false, selectAll: false })
-    console.log(sendUpdate)
+
+    for (let i = 0; i < changeUpdate.length; i++) {
+      let update = sendUpdate.map(item => item.id === changeUpdate[i].id ? { ...item, value: true } : item)
+      sendUpdate = [...update]
+    }
     setDesignationModules(sendUpdate)
+    // console.log(designationModules)
+
+    setModule(sendUpdate)
+
     setAddData(['Permission'])
   }
 
@@ -137,13 +151,30 @@ const ViewDesignations = () => {
       })
       .catch((error) => console.error("Error fetching designations:", error));
 
+    axios.get(`${api.baseUrl}/modules/getall`)
+      .then(response => {
+        // let mod = response.data.filter(item => item.parentId === 0);
+        let perms = response.data.map(item => item.moduleName === 'Quickstart' || item.moduleName === 'Dashboard' ? { ...item, parentId: item.id, value: false, selectAll: false } : { ...item, value: false, selectAll: false })
+
+        setModule(perms)
+        // let update = []
+        // for (let i = 0; i < designationModules.length; i++) {
+        //   update = perms.map(item => item.id === designationModules[i].id ? { ...item, value: true } : item)
+        // }
+
+        // console.log(perms)
+      })
+      .catch(error => console.error(error));
+
     axios.get(`${api.baseUrl}/designationModules/getall`)
       .then((response) => {
-        console.log(response.data)
+        // console.log(response.data)
         // console.log(designationData.id)
         // let updateData = response.data.filter(item => item.designations.id === designationData.id)
         // console.log(updateData)
         setAllDesignationModules(response.data)
+        // let sendUpdate = module.map(item => item.moduleName === 'Quickstart' || item.moduleName === 'Dashboard' ? { ...item, parentId: item.id, value: false, selectAll: false } : { ...item, value: false, selectAll: false })
+        // setDesignationModules(sendUpdate)
       })
       .catch((error) => {
         console.error('Error fetching designation modules:', error);
@@ -237,6 +268,8 @@ const ViewDesignations = () => {
           onClose={() => setAddData([])}
           designationModules={designationModules}
           designationData={selectedDesignation}
+          // designationModules={designationModules}
+          setDesignationModules={setDesignationModules}
         />
       </div>
     </>
