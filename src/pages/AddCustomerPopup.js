@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import PhoneInput from "react-phone-input-2";
-import "react-phone-input-2/lib/bootstrap.css";
+// import "react-phone-input-2/lib/bootstrap.css";
 import { toast } from "react-toastify";
 import axios from "axios";
 import api from "../apiConfig/config";
@@ -144,7 +144,7 @@ const AddCustomerPopup = ({ isOpen, onClose }) => {
               </div>
 
               {/* {errors && errors.emailId && ( */}
-                {/* <p className="text-red-500 text-sm">
+              {/* <p className="text-red-500 text-sm">
                   Customer already exists <Link href="/home/customer-profile-popup">view here</Link>
                 </p> */}
               {/* // )} */}
@@ -163,9 +163,9 @@ const AddCustomerPopup = ({ isOpen, onClose }) => {
               </div>
 
               {/* {errors && errors.contactNo( */}
-                <p className="text-red-500 text-sm">
-                  Customer already exists <Link to="/home/customer-profile-popup">view here</Link>
-                </p>
+              {/* <p className="text-red-500 text-sm">
+                Customer already exists <Link to="/home/customer-profile-popup">view here</Link>
+              </p> */}
               {/* // )} */}
 
               <div className="flex space-x-2">

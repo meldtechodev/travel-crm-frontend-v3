@@ -10,7 +10,6 @@ const Permission = ({ isOpen, onClose, designationData }) => {
   const [modulesPermissionValue, setModulesPermissionValue] = useState([])
   const [module, setModule] = useState([])
 
-
   const handleToggle = (moduleId, perm, action) => {
 
     const changeModule = modulesPermission.filter(item => item.module.id === moduleId.module.id)
