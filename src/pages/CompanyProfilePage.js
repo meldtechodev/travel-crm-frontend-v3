@@ -13,6 +13,8 @@ const CompanyProfilePage = () => {
 
   const { user } = useContext(UserContext);
 
+  console.log(user)
+
   const [addData, setAddData] = useState([]);
   // const [userData, setUserData] = useState(null);
   const [designationData, setDesignationData] = useState(null);
@@ -97,7 +99,7 @@ const CompanyProfilePage = () => {
               <span className="text-gray-800">tourbom.myfreshworks.com</span>
             </div>
             <button
-              onClick={() => navigate(`/home/organization-details/${user && user.companyId}`, { state: user.company })}
+              onClick={() => navigate(`/home/organization-details/${user && user.company && user.company.id}`, { state: user.company })}
               className="text-blue-500 underline text-sm mt-2"
             >
               Edit Organization Information

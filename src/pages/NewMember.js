@@ -134,6 +134,7 @@ const NewMember = ({ isOpen, onClose }) => {
     Password: "",
     mobnumber: "",
     timezone: "Asia/Kolkata",
+    status: true
   });
 
   const handleChange = (e) => {
@@ -211,10 +212,11 @@ const NewMember = ({ isOpen, onClose }) => {
       mobnumber: formData.mobnumber,
       password: formData.Password,
       timezone: formData.timezone,
-      role: selectedRole ? [selectedRole.value] : [],
-      company: selectedCompany ? [selectedCompany.value] : [],
-      department: selectedDepartment ? [selectedDepartment.value] : [],
-      designation: selectedDesignation ? [selectedDesignation.value] : [],
+      status: formData.status,
+      roleId: selectedRole ? selectedRole.value : null,
+      companyId: selectedCompany ? selectedCompany.value : null,
+      departmentId: selectedDepartment ? selectedDepartment.value : null,
+      designationId: selectedDesignation ? selectedDesignation.value : null,
     };
 
     try {
@@ -235,6 +237,8 @@ const NewMember = ({ isOpen, onClose }) => {
         lastName: "",
         Email: "",
         Password: "",
+        mobnumber: "",
+        status: true
       });
       setSelectedRole(null); // Clear role selection
     } catch (error) {
@@ -254,6 +258,8 @@ const NewMember = ({ isOpen, onClose }) => {
       lastName: "",
       Email: "",
       Password: "",
+      mobnumber: "",
+      status: true
     });
     setSelectedRole(null); // Clear role selection
     setErrors({}); // Clear errors

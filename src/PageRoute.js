@@ -91,7 +91,7 @@ const PageRoute = () => {
   }
 
   // Example usage to make an authenticated request
-  const [modulePermission, setModulePermission] = useState([])
+  // const [modulePermission, setModulePermission] = useState([])
   useEffect(() => {
     getDecryptedToken()
       .then((token) => {
@@ -110,9 +110,9 @@ const PageRoute = () => {
       );
 
 
-    axios.get(`${api.baseUrl}/permissions/getall`)
-      .then(response => setModulePermission(response.data))
-      .catch(error => console.error(error))
+    // axios.get(`${api.baseUrl}/permissions/getall`)
+    //   .then(response => setModulePermission(response.data))
+    //   .catch(error => console.error(error))
   }, []);
 
 

@@ -87,17 +87,15 @@ function Login() {
 
     try {
       const response = await axios.post(
-        `${api.baseUrl}/login`,
-        {
-          email: values.email,
-          password: values.password,
+        `${api.baseUrl}/login`, {
+        email: values.email,
+        password: values.password,
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
         },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-          },
-        }
+      }
       );
 
       const token = response.data;
@@ -137,9 +135,10 @@ function Login() {
     }
   };
 
-  // useEffect(() => {
-  //   localStorage.clear();
-  // }, []);
+  useEffect(() => {
+    localStorage.clear();
+    navigate('/login')
+  }, []);
 
   return (
     <div className="min-h-screen flex overflow-hidden max-w-full">

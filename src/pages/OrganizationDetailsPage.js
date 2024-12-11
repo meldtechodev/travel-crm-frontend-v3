@@ -21,16 +21,16 @@ const OrganizationDetailsPage = () => {
   const params = useParams();
   const organizationId = params.id;
 
-  useEffect(() => {
-    if (organizationId) {
-      axios.get(`${api.baseUrl}/company/getbyid/${organizationId}`).then((res) => {
-        setOrganizationData(res.data);
-      });
-    }
-  }, [organizationId]);
+  // console.log(organizationId)
 
   useEffect(() => {
-    if (organizationData) {
+    if (organizationId) {
+      axios.get(`${api.baseUrl}/company/getbyid/${organizationId}`)
+        .then((res) => {
+          setOrganizationData(res.data);
+          console.log(res.data)
+        });
+
       setFormData({
         organizationName: organizationData.companyname || "",
         organizationEmail: organizationData.companyemail || "",
@@ -42,7 +42,13 @@ const OrganizationDetailsPage = () => {
         organizationLogo: organizationData.companylogo || null,
       });
     }
-  }, [organizationData]);
+  }, [organizationId]);
+
+  // useEffect(() => {
+  //   if (organizationData) {
+
+  //   }
+  // }, [organizationData]);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -56,7 +62,7 @@ const OrganizationDetailsPage = () => {
     const file = event.target.files[0];
     setFormData((prevState) => ({
       ...prevState,
-      organizationLogo: file,
+      image: file,
     }));
   };
 
@@ -80,13 +86,33 @@ const OrganizationDetailsPage = () => {
       return;
     }
 
-    await axios.post(`${api.baseUrl}/company/updateby/${organizationId}`, formData).then(
+
+    // formData.append('createdby', "alex");
+    // formData.append('modifiedby', "alex");
+    // formData.append('isdelete', false);
+
+    Object.keys(formData).forEach((key, value) => {
+      // if (formData[key] !== null && formData[key] !== undefined) {
+      console.log(key, formData[value]);
+      // }
+    });
+
+    await axios.post(`${api.baseUrl}/company/updateby/${organizationId}`, formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Access-Control-Allow-Origin': '*'
+        }
+      }
+    ).then(
       (res) => {
         console.log(res.data);
         toast.success("Organization details saved successfully!", {
           position: "top-right",
         });
-      });
+      })
+      .catch(error => console.error(error))
+      ;
   };
 
   const handleCancel = () => {
@@ -322,6 +348,7 @@ const OrganizationDetailsPage = () => {
               <button
                 type="submit"
                 className="bg-blue-500 text-white px-4 py-2 rounded"
+
               >
                 Save Changes
               </button>

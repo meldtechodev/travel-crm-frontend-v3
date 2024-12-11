@@ -13,7 +13,7 @@ const App = () => {
   const navigate = useNavigate();
   const [allUsers, setAllUsers] = useState([])
 
-  const {isAuthenticated, handleLogout, isLoading} = useContext(UserContext);
+  const { isAuthenticated, handleLogout, isLoading } = useContext(UserContext);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -22,7 +22,7 @@ const App = () => {
       }
     }, 60000); // Check every 60 seconds
 
-    // Clean up the interval on component unmount
+
     return () => clearInterval(interval);
 
   }, []);
@@ -60,6 +60,10 @@ const App = () => {
   // const ProtectedRoute = ({ children }) => {
   //   return isAuthenticated ? children : allUsers.length === 0 ? <Navigate to="/login" /> : <Navigate to="/login" />;
   // };
+
+  if (!isAuthenticated) {
+    localStorage.clear();
+  }
 
   if (isLoading) {
     return <div>Loading...</div>;

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FaEdit, FaTrashAlt, FaSearch } from "react-icons/fa";
+import { MdOutlineSecurityUpdateGood } from "react-icons/md";
 import { FiFilter } from "react-icons/fi";
 import { IoArrowBack, IoArrowForward } from "react-icons/io5";
 import axios from "axios";
@@ -13,6 +14,9 @@ const ViewDesignations = () => {
   const [data, setData] = useState([]);
   const [selectedDesignation, setSelectedDesignation] = useState(null);
   const [addData, setAddData] = useState([]);
+
+  const [allDesignationModules, setAllDesignationModules] = useState([])
+  const [designationModules, setDesignationModules] = useState([])
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10); // Set the number of items per page
@@ -40,8 +44,15 @@ const ViewDesignations = () => {
   }
 
   const handlePermission = (item) => {
-    setAddData(['Permission'])
     setSelectedDesignation(item);
+    let update = allDesignationModules.filter(items => items.designations.id === item.id)
+    setDesignationModules(update)
+    let changeUpdate = update.map(item => item.modules)
+    //(changeUpdate)
+    let sendUpdate = changeUpdate.map(item => item.moduleName === 'Quickstart' || item.moduleName === 'Dashboard' ? { ...item, parentId: item.id, value: false, selectAll: false } : { ...item, value: false, selectAll: false })
+    console.log(sendUpdate)
+    setDesignationModules(sendUpdate)
+    setAddData(['Permission'])
   }
 
   const handleDelete = async (item) => {
@@ -52,12 +63,12 @@ const ViewDesignations = () => {
       return;
     }
 
-    await axios
-      .delete(`${api.baseUrl}/designations/deletebyid/${item.id}`)
-      .then((response) => {
-        toast.success("Designation deleted successfully.");
-      })
-      .catch((error) => console.error("Error fetching designations:", error));
+    await
+      axios.delete(`${api.baseUrl}/designations/deletebyid/${item.id}`)
+        .then((response) => {
+          toast.success("Designation deleted successfully.");
+        })
+        .catch((error) => console.error("Error fetching designations:", error));
   }
 
   const columns = [
@@ -100,7 +111,7 @@ const ViewDesignations = () => {
       render: ({ row }) => (
         <div className="flex justify-center items-center space-x-2">
           <button className="text-blue-500 hover:text-blue-700" onClick={() => handlePermission(row)}>
-            <FaEdit />
+            <MdOutlineSecurityUpdateGood />
           </button>
           <button className="text-blue-500 hover:text-blue-700" onClick={() => handleEdit(row)}>
             <FaEdit />
@@ -114,8 +125,7 @@ const ViewDesignations = () => {
   ];
 
   useEffect(() => {
-    axios
-      .get(`${api.baseUrl}/designations/getall`)
+    axios.get(`${api.baseUrl}/designations/getall`)
       .then((response) => {
         const formatData = response.data.content.map((designation) => ({
           ...designation,
@@ -123,10 +133,21 @@ const ViewDesignations = () => {
           status: designation.status ? "Active" : "Inactive",
           index: response.data.content.indexOf(designation),
         }))
-        // console.log(response.data.content)
         setData(formatData);
       })
       .catch((error) => console.error("Error fetching designations:", error));
+
+    axios.get(`${api.baseUrl}/designationModules/getall`)
+      .then((response) => {
+        console.log(response.data)
+        // console.log(designationData.id)
+        // let updateData = response.data.filter(item => item.designations.id === designationData.id)
+        // console.log(updateData)
+        setAllDesignationModules(response.data)
+      })
+      .catch((error) => {
+        console.error('Error fetching designation modules:', error);
+      });
   }, []);
 
   return (
@@ -214,6 +235,7 @@ const ViewDesignations = () => {
         <Permission
           isOpen={addData[0] === "Permission"}
           onClose={() => setAddData([])}
+          designationModules={designationModules}
           designationData={selectedDesignation}
         />
       </div>
