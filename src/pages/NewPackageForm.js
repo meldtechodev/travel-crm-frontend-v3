@@ -339,11 +339,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
     }));
     updatedHotels[i].hotelName = selectedOption;
     updatedHotels[i].roomTypeData = formatRoomType;
-<<<<<<< HEAD
-    // console.log(formatRoomType)
-=======
     console.log(formatRoomType);
->>>>>>> 76e0e6aee709855b96a2d081bc1edd2ac90559af
 
     const updateVal = formItinaryData.map((prev, list) =>
       index === list ? { ...prev, hotel: updatedHotels } : prev
@@ -904,13 +900,8 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
         },
       })
       .then((response) => {
-<<<<<<< HEAD
         setPackageData(response.data)
         // console.log(response.data)
-=======
-        setPackageData(response.data);
-        console.log(response.data);
->>>>>>> 76e0e6aee709855b96a2d081bc1edd2ac90559af
         toast.success("Package Created...", {
           position: "top-center",
           autoClose: 5000,
@@ -930,7 +921,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
       image: e.target.files[0],
     });
   };
-  const handleSupplierChange = () => {};
+  const handleSupplierChange = () => { };
 
   const handleStartCityChange = (selectedStartCity) => {
     setSelectedStartCity(selectedStartCity);
@@ -1052,9 +1043,8 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
 
   return (
     <div
-      className={`fixed top-8 right-0 h-full bg-gray-200 shadow-lg transform transition-transform duration-500 ${
-        isOpen ? "translate-x-0" : `translate-x-[1050px]`
-      } mt-4 sm:top-18 md:top-18 lg:w-[950px] sm:w-full md:w-[700px] z-10`}
+      className={`fixed top-8 right-0 h-full bg-gray-200 shadow-lg transform transition-transform duration-500 ${isOpen ? "translate-x-0" : `translate-x-[1050px]`
+        } mt-4 sm:top-18 md:top-18 lg:w-[950px] sm:w-full md:w-[700px] z-10`}
     >
       <button
         onClick={onClose}
@@ -1172,10 +1162,10 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                   value={selectedStartCity}
                   onChange={handleStartCityChange}
                   options={destination}
-                  // components={{ Option: CustomOption }}
-                  // closeMenuOnSelect={true}
-                  // hideSelectedOptions={true}
-                  // isClearable={true}
+                // components={{ Option: CustomOption }}
+                // closeMenuOnSelect={true}
+                // hideSelectedOptions={true}
+                // isClearable={true}
                 />
               </div>
               <div className="w-1/3 h-full">
@@ -1190,10 +1180,10 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                   value={selectedEndCity}
                   onChange={handleEndCityChange}
                   options={destination}
-                  // components={{ Option: CustomOption }}
-                  // closeMenuOnSelect={true}
-                  // hideSelectedOptions={true}
-                  // isClearable={true}
+                // components={{ Option: CustomOption }}
+                // closeMenuOnSelect={true}
+                // hideSelectedOptions={true}
+                // isClearable={true}
                 />
               </div>
             </div>
@@ -1275,7 +1265,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                   closeMenuOnSelect={false}
                   hideSelectedOptions={false}
                   isClearable={true}
-                  // value={packageTheme}
+                // value={packageTheme}
                 />
               </div>
               <div className="w-full mb-6">
@@ -1379,7 +1369,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                   className="w-full text-gray-700 mt-1 p-[4.5px] bg-white rounded border border-gray-200"
                   name="image"
                   onChange={(e) => setPkImage(e.target.files[0])}
-                  // value={pkImage}
+                // value={pkImage}
                 />
               </div>
               {isFixedDeparture && (
@@ -1607,9 +1597,8 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                       <button>{openItems[index] ? "-" : "+"} </button>
                     </div>
                     <div
-                      className={`accordion-content overflow-x-hidden w-full transition-[max-height] duration-1500 ease-in-out ${
-                        openItems[index] ? "max-h-fit" : "max-h-0"
-                      }`}
+                      className={`accordion-content overflow-x-hidden w-full transition-[max-height] duration-1500 ease-in-out ${openItems[index] ? "max-h-fit" : "max-h-0"
+                        }`}
                     >
                       {/* <div className="w-full"> */}
 
