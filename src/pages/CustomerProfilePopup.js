@@ -1,8 +1,10 @@
 import React from "react";
+import NewQuery from "../pages/NewQuery";
 import { FaTrash } from "react-icons/fa6";
 
 const CustomerProfile = () => {
   const [tab, setTab] = React.useState("profile");
+  const [addData, setAddData] = React.useState([]);
 
   return (
     <div className="p-4 w-full mb-14">
@@ -11,7 +13,7 @@ const CustomerProfile = () => {
           <div className="mb-2 md:mb-0">
             <p>Customer Name : Mr. Gaurav Kr Gupta</p>
             <p>Owner Name : Gaurav Gupta</p>
-            <p>Last Remark :</p>
+            {/*<p>Last Remark :</p>*/}
           </div>
           <div className="mb-2 md:mb-0">
             <p>Contact No : 8899008899</p>
@@ -19,26 +21,47 @@ const CustomerProfile = () => {
           </div>
           <div className="mb-2 md:mb-0">
             <p>Email ID : abc@gmail.com</p>
+            <p>Lead Source: Google</p>
           </div>
           <div className="mb-2 md:mb-0">
             <p>Active Since : 02-Aug-17 05:26:00</p>
           </div>
         </div>
         <div className="flex flex-col md:flex-row justify-between items-center mb-4">
+          {/* 
           <button className="bg-green-500 text-white px-4 py-2 rounded">
             + Add Remarks
-          </button>
+          </button> 
+          */}
           <div className="flex space-x-2">
+            {/*
             <button className="bg-blue-500 text-white px-4 py-2 rounded">
               + Facebook
             </button>
             <button className="bg-yellow-500 text-white px-4 py-2 rounded">
               + To Do
-            </button>
-            <button className="bg-red-500 text-white px-4 py-2 rounded">
+            </button> 
+             */}
+            <button className="bg-red-500 text-white px-4 py-2 rounded"
+             onClick={() => {
+                setAddData([]);
+                setAddData(["NewQuery"]);
+              }}
+            >
               + New Query
             </button>
           </div>
+           <div
+                className="submenu-menu"
+                style={{
+                  right: addData[0] === "NewQuery" ? "0" : "-100%",
+                }}
+              >
+                <NewQuery
+                  isOpen={addData[0] === "NewQuery"}
+                  onClose={() => setAddData([])}
+                />
+              </div>
         </div>
       </div>
 
@@ -48,11 +71,11 @@ const CustomerProfile = () => {
             "profile",
             "queries",
             "bookings",
-            "todos",
-            "chats",
-            "contacts",
-            "feedback",
-            "remarks",
+            // "todos",
+            // "chats",
+            // "contacts",
+            // "feedback",
+            // "remarks",
           ].map((item) => (
             <button
               key={item}
@@ -88,7 +111,7 @@ const CustomerProfile = () => {
         <div className="bg-white p-4 rounded shadow w-full md:w-1/2">
           <div className="flex justify-between items-center mb-4">
             <p className="font-bold">I want to go :</p>
-            <button className="bg-gray-200 px-4 py-2 rounded">+ Add</button>
+            {/* <button className="bg-gray-200 px-4 py-2 rounded">+ Add</button> */}
           </div>
           <table className="w-full">
             <thead>
@@ -130,7 +153,11 @@ const CustomerProfile = () => {
               </tr>
               <tr className="border-b">
                 <td className="p-2">Passport:</td>
-                <td className="p-2">31155895 (20-Sep-24)</td>
+                <td className="p-2">ABCD45560</td>
+              </tr>
+              <tr className="border-b">
+                <td className="p-2">Adhar:</td>
+                <td className="p-2">787845649899</td>
               </tr>
               <tr>
                 <td className="p-2">Marital Status:</td>
