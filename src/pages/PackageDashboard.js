@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaCaretDown, FaFilter, FaSort, FaArrowsAltH, FaPlus, FaEdit, FaTrashAlt, FaSearch } from "react-icons/fa";
+import { FaCaretDown, FaFilter, FaSort, FaArrowsAltH, FaPlus, FaEdit, FaTrashAlt, FaSearch ,FaEye } from "react-icons/fa";
 import axios from "axios";
 import api from "../apiConfig/config";
 import TableComponent from '../component/TableComponent';
@@ -117,39 +117,24 @@ const ListView = () => {
     { header: "To City", render: ({ row }) => ViewDestination(row.toCityId) },
     { header: "Category", accessor: "pkCategory" },
     { header: "Type", accessor: "packageType" },
-    {
-      header: 'Status', render: (({ row }) => <div className="flex items-center justify-center">
-        <label className="relative inline-flex items-center cursor-pointer">
-          <input
-            type="checkbox"
-            className="sr-only peer"
-            checked={row.status}
-            onChange={() => handleStatusToggle(row.id)}
-          />
-          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:bg-green-500 dark:bg-gray-300 dark:peer-focus:ring-green-800">
-            <div
-              className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${row.status ? "translate-x-5" : ""
-                }`}
-            ></div>
-          </div>
-        </label>
-      </div>)
-    },
     { header: "Days/Nights", render: ({ row }) => `${row.days}/${row.nights}` },
     {
       header: "Action",
       render: (row) => (
         <div className="flex gap-2 justify-center">
-          <button onClick={() => handleView(row.row)}>view</button>
-          <FaEdit
-            className="text-purple-600 cursor-pointer"
-            onClick={() => setAddData(['New Package'])}
-          />
-          <FaTrashAlt
-            className="text-red-600 cursor-pointer"
-          // onClick={() => handleDelete(item)}
-          />
-        </div>
+  <FaEye
+    className="text-blue-600 cursor-pointer"
+    onClick={() => handleView(row.row)}
+  />
+  <FaEdit
+    className="text-purple-600 cursor-pointer"
+    onClick={() => setAddData(['New Package'])}
+  />
+  <FaTrashAlt
+    className="text-red-600 cursor-pointer"
+    // onClick={() => handleDelete(item)}
+  />
+</div>
       )
     },
   ]
