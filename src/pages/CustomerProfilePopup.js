@@ -42,8 +42,9 @@ const CustomerProfile = () => {
               + To Do
             </button> 
              */}
-            <button className="bg-red-500 text-white px-4 py-2 rounded"
-             onClick={() => {
+            <button
+              className="bg-red-500 text-white px-4 py-2 rounded"
+              onClick={() => {
                 setAddData([]);
                 setAddData(["NewQuery"]);
               }}
@@ -51,17 +52,17 @@ const CustomerProfile = () => {
               + New Query
             </button>
           </div>
-           <div
-                className="submenu-menu"
-                style={{
-                  right: addData[0] === "NewQuery" ? "0" : "-100%",
-                }}
-              >
-                <NewQuery
-                  isOpen={addData[0] === "NewQuery"}
-                  onClose={() => setAddData([])}
-                />
-              </div>
+          <div
+            className="submenu-menu"
+            style={{
+              right: addData[0] === "NewQuery" ? "0" : "-100%",
+            }}
+          >
+            <NewQuery
+              isOpen={addData[0] === "NewQuery"}
+              onClose={() => setAddData([])}
+            />
+          </div>
         </div>
       </div>
 
@@ -107,6 +108,74 @@ const CustomerProfile = () => {
         </div>
       </div>
 
+      <div className="flex flex-col md:flex-row space-x-0 md:space-x-4 mt-4">
+        <div className="bg-white p-4 rounded shadow w-full md:w-1/2">
+          <div className="flex justify-between items-center mb-4">
+            <p className="font-bold">I want to go :</p>
+            {/* <button className="bg-gray-200 px-4 py-2 rounded">+ Add</button> */}
+          </div>
+          <table className="w-full">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="p-2">Destination</th>
+                <th className="p-2">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {["Goa (India)", "(Singapore)", "(USA)", "Goa (India)"].map(
+                (destination, index) => (
+                  <tr key={index} className="border-b">
+                    <td className="p-2 text-center">{destination}</td>
+                    <td className="p-2 text-center">
+                      <button className="text-red-500">
+                        <FaTrash />
+                      </button>
+                    </td>
+                  </tr>
+                )
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="bg-white p-4 rounded shadow w-full md:w-1/2 mt-4 md:mt-0">
+          <p className="font-bold mb-4">Customer Profile / Preferences</p>
+          <table className="w-full">
+            <tbody>
+              <tr className="border-b">
+                <td className="p-2">Food:</td>
+                <td className="p-2">Veg, Jain/Satwik</td>
+              </tr>
+              <tr className="border-b">
+                <td className="p-2">Hotel:</td>
+                <td className="p-2">
+                  1 Star, 2 Star, 3 Star, 4 Star, 5 Star, Any Star
+                </td>
+              </tr>
+              <tr className="border-b">
+                <td className="p-2">Passport:</td>
+                <td className="p-2">ABCD45560</td>
+              </tr>
+              <tr className="border-b">
+                <td className="p-2">Adhar:</td>
+                <td className="p-2">787845649899</td>
+              </tr>
+              <tr>
+                <td className="p-2">Marital Status:</td>
+                <td className="p-2">
+                  <select className="border p-2 rounded w-full">
+                    <option>Select your status</option>
+                    <option value="">Select Marital Status</option>
+                    <option value="Married">Married</option>
+                    <option value="Single">Single</option>
+                    <option value="Divorced">Divorced</option>
+                  </select>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
       <div className="flex flex-col md:flex-row space-x-0 md:space-x-4 mt-4">
         <div className="bg-white p-4 rounded shadow w-full md:w-1/2">
           <div className="flex justify-between items-center mb-4">
