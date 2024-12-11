@@ -1,140 +1,131 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import api from '../apiConfig/config';
+import { UserContext } from "../contexts/userContext";
 
-const Permission = ({ isOpen, onClose, designationData }) => {
+const Permission = ({ isOpen, onClose, designationData, designationModules }) => {
 
   const [permissionData, setPermissionData] = useState([])
-  const [modulePermission, setModulePermission] = useState([])
-  const [modulesPermission, setModulesPermission] = useState([])
-  const [modulesPermissionValue, setModulesPermissionValue] = useState([])
+  const [ipAddress, setIpAddress] = useState()
   const [module, setModule] = useState([])
+  const { user } = useContext(UserContext);
 
-  const handleToggle = (moduleId, perm, action) => {
 
-    const changeModule = modulesPermission.filter(item => item.module.id === moduleId.module.id)
-    // console.log(changeModule)
-    const permissionChange = [...changeModule[0].permission]
-    console.log(permissionChange)
-    console.log(perm)
-    const updatedActions = permissionChange.map(item => item.id === perm.id ? { ...item, value: action } : item)
-    const final = modulesPermission.map(prev => prev.module.id === moduleId.module.id ? { ...prev, permission: updatedActions } : prev)
-    setModulesPermission(final)
+  const handleToggle = (moduleId, action) => {
+
+    // console.log(moduleId, action)
+
+    // const changeModule = modulesPermission.filter(item => item.module.id === moduleId.module.id)
+    // // console.log(changeModule)
+    // const permissionChange = [...changeModule[0].permission]
+    // console.log(permissionChange)
+    // console.log(perm)
+    // const updatedActions = permissionChange.map(item => item.id === perm.id ? { ...item, value: action } : item)
+    // const final = modulesPermission.map(prev => prev.module.id === moduleId.module.id ? { ...prev, permission: updatedActions } : prev)
+    // setModulesPermission(final)
+
+    let mod = permissionData.map(item => item.id === moduleId ? { ...item, value: action } : item)
+    setPermissionData(mod)
   };
 
-  const handleSelectAll = (module) => {
+  const handleSelectAll = (moduleId) => {
 
-    let selectAll = false
+    // let selectAll = false
     // const updatedActions = []
-    const changeModule = modulePermission.filter(item => item.id === module.id)
-    const permissionChange = [...changeModule[0].permission]
-    for (let i = 0; i < permissionChange.length; i++) {
-      if (!permissionChange[i].value) {
-        selectAll = true
-        break
-      }
-    }
-    if (selectAll) {
-      const updatedActions = permissionChange.map(item => ({ ...item, value: true }))
-      const final = modulePermission.map(prev => prev.id === module.id ? { ...prev, permission: updatedActions } : prev)
-      setModulePermission(final)
+    // const changeModule = modulePermission.filter(item => item.id === module.id)
+    // const permissionChange = [...changeModule[0].permission]
+    // for (let i = 0; i < permissionChange.length; i++) {
+    //   if (!permissionChange[i].value) {
+    //     selectAll = true
+    //     break
+    //   }
+    // }
+    // if (selectAll) {
+    //   const updatedActions = permissionChange.map(item => ({ ...item, value: true }))
+    //   const final = modulePermission.map(prev => prev.id === module.id ? { ...prev, permission: updatedActions } : prev)
+    //   setModulePermission(final)
+    // } else {
+    //   const updatedActions = permissionChange.map(item => ({ ...item, value: false }))
+    //   const final = modulePermission.map(prev => prev.id === module.id ? { ...prev, permission: updatedActions } : prev)
+    //   setModulePermission(final)
+    // }
+    // console.log(moduleId)
+    // console.log(permissionData[moduleId.id].selectAll)
+    // console.log(moduleId)
+    let selectval = permissionData.filter(item => item.id === moduleId.id && item.selectAll ? true : false)
+    // console.log(selectval)
+    // let val = 0
+    // for (let i = 0; i < selectAll.length; i++) {
+    //   if (!selectAll[i]) {
+    //     val += 1
+    //   }
+    // }
+    let data = []
+    let update = []
+    if (!selectval[0]) {
+      data = permissionData.map(item => item.parentId === moduleId.id ? { ...item, value: true, selectAll: true } : item)
+      update = data.map(item => item.id === moduleId.id ? { ...item, selectAll: true } : item)
     } else {
-      const updatedActions = permissionChange.map(item => ({ ...item, value: false }))
-      const final = modulePermission.map(prev => prev.id === module.id ? { ...prev, permission: updatedActions } : prev)
-      setModulePermission(final)
+      data = permissionData.map(item => item.parentId === moduleId.id || item.parentId === 0 ? { ...item, value: false, selectAll: false } : item)
+      update = data.map(item => item.id === moduleId.id ? { ...item, selectAll: false } : item)
+      // console.log(data)
     }
+    setPermissionData(update)
   };
 
 
   useEffect(() => {
-    axios.get(`${api.baseUrl}/permissions/getall`)
+    axios.get(`${api.baseUrl}/ipAddress`)
+      .then(response => setIpAddress(response.data))
+      .catch((error) => {
+        console.error('Error fetching IP address:', error);
+      });
+
+    axios.get(`${api.baseUrl}/modules/getall`)
       .then(response => {
-        setPermissionData(response.data);
-        // console.log(res.data)
+        let mod = response.data.filter(item => item.parentId === 0);
+        setModule(mod)
+        let perms = response.data.map(item => item.moduleName === 'Quickstart' || item.moduleName === 'Dashboard' ? { ...item, parentId: item.id, value: false, selectAll: false } : { ...item, value: false, selectAll: false })
 
-        const pModuleSet = new Set(response.data.map(items => items.modules.id))
-        const pModuleArr = [...pModuleSet]
-        const pModuleArrList = []
-        const permModuleArrList = []
-        const permModuleArrLists = []
+        let update = []
+        for (let i = 0; i < designationModules.length; i++) {
+          update = perms.map(item => item.id === designationModules[i].id ? { ...item, value: true } : item)
+        }
 
-        // console.log(pModuleArr)
-
-        axios.get(`${api.baseUrl}/modules/getall`)
-          .then(res => {
-            setModule(res.data);
-            for (let i = 0; i < pModuleArr.length; i++) {
-              const data = res.data.filter(item => item.id === pModuleArr[i])
-              pModuleArrList.push(data[0])
-              // console.log(data[0])
-            }
-            pModuleArrList.forEach(items => {
-              const filterPerm = response.data.filter(item => item.modules.id === items.id)
-              permModuleArrList.push(items)
-              // console.log(filterPerm)
-              // console.log(items)
-
-              permModuleArrLists.push({
-                module: items,
-                permission: filterPerm.map(item => ({
-                  ...item,
-                  value: false
-                }))
-              })
-            })
-
-            setModulesPermission(permModuleArrLists)
-
-            console.log(permModuleArrLists)
-          })
-          .catch(error => console.error(error));
-
-        // console.log(permModuleArrList)
-        // pModuleArrList.map(item => item.modules.id)
-        // console.log(permModuleArrList)
-
-
-
-        // moduleFormat.forEach(items => {
-        //   const formatPerm = res.data.filter(item => item.modules.id === items.id)
-        //   if (formatPerm.length !== 0) {
-        //     const formatP = formatPerm.map(item => ({ ...item, value: false }))
-        //     const perm = {
-        //       id: items.id,
-        //       module: items.moduleName,
-        //       permission: formatP
-        //     }
-        //     modulePermission.push(perm)
-        //   }
-        // })
+        console.log(update)
+        setPermissionData(update)
       })
       .catch(error => console.error(error));
-    // console.log(modulesPermission)
   }, [])
 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    for (let i = 0; i < modulesPermission.length; i++) {
-      for (let j = 0; j < modulesPermission[i].permission.length; j++) {
-        if (modulesPermission[i].permission[j].value) {
-          axios.post(`${api.baseUrl}/designationPermission/create`, {
-            "createdBy": "Anshul",
-            "modifiedBy": "Anshul",
-            "ipaddress": "14.11.223.21",
-            "status": 1,
-            "isdelete": 0,
-            "designations": {
-              "id": designationData.id
-            },
-            "permissions": {
-              "id": modulesPermission[i].permission[j].id
-            }
+    for (let i = 0; i < permissionData.length; i++) {
+      // for (let j = 0; j < modulesPermission[i].permission.length; j++) {
+      if (permissionData[i].value) {
+        axios.post(`${api.baseUrl}/designationModules/create`, {
+          "createdBy": user.name,
+          "modifiedBy": user.name,
+          "ipaddress": ipAddress,
+          "status": 1,
+          "isdelete": 0,
+          "designations": {
+            "id": designationData.id
+          },
+          "modules": {
+            "id": permissionData[i].id
           }
-          ).then(response => alert(response.data))
-            .catch(error => console.error(error))
         }
+        )
+          .then(response => {
+            let data = permissionData.map(item => ({ ...item, value: false, selectAll: false }))
+            onClose(true)
+            setPermissionData(data)
+            console.log(response.data)
+          })
+          .catch(error => console.error(error))
       }
     }
   }
@@ -142,26 +133,35 @@ const Permission = ({ isOpen, onClose, designationData }) => {
   return (
     <>
       <div
-        className={`fixed top-0 right-0 h-full bg-gray-200 shadow-lg transform transition-transform duration-500 z-50 ${isOpen ? "translate-x-0" : "translate-x-[850px]"
-          } mt-4 sm:mt-8 md:mt-12 w-full sm:w-[calc(100%-120px)] md:w-[800px]`}
+        className={`fixed top-0 right-0 h-full bg-gray-200 shadow-lg mb-16 transform transition-transform duration-500 z-50 ${isOpen ? "translate-x-0" : "translate-x-[1050px]"
+          } mt-4 sm:mt-8 md:mt-12 w-full sm:w-[calc(100%-120px)] md:w-[1000px]`}
       >
         {/* "X" button positioned outside the form box */}
         <button
-          onClick={() => onClose(true)}
+          onClick={() => {
+            let data = permissionData.map(item => ({ ...item, value: false, selectAll: false }))
+            onClose(true)
+            setPermissionData(data);
+            onClose(true)
+          }}
           className="absolute top-[12px] left-[-22px] font-semibold text-white text-sm bg-red-700 square px-3  py-1.5 border border-1 border-transparent hover:border-red-700 hover:bg-white hover:text-red-700"
         >
           X
         </button>
+        <div className="flex justify-between items-center p-4 pl-8 bg-white shadow-md">
+          <h2 className="text-lg font-bold text-black">Module Permisiion
+          </h2>
+        </div>
         <h3 className="bg-red-700 text-white p-2 rounded mb-4">
-          Select all permissions
+          Select all Module of {designationData && designationData.designationName}
         </h3>
 
 
-        <div className="w-full h-full mb-8 mr-4 p-4  overflow-y-scroll">
-          {modulesPermission.map(items => (
-            <div className="flex items-center justify-between bg-gray-100 p-2 rounded mb-2 mr-4">
-              <div key={items.module.id} className="w-full gap-2" style={{ marginTop: '20px' }}>
-                <h4>Select all of {items.module.moduleName}</h4>
+        <div className="w-full h-full mb-2 mr-4 p-4 overflow-y-scroll ">
+          {module.map(items => (
+            <div className="flex items-center justify-between bg-gray-100 p-2 rounded mb-2 mr-4 ">
+              <div key={items.id} className="w-full gap-2 " style={{ marginTop: '20px' }}>
+                <h4>Select all of {items.moduleName}</h4>
                 <button
                   type="button"
                   onClick={() => handleSelectAll(items)}
@@ -170,24 +170,25 @@ const Permission = ({ isOpen, onClose, designationData }) => {
                   Select All
                 </button>
                 <div className="flex w-full gap-4 mb-2">
-                  {items.permission.map(item => (
+                  {permissionData.map(item => (item.parentId === items.id)
+                    && (
+                      <label key={item.id} className="flex max-w-fit gap-2 my-2 items-center text-sm">
 
-                    <label key={item.id} className="flex w-full gap-2 my-2 items-center text-sm">
-                      {/* <input
+                        {/* <input
                         type="checkbox"
                         className="h-4 w-5"
                         // checked={item.value}
                         /> */}
-                      <input className="checkBox"
-                        type="checkbox"
-                        checked={item.value}
-                        onChange={(e) => handleToggle(items, item, e)}
-                      // onChange={() => handleToggle(section, action)}
-                      />
-                      {/* {action.replace(/([A-Z])/g, ' $1').trim()} */}
-                      {item.permissionName}
-                    </label>
-                  ))}
+                        <input className="checkBox"
+                          type="checkbox"
+                          checked={item.value}
+                          onChange={(e) => handleToggle(item.id, !item.value)}
+                        // onChange={() => handleToggle(section, action)}
+                        />
+                        {/* {action.replace(/([A-Z])/g, ' $1').trim()} */}
+                        {item.moduleName}
+                      </label>
+                    ))}
                 </div>
               </div>
             </div>
