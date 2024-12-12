@@ -7,16 +7,18 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import api from "../apiConfig/config";
 import { UserContext } from "../contexts/userContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const AddCustomerPopup = ({ isOpen, onClose }) => {
 
   const { user } = useContext(UserContext);
   const [ipAddress, setIpAddress] = React.useState("");
   const [errors, setErrors] = React.useState(null);
+  const [customer, setCustomer] = React.useState({});
+  const navigate = useNavigate();
 
-  console.log(ipAddress);
-  console.log(user);
+  // console.log(ipAddress);
+  // console.log(user);
 
   const formik = useFormik({
     initialValues: {
@@ -31,6 +33,7 @@ const AddCustomerPopup = ({ isOpen, onClose }) => {
       ipaddress: ipAddress,
       status: 1,
       isdelete: 0,
+      user_id: user.userId
     },
     enableReinitialize: true,
     validationSchema: Yup.object({
@@ -86,9 +89,10 @@ const AddCustomerPopup = ({ isOpen, onClose }) => {
           onClose();
         })
         .catch(error => {
-          console.error(error);
-          setErrors(error.response.data);
-          toast.error(error.response.data, {
+          setCustomer(error.config.data);
+          console.log(error.config.data);
+          setErrors(error.config.data);
+          toast.error(error.config.data, {
             position: "top-center",
             autoClose: 5000,
             hideProgressBar: false,
@@ -151,7 +155,7 @@ const AddCustomerPopup = ({ isOpen, onClose }) => {
 
               <div className="flex space-x-2 w-full h-full flex-col">
                 <PhoneInput
-                  country={"eg"}
+                  country={"in"}
                   enableSearch={true}
                   value={formik.values.contactNo}
                   onChange={(contactNo) => formik.setFieldValue("contactNo", contactNo)}
@@ -163,8 +167,17 @@ const AddCustomerPopup = ({ isOpen, onClose }) => {
               </div>
 
               {/* {errors && errors.contactNo( */}
-              <p className="text-red-500 text-sm">
-                Customer already exists <Link to="/home/customer-profile-popup">view here</Link>
+              <p className="text-red-500 text-sm"
+                onClick={() => {
+                  navigate(`/home/customer-profile-popup/${customer && customer.userId}`, { state: { customer } });
+                  // console.log(customer)
+                  onClose(); // Close the popup
+                }}
+              >
+                Customer already exists 
+                {/* <Link to="/home/customer-profile-popup" */}
+                view here
+                {/* </Link> */}
               </p>
               {/* )} */}
 

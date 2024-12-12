@@ -179,39 +179,44 @@ const Navbar = () => {
                   +
                 </span>
                 {dropdownOpen && (
-                  <div className="absolute top-10 left-0 w-48 bg-white shadow-lg rounded-md  text-black">
+                  <div className="absolute top-10 left-0 w-48 bg-white shadow-lg rounded-md text-black">
                     <ul className="space-y-2">
                       <li
-                        className="hover:bg-gray-200  hover:border-l-4  border-blue-500 p-2 rounded cursor-pointer"
+                        className="hover:bg-gray-200 hover:border-l-4 border-blue-500 p-2 rounded cursor-pointer"
                         onClick={() => {
                           setAddData([]);
                           setAddData(["NewPackageForm"]);
+                          setDropdownOpen(false); // Close dropdown
                         }}
                       >
                         New Package
                       </li>
                       <li
-                        className="hover:bg-gray-200  hover:border-l-4  border-blue-500 p-2 rounded cursor-pointer"
+                        className="hover:bg-gray-200 hover:border-l-4 border-blue-500 p-2 rounded cursor-pointer"
                         onClick={() => {
                           setAddData([]);
                           setAddData(["NewQuery"]);
+                          setDropdownOpen(false); // Close dropdown
                         }}
                       >
                         New Query
                       </li>
-                      <li className="hover:bg-gray-200  hover:border-l-4  border-blue-500 p-2 rounded cursor-pointer"
-                      onClick={() => {
-                        setAddData([]);
-                        setAddData(["AddCustomerPopup"]);
-                      }}
+                      <li
+                        className="hover:bg-gray-200 hover:border-l-4 border-blue-500 p-2 rounded cursor-pointer"
+                        onClick={() => {
+                          setAddData([]);
+                          setAddData(["AddCustomerPopup"]);
+                          setDropdownOpen(false); // Close dropdown
+                        }}
                       >
                         New Customer
                       </li>
                       <li
-                        className="hover:bg-gray-200  hover:border-l-4  border-blue-500 p-2 rounded cursor-pointer"
+                        className="hover:bg-gray-200 hover:border-l-4 border-blue-500 p-2 rounded cursor-pointer"
                         onClick={() => {
                           setAddData([]);
                           setAddData(["Hotel"]);
+                          setDropdownOpen(false); // Close dropdown
                         }}
                       >
                         New Hotels
@@ -221,6 +226,7 @@ const Navbar = () => {
                         onClick={() => {
                           setAddData([]);
                           setAddData(["NewMember"]);
+                          setDropdownOpen(false); // Close dropdown
                         }}
                       >
                         <hr className="absolute top-0 left-0 w-full border-gray-300 m-0" />
@@ -230,6 +236,7 @@ const Navbar = () => {
                   </div>
                 )}
               </div>
+
               {/* Submenu Components */}
               <div
                 className="submenu-menu"
