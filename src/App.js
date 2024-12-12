@@ -13,7 +13,7 @@ const App = () => {
   const navigate = useNavigate();
   const [allUsers, setAllUsers] = useState([])
 
-  const {isAuthenticated, handleLogout, isLoading} = useContext(UserContext);
+  const { isAuthenticated, handleLogout, isLoading } = useContext(UserContext);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -29,7 +29,6 @@ const App = () => {
 
   // const handleLogout = () => {
   //   localStorage.clear();
-  //   navigate('/login');
   // };
 
   const isSessionExpired = () => {
@@ -39,9 +38,10 @@ const App = () => {
 
 
 
-  // const isAuthenticated = () => {
-  //   return localStorage.getItem('encryptedToken') !== null;
-  // };
+  if (!isAuthenticated) {
+    localStorage.clear();
+    navigate('/login');
+  };
 
   useEffect(() => {
     axios.get(`${api.baseUrl}/usergetall`)
@@ -53,7 +53,7 @@ const App = () => {
 
   // var isAuthenticated = localStorage.getItem('token') !== null ? true : false
 
-  console.log('isAuthenticated', isAuthenticated);
+  // console.log('isAuthenticated', isAuthenticated);
 
 
   // Protected Route Component

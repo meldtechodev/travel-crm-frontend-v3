@@ -11,8 +11,9 @@ import { toast } from "react-toastify";
 import e from "cors";
 
 const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
-  console.log(editablePackageData);
+  // console.log(editablePackageData);
   const [nights, setNights] = useState(0);
+  const [isOverNight, setIsOverNight] = useState(false);
   const [days, setDays] = useState(0);
   const [page, setPage] = useState(1);
   const [selectedDestinations, setSelectedDestinations] = useState([]);
@@ -145,6 +146,16 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
         console.error("Error fetching protected resource:", error)
       );
   }, []);
+
+  const handleNightChange = (e) => {
+    if (packageData.nights >= e.target.value) {
+      setNights(e.target.value)
+      setIsOverNight(false)
+    } else {
+      setIsOverNight(true)
+    }
+  }
+
 
   const [formData, setFormData] = useState({
     pkName: "",
@@ -889,8 +900,8 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
         },
       })
       .then((response) => {
-        setPackageData(response.data);
-        console.log(response.data);
+        setPackageData(response.data)
+        // console.log(response.data)
         toast.success("Package Created...", {
           position: "top-center",
           autoClose: 5000,
@@ -910,7 +921,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
       image: e.target.files[0],
     });
   };
-  const handleSupplierChange = () => {};
+  const handleSupplierChange = () => { };
 
   const handleStartCityChange = (selectedStartCity) => {
     setSelectedStartCity(selectedStartCity);
@@ -1032,9 +1043,8 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
 
   return (
     <div
-      className={`fixed top-8 right-0 h-full bg-gray-200 shadow-lg transform transition-transform duration-500 ${
-        isOpen ? "translate-x-0" : `translate-x-[1050px]`
-      } mt-4 sm:top-18 md:top-18 lg:w-[950px] sm:w-full md:w-[700px] z-10`}
+      className={`fixed top-8 right-0 h-full bg-gray-200 shadow-lg transform transition-transform duration-500 ${isOpen ? "translate-x-0" : `translate-x-[1050px]`
+        } mt-4 sm:top-18 md:top-18 lg:w-[950px] sm:w-full md:w-[700px] z-10`}
     >
       <button
         onClick={onClose}
@@ -1152,10 +1162,10 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                   value={selectedStartCity}
                   onChange={handleStartCityChange}
                   options={destination}
-                  // components={{ Option: CustomOption }}
-                  // closeMenuOnSelect={true}
-                  // hideSelectedOptions={true}
-                  // isClearable={true}
+                // components={{ Option: CustomOption }}
+                // closeMenuOnSelect={true}
+                // hideSelectedOptions={true}
+                // isClearable={true}
                 />
               </div>
               <div className="w-1/3 h-full">
@@ -1170,10 +1180,10 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                   value={selectedEndCity}
                   onChange={handleEndCityChange}
                   options={destination}
-                  // components={{ Option: CustomOption }}
-                  // closeMenuOnSelect={true}
-                  // hideSelectedOptions={true}
-                  // isClearable={true}
+                // components={{ Option: CustomOption }}
+                // closeMenuOnSelect={true}
+                // hideSelectedOptions={true}
+                // isClearable={true}
                 />
               </div>
             </div>
@@ -1255,7 +1265,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                   closeMenuOnSelect={false}
                   hideSelectedOptions={false}
                   isClearable={true}
-                  // value={packageTheme}
+                // value={packageTheme}
                 />
               </div>
               <div className="w-full mb-6">
@@ -1359,7 +1369,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                   className="w-full text-gray-700 mt-1 p-[4.5px] bg-white rounded border border-gray-200"
                   name="image"
                   onChange={(e) => setPkImage(e.target.files[0])}
-                  // value={pkImage}
+                // value={pkImage}
                 />
               </div>
               {isFixedDeparture && (
@@ -1540,7 +1550,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                   name="noOFDays"
                   value={nights}
                   min={0}
-                  onChange={(e) => setNights(e.target.value)}
+                  onChange={(e) => handleNightChange(e)}
                   className="mt-1 h-[38px] p-2 w-full border border-1 border-[#e5e7eb] rounded"
                   placeholder="No. of night..."
                 />
@@ -1556,6 +1566,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                 </button>
               </div>
             </div>
+            {isOverNight && <div className="flex justify-center"><p className="text-red-600">You can't add more than { } nights</p></div>}
             <div className="mb-6 gap-2">
               <label
                 htmlFor="destinations"
@@ -1586,9 +1597,8 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                       <button>{openItems[index] ? "-" : "+"} </button>
                     </div>
                     <div
-                      className={`accordion-content overflow-x-hidden w-full transition-[max-height] duration-1500 ease-in-out ${
-                        openItems[index] ? "max-h-fit" : "max-h-0"
-                      }`}
+                      className={`accordion-content overflow-x-hidden w-full transition-[max-height] duration-1500 ease-in-out ${openItems[index] ? "max-h-fit" : "max-h-0"
+                        }`}
                     >
                       {/* <div className="w-full"> */}
 
