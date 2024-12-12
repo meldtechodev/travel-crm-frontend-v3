@@ -157,7 +157,7 @@ const PageRoute = () => {
               element={<ViewDesignations />}
             />
             <Route
-              path="/customer-profile-popup"
+              path="/customer-profile-popup/:userId"
               element={<CustomerProfilePopup />}
             />
             {/* <Route path='/' /> */}

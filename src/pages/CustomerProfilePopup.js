@@ -6,9 +6,9 @@ import axios from "axios";
 import api from "../apiConfig/config";
 
 const CustomerProfile = () => {
-  const location = useLocation();
-  const option = location.state?.option;
-  console.log(option)
+  // const location = useLocation();
+  // const option = location.state?.option;
+  // console.log(option)
   const queries = [
     {
       date: "2023-01-01",
@@ -38,11 +38,14 @@ const CustomerProfile = () => {
 
   const userId = params.userId;
 
+  console.log(params);
+  console.log(userId);
+
   useEffect(() => {
-    axios.get(`${api}/customer/getbyid/${userId}`).then((res) => {
+    axios.get(`${api.baseUrl}/customer/getbyid/${userId}`).then((res) => {
       setUserData(res.data);
     })
-  }, [])
+  }, [userId])
 
   return (
     <div className="p-4 w-full mb-14">
