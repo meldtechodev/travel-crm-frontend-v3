@@ -131,7 +131,7 @@ const ViewDesignations = () => {
 
   return (
     <>
-      <div className="p-4 w-full bg-gray-50 h-full">
+      <div className="p-4 w-full bg-gray-50 h-full mb-12">
         <h1 className="text-xl font-bold mb-6">Designation</h1>
         <div className="flex items-center justify-between gap-2 w-full flex-col md:flex-row">
           <div className="flex justify-between">
