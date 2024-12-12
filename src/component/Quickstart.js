@@ -121,7 +121,7 @@ const Quickstart = () => {
 
             <div className="flex items-start mb-4">
               <div className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-300 mr-3">
-                <span className="text-gray-800 font-semibold">5</span>
+                <span className="text-gray-800 font-semibold">6</span>
               </div>
               <div>
                 <h3 className="text-lg font-semibold">Set Up Your Designations</h3>

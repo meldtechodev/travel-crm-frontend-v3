@@ -38,10 +38,10 @@ const App = () => {
 
 
 
-  if (!isAuthenticated) {
-    localStorage.clear();
-    navigate('/login');
-  };
+  // if (!isAuthenticated) {
+  //   localStorage.clear();
+  //   navigate('/login');
+  // };
 
   useEffect(() => {
     axios.get(`${api.baseUrl}/usergetall`)
