@@ -145,7 +145,7 @@ const PageRoute = () => {
             <Route path="/app-settings" element={<SettingsPage />} />
             <Route path="/company-profile" element={<CompanyProfilePage />} />
             <Route
-              path="/organization-details/:id"
+              path={'/organization-details/:id'}
               element={<OrganizationDetailsPage />}
             />
             <Route

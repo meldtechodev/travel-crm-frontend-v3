@@ -89,7 +89,7 @@ const CompanyProfilePage = () => {
           {/* Right Section (Organization Details and Buttons) */}
           <div className="text-right w-full md:w-1/2 mt-4 md:mt-0">
             <button
-              onClick={() => navigate(`/home/organization-details/${user && user.company && user.company.id}`, { state: user.company })}
+              onClick={() => navigate(`/home/organization-details/${user && user.company && user.company.id}`, { state: user.company.id })}
               className="border  border-gray-300 bg-gray-100 text-gray-600 text-sm py-2 px-4 rounded mb-2"
             >
               Upload Organization Logo

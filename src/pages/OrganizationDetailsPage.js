@@ -28,19 +28,19 @@ const OrganizationDetailsPage = () => {
       axios.get(`${api.baseUrl}/company/getbyid/${organizationId}`)
         .then((res) => {
           setOrganizationData(res.data);
-          console.log(res.data)
-        });
+          setFormData({
+            organizationName: res.data.companyname || "",
+            organizationEmail: res.data.companyemail || "",
+            organizationAddress: res.data.companyaddress || "",
+            organizationPhone: res.data.companyphone || "",
+            organizationCountryCode: res.data.companycountrycode || "",
+            organizationWebsite: res.data.companywebsite || "",
+            status: res.data.status || "",
+            organizationLogo: res.data.companylogo || null,
+          });
+        }).catch(error => console.error(error));
 
-      setFormData({
-        organizationName: organizationData.companyname || "",
-        organizationEmail: organizationData.companyemail || "",
-        organizationAddress: organizationData.companyaddress || "",
-        organizationPhone: organizationData.companyphone || "",
-        organizationCountryCode: organizationData.companycountrycode || "",
-        organizationWebsite: organizationData.companywebsite || "",
-        status: organizationData.status || "",
-        organizationLogo: organizationData.companylogo || null,
-      });
+      // console.log(organizationData)
     }
   }, [organizationId]);
 

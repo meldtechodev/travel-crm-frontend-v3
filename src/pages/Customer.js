@@ -11,7 +11,7 @@ const Customer = ({ isOpen, onClose, customerData, isFormEditEnabled, setIsFormE
   const { user } = useContext(UserContext);
   const token = useDecryptedToken();
 
-  console.log(token);
+  // console.log(token);
 
   const [formData, setFormData] = useState({
     salutation: "",

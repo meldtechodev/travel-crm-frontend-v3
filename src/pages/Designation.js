@@ -72,14 +72,14 @@ const Designation = ({ isOpen, onClose, designationData }) => {
 
 
 
-  const handleNext = () => {
+  // const handleNext = () => {
 
-    setCurrentPage(2);
-  };
+  //   setCurrentPage(2);
+  // };
 
-  const handlePrev = () => {
-    setCurrentPage(1);
-  };
+  // const handlePrev = () => {
+  //   setCurrentPage(1);
+  // };
 
   // async function decryptToken(encryptedToken, key, iv) {
   //   const dec = new TextDecoder();
@@ -192,6 +192,8 @@ const Designation = ({ isOpen, onClose, designationData }) => {
       return;
     }
 
+    // console.log(formData)
+
     if (designationData && designationData.id) {
       const payload = {
         designationName: formData.designationName,
@@ -206,6 +208,7 @@ const Designation = ({ isOpen, onClose, designationData }) => {
         createdDate: designationData.createdDate,
         modifiedDate: current.getDate
       }
+
 
       await axios.put(`${api.baseUrl}/designations/update/${designationData.id}`, payload, {
         headers: {
@@ -247,6 +250,8 @@ const Designation = ({ isOpen, onClose, designationData }) => {
         },
       };
 
+      console.log(payload)
+
       await axios
         .post(`${api.baseUrl}/designations/create`, payload, {
           headers: {
@@ -270,7 +275,7 @@ const Designation = ({ isOpen, onClose, designationData }) => {
         .catch((error) => console.log(error));
     }
 
-    setCurrentPage(2)
+    // setCurrentPage(2)
   };
 
   const handlePermission = () => {

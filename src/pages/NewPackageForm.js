@@ -9,10 +9,14 @@ import PackageItinerary from "./PackageItinerary";
 import { data } from "autoprefixer";
 import { toast } from "react-toastify";
 import e from "cors";
+import { FaEdit, FaTrashAlt } from "react-icons/fa";
+import { isArray } from "chart.js/helpers";
 
 const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
   // console.log(editablePackageData);
   const [nights, setNights] = useState(0);
+  const [checkNights, setCheckNights] = useState(0);
+  const [editNights, setEditNights] = useState(0);
   const [isOverNight, setIsOverNight] = useState(false);
   const [days, setDays] = useState(0);
   const [page, setPage] = useState(1);
@@ -148,10 +152,12 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
   }, []);
 
   const handleNightChange = (e) => {
-    if (packageData.nights >= e.target.value) {
+    if (packageData.nights >= e.target.value + formItinaryData.length) {
       setNights(e.target.value)
+      setCheckNights(checkNights + e.target.value)
       setIsOverNight(false)
     } else {
+      setNights(e.target.value)
       setIsOverNight(true)
     }
   }
@@ -218,6 +224,15 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
       })
       .catch((error) => console.error(error));
   }, []);
+
+  const [editIti, setEditIti] = useState(false)
+  const handleEdit = (data) => {
+    setEditIti(true)
+    console.log(data)
+  }
+  const handleDelete = (data) => {
+
+  }
 
   useEffect(() => {
     Promise.all([
@@ -503,7 +518,27 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
     );
   };
 
+  const [selectedEditCity, setSelectedEditCity] = useState([])
+
+  const handleEditItineraryDay = () => {
+
+  }
+
+  const setEditNightsChange = (e) => {
+    setEditNights(e.target.value)
+    if (e.target.value > formItinaryData.length) {
+      setCheckNights(true)
+    } else {
+      setCheckNights(false)
+    }
+  }
+
   const handleAddItineraryDay = () => {
+    if (formItinaryData.length + nights < packageData.nights) {
+      setIsOverNight(true)
+      return
+    }
+
     if (Number(nights) > 0 && selectedHotelCity !== null) {
       let l = addCityAndNight.length;
       const addIti = {
@@ -620,6 +655,10 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
       else if (Number(nights) === 0) alert("Select Valid Days...");
       else alert("Select City...");
     }
+
+    if (formItinaryData.length >= packageData.days) {
+      setIsOverNight(true)
+    }
   };
 
   const handleItinearayProgramData = (data, i) => {
@@ -702,14 +741,14 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
       }
     }
 
-    console.log(formItinaryData);
+    // console.log(formItinaryData);
 
     for (let i = 0; i < formItinaryData.length; i++) {
       const val = [...formItinaryData[i].hotel];
       const updateVal = val.filter((item) => item.hotelName !== null);
 
-      console.log(val);
-      console.log(updateVal);
+      // console.log(val);
+      // console.log(updateVal);
 
       let siteSee = formItinaryData[i].siteSeeing.map((item) => item.value);
       let itiActivity = formItinaryData[i].activities.map((item) => ({
@@ -811,10 +850,9 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
   const handlePageChange = async (e) => {
     e.preventDefault();
 
-    // destinationCoveredId
-    const destinationCoveredStr = selectedDestinations
+    const destinationCoveredStr = isArray(selectedDestinations) ? selectedDestinations
       .map((option) => option.value)
-      .join(",");
+      .join(",") : selectedDestinations !== null ? selectedDestinations.value : null;
     const selectedPackagesStr = selectedPackageTheme
       .map((option) => option.label)
       .join(",");
@@ -840,7 +878,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
       formData.pkName === "" ||
       selectedStartCity === null ||
       selectedEndCity === null ||
-      destinationCoveredStr === "" ||
+      // destinationCoveredStr === "" ||
       selectedPackagesStr === "" ||
       packageSpecification === "" ||
       formData.days === 0 ||
@@ -892,17 +930,16 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
     //   console.log(pair[0] + ' = ' + pair[1]);
     // }
 
-    await axios
-      .post(`${api.baseUrl}/packages/create`, formDataPackageMaster, {
-        headers: {
-          // 'Authorization': `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-          "Access-Control-Allow-Origin": "*",
-        },
-      })
+    await axios.post(`${api.baseUrl}/packages/create`, formDataPackageMaster, {
+      headers: {
+        // 'Authorization': `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+        "Access-Control-Allow-Origin": "*",
+      },
+    })
       .then((response) => {
         setPackageData(response.data)
-        // console.log(response.data)
+        console.log(response.data)
         toast.success("Package Created...", {
           position: "top-center",
           autoClose: 5000,
@@ -945,19 +982,20 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
     const { name, value } = e.target;
 
     if (name === "days") {
+      let n = false
+      if (value === "" || value == 0) {
+        n = true
+      }
       setFormData({
         ...formData,
-        days: e.target.value,
-        nights:
-          e.target.value !== 0 || e.target.value !== null
-            ? Number(e.target.value) - 1
-            : 0,
+        days: value,
+        nights: n ? 0 : value - 1,
       });
     } else if (name === "nights") {
       setFormData({
         ...formData,
-        nights: e.target.value,
-        days: Number(e.target.value) + 1,
+        nights: value,
+        days: Number(value) + 1,
       });
     }
   };
@@ -1498,30 +1536,87 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
             </div>
             <div className="flex mb-4 gap-2 justify-between">
               <table className="w-full bg-white border-2 border-collapse border-black">
-                <thead className="gap-4 ">
+                {addCityAndNight.length > 0 && <thead className="gap-4 ">
                   {/* <th>Itinerary City ID</th> */}
                   <th className=" border-2 border-black">Itinerary City</th>
                   <th className=" border-2 border-black">Nights</th>
                   <th className=" border-2 border-black">From</th>
                   <th className=" border-2 border-black">To</th>
                   <th className=" border-2 border-black">Action</th>
-                  {/* <th>Number of Nights</th> */}
-                </thead>
+                </thead>}
                 {addCityAndNight.length > 0 &&
-                  addCityAndNight.map((i) => (
+                  addCityAndNight.map((item, i) => (
                     <tbody className="text-center  border-collapse border-1 border-black">
                       {/* <td>{i.hotelCityId}</td> */}
-                      <td className=" border-2 border-black">{i.hotelCity}</td>
-                      <td className=" border-2 border-black">{i.nights}</td>
+                      <td className=" border-2 border-black">{item.hotelCity}</td>
+                      <td className=" border-2 border-black">{item.nights}</td>
                       <td className=" border-2 border-black">
-                        Day {i.fromStartDay}
+                        Day {item.fromStartDay}
                       </td>
-                      <td className=" border-2 border-black">Day {i.to}</td>
-                      <td className=" border-2 border-black">Add</td>
+                      <td className=" border-2 border-black">Day {item.to}</td>
+                      <td className=" border-2 border-black">
+                        <div className="flex gap-2 justify-center">
+                          <button className="text-blue-500 hover:text-blue-700" onClick={() => handleEdit(item, i)}>
+                            <FaEdit />
+                          </button>
+                          <button className="text-red-500 hover:text-red-700" onClick={() => handleDelete(item)}>
+                            <FaTrashAlt />
+                          </button>
+                        </div>
+                      </td>
                     </tbody>
                   ))}
               </table>
             </div>
+            {editIti && <div className="flex mb-4 gap-2 justify-evenly w-full">
+              <div className="w-1/2">
+                <label
+                  htmlFor="destinations"
+                  className="block text-sm font-medium"
+                >
+                  Add Hotel City
+                </label>
+                <Select
+                  className="mt-1 w-full border rounded "
+                  value={selectedEditCity}
+                  onChange={setSelectedEditCity}
+                  options={destination}
+                />
+                {/* <input type="text" className="w-full p-2 " placeholder="Enter Hotel Stay..." /> */}
+              </div>
+              <div className="w-1/3">
+                <label
+                  htmlFor="destinations"
+                  className="block text-sm font-medium"
+                >
+                  No of Nights
+                </label>
+                <input
+                  type="number"
+                  id="packageName"
+                  name="noOFDays"
+                  value={editNights}
+                  min={0}
+                  onChange={(e) => setEditNightsChange(e)}
+                  className="mt-1 h-[38px] p-2 w-full border border-1 border-[#e5e7eb] rounded"
+                  placeholder="No. of night..."
+                />
+              </div>
+              <div className="w-1/4 flex items-end border border-1 min-h-full">
+                <button
+                  className={`bg-red-600 py-1 rounded-sm px-2 mb-1 text-white 
+     border-[1px] 
+    ${checkNights ? 'bg-gray-400 text-gray-700 cursor-not-allowed hover:bg-gray-400 hover:text-gray-700' : 'hover:bg-white hover:text-red-600 hover:border-red-600'}`}
+                  onClick={handleEditItineraryDay}
+                  disabled={checkNights}
+                >
+                  Add
+                </button>
+
+              </div>
+            </div>}
+
+
             <div className="flex mb-4 gap-2 justify-evenly w-full">
               <div className="w-1/2">
                 <label
@@ -1555,19 +1650,21 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                   className="mt-1 h-[38px] p-2 w-full border border-1 border-[#e5e7eb] rounded"
                   placeholder="No. of night..."
                 />
-                {/* <input type="text" className="" placeholder="No. of night..." /> */}
               </div>
               <div className="w-1/4 flex items-end border border-1 min-h-full">
                 <button
-                  className="bg-red-600 py-1 rounded-sm px-2 mb-1 text-white 
-              hover:bg-white hover:text-red-600 hover:border-red-600 border-[1px]"
+                  className={`bg-red-600 py-1 rounded-sm px-2 mb-1 text-white 
+     border-[1px] 
+    ${nights + formItinaryData.length >= packageData.nights || 0 ? 'bg-gray-400 text-gray-700 cursor-not-allowed hover:bg-gray-400 hover:text-gray-700' : 'hover:bg-white hover:text-red-600 hover:border-red-600'}`}
                   onClick={handleAddItineraryDay}
+                  disabled={nights + formItinaryData.length >= packageData.nights || 0}
                 >
                   Add
                 </button>
+
               </div>
             </div>
-            {isOverNight && <div className="flex justify-center"><p className="text-red-600">You can't add more than { } nights</p></div>}
+            {isOverNight && <div className="flex justify-center"><p className="text-red-600">You can't add more than {packageData.nights} nights</p></div>}
             <div className="mb-6 gap-2">
               <label
                 htmlFor="destinations"
