@@ -145,14 +145,6 @@ export const UserProvider = ({ children }) => {
           .catch(error => console.error(error))
       })
       .catch(error => console.error('Error fetching protected resource:', error));
-
-
-
-    // const pModule = modulePermission.filter(item => item.modules.parentId === 0)
-    // const cModule = modulePermission.filter(item => item.modules.parentId !== 0)
-    // setParentModule(pModule)
-    // setChildModule(cModule)
-    // console.log(cModule)
   }, []);
 
   const handleLogout = () => {

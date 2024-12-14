@@ -325,7 +325,6 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
         value: item.id,
         label: item.vendorName,
       }));
-      console.log(formattedSuppliers)
       setSupplier(formattedSuppliers);
 
       const formattedPackageThemes = response[2].data.content.map((item) => ({
@@ -354,10 +353,11 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
       setHotelCompleteData(response[5].data);
 
       const formattedRoomType = response[6].data.content.map((item) => ({
+        ...item,
         value: item.id,
-        label: item.bed_size,
+        label: item.bedSize,
       }));
-      setRoomTypeCompleteData(response[6].data.content);
+      setRoomTypeCompleteData(formattedRoomType);
       setRoomTypeData(formattedRoomType);
 
       const formattedMealType = response[7].data.content.map((item) => ({
@@ -415,8 +415,6 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
   const handleHotelChange = (selectedOption, index, i) => {
     const updatedHotels = [...formItinaryData[index].hotel];
     updatedHotels[i].roomType = null;
-    // console.log(roomTypeCompleteData)
-    console.log(selectedOption);
     const result = roomTypeCompleteData.filter(
       (item) => item.hotel.id === selectedOption.value
     );
@@ -426,7 +424,6 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
     }));
     updatedHotels[i].hotelName = selectedOption;
     updatedHotels[i].roomTypeData = formatRoomType;
-    console.log(formatRoomType);
 
     const updateVal = formItinaryData.map((prev, list) =>
       index === list ? { ...prev, hotel: updatedHotels } : prev
@@ -795,7 +792,6 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
           formItinaryData[i].cityname === "" ||
           formItinaryData[i].daytitle === null ||
           formItinaryData[i].transport === null ||
-          formItinaryData[i].hotel[j].roomType === null ||
           formItinaryData[i].hotel[j].mealType === null
         ) {
           toast.error("Please fill all the fields...", {
@@ -822,9 +818,8 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
       // console.log(updateVal);
 
       let siteSee = formItinaryData[i].siteSeeing.map((item) => item.value);
-      let itiActivity = formItinaryData[i].activities.map((item) => ({
-        id: item.value,
-      }));
+      let itiActivity = formItinaryData[i].activities.map(item => item.value,
+      );
 
       var meald = "";
       if (formItinaryData[i].breakfast) {
@@ -850,10 +845,9 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
         transport: {
           id: formItinaryData[i].transport.value,
         },
-        // "packid": packageData.id
         packid: packageData.id,
       };
-      // console.log(payload)
+      console.log(payload)
 
       await axios
         .post(`${api.baseUrl}/packageitinerary/create`, payload, {
@@ -863,6 +857,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
           },
         })
         .then((response) => {
+          // console.log(response.data)
           setPackageItinerayData(response.data);
         })
         .catch((error) => console.error(error));
@@ -873,7 +868,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
         let upd = formItinaryData.map((item, l) =>
           i === l ? { ...item, hotel: updateVal } : item
         );
-        console.log(upd);
+        // console.log(upd);
 
         // let mel =
         setFormItinaryData(upd);
@@ -885,30 +880,28 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
           modifiedby: user.name,
           category: formItinaryData[i].hotel[j].category,
           packitid: {
-            id: 501,
-            // id: packageItinerayData.id
+            // id: 501,
+            id: packageItinerayData.id
           },
-          activities: itiActivity,
+          activitiesIds: itiActivity,
           sightseeingIds: siteSee,
           roomtypes: {
             id: formItinaryData[i].hotel[j].roomType.value,
           },
-          mealPackages: [formItinaryData[i].hotel[j].mealType.value],
+          mealspackageIds: [formItinaryData[i].hotel[j].mealType.value],
         };
         console.log(payloadItineararyDetails);
 
-        await axios
-          .post(
-            `${api.baseUrl}/packageitinerarydetails/create`,
-            payloadItineararyDetails,
-            {
-              headers: {
-                // 'Authorization': `Bearer ${token}`,
-                "Access-Control-Allow-Origin": "*",
-              },
-            }
-          )
+        await axios.post(`${api.baseUrl}/packageitinerarydetails/create`, payloadItineararyDetails,
+          {
+            headers: {
+              // 'Authorization': `Bearer ${token}`,
+              "Access-Control-Allow-Origin": "*",
+            },
+          }
+        )
           .then((response) => {
+            console.log(response.data)
             setPackageItinerayDetails(response.data);
             alert("created...");
           })
@@ -928,8 +921,8 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
     e.preventDefault();
 
     const destinationCoveredStr = isArray(selectedDestinations) ? selectedDestinations
-      .map((option) => option.value)
-      .join(",") : selectedDestinations !== null ? selectedDestinations.value : null;
+      .map((option) => option.id)
+      .join(",") : selectedDestinations !== null ? selectedDestinations.value : " ";
     const selectedPackagesStr = selectedPackageTheme
       .map((option) => option.label)
       .join(",");
@@ -978,8 +971,8 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
 
     formDataPackageMaster.append("pkName", formData.pkName);
 
-    formDataPackageMaster.append("fromCityId", selectedStartCity.value);
-    formDataPackageMaster.append("toCityId", selectedEndCity.value);
+    formDataPackageMaster.append("fromCityId", selectedStartCity.id);
+    formDataPackageMaster.append("toCityId", selectedEndCity.id);
     formDataPackageMaster.append("destinationCoveredId", destinationCoveredStr);
     formDataPackageMaster.append("description", editorData);
     formDataPackageMaster.append("pkCategory", selectedPackagesStr);
@@ -1003,9 +996,9 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
     formDataPackageMaster.append("pkthem", selectedPackageThemeStr);
     formDataPackageMaster.append("image", pkImage);
 
-    // for (var pair of formDataPackageMaster.entries()) {
-    //   console.log(pair[0] + ' = ' + pair[1]);
-    // }
+    for (var pair of formDataPackageMaster.entries()) {
+      console.log(pair[0] + ' = ' + pair[1]);
+    }
 
     if (!packageData) {
       await axios.post(`${api.baseUrl}/packages/create`, formDataPackageMaster, {
@@ -1048,7 +1041,6 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
 
   const handleEndCityChange = (selectedEndCity) => {
     setSelectedEndCity(selectedEndCity);
-    setSelectedDestinations(selectedEndCity)
   };
 
   const handleInputChange = (e) => {
@@ -1163,7 +1155,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
 
   const [inputStartSearch, setInputStartSearch] = useState("")
   const [inputEndSearch, setInputEndSearch] = useState("")
-  const [inputSearch, setInputSearch] = useState(["", "", "", "", "", "", ""])
+  const [inputSearch, setInputSearch] = useState({ coveredDid: "", startDid: "", endDid: "", supplier: "", packageTheme: "" })
 
   return (
     <div
@@ -1286,13 +1278,13 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                 </label>
                 <Select
                   className="mt-1 w-full border rounded z-40"
-                  value={selectedStartCity}
-                  // onChange={handleStartCityChange}
+                  // value={selectedStartCity}
+                  onChange={handleStartCityChange}
                   options={selectedPackageType === "international" ? internationalList : domesticList}
-                  onInputChange={(value) => setInputStartSearch(value)}
+                  onInputChange={(value) => setInputSearch((prev) => ({ ...prev, startDid: value }))}
                   openMenuOnClick={false}
                   openMenuOnFocus={false}
-                  menuIsOpen={inputStartSearch !== "" && inputStartSearch.length >= 2} // Opens menu only when typing
+                  menuIsOpen={inputSearch.startDid !== "" && inputSearch.startDid.length >= 2} // Opens menu only when typing
 
                 // components={{ Option: CustomOption }}
                 // closeMenuOnSelect={true}
@@ -1309,16 +1301,18 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                 </label>
                 <Select
                   className="mt-1 w-full border rounded z-40"
-                  value={selectedEndCity}
-                  // onChange={handleEndCityChange}
+                  // value={selectedEndCity}
+                  onChange={handleEndCityChange}
                   // onChange={(option) => setSelectedOption(option)} // Handle selection
 
                   options={selectedPackageType === "international" ? internationalList : domesticList}
-                  onInputChange={(value) => setInputEndSearch(value)}
+                  onInputChange={(value) => setInputSearch((prev) => ({
+                    ...prev, endDid: value
+                  }))}
                   openMenuOnClick={false}
                   openMenuOnFocus={false}
                   // isClearable
-                  menuIsOpen={inputEndSearch !== "" && inputEndSearch.length >= 2} // Opens menu only when typing                // components={{ Option: CustomOption }}
+                  menuIsOpen={inputSearch.endDid !== "" && inputSearch.endDid.length >= 2} // Opens menu only when typing                // components={{ Option: CustomOption }}
                   // closeMenuOnSelect={true}
                   // hideSelectedOptions={true}
                   isClearable={true}
@@ -1337,7 +1331,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                 </label>
                 <Select
                   className="mt-1 w-full border rounded z-30"
-                  value={selectedDestinations}
+                  // value={selectedDestinations}
                   onChange={handleChange}
                   // options={destination}
                   isMulti
@@ -1347,10 +1341,12 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                   isClearable={true}
 
                   options={selectedPackageType === "international" ? internationalList : domesticList}
-                  onInputChange={(value) => setInputEndSearch(value)}
+                  onInputChange={(value) => setInputSearch((prev) => ({
+                    ...prev, coveredDid: value
+                  }))}
                   openMenuOnClick={false}
                   openMenuOnFocus={false}
-                  menuIsOpen={inputEndSearch !== "" && inputEndSearch.length >= 2} // Opens menu only when
+                  menuIsOpen={inputSearch.coveredDid !== "" && inputSearch.coveredDid.length >= 2} // Opens menu only when
 
                 />
               </div>
@@ -1366,6 +1362,13 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                     formData.SupplierId = selectedSupplier.value;
                   }}
                   options={supplier}
+
+                  onInputChange={(value) => setInputSearch((prev) => ({
+                    ...prev, supplier: value
+                  }))}
+                  openMenuOnClick={false}
+                  openMenuOnFocus={false}
+                  menuIsOpen={inputSearch.supplier !== "" && inputSearch.supplier.length >= 2} // Opens menu only when
                 />
               </div>
               <div className="w-1/2">
@@ -1410,6 +1413,15 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                   closeMenuOnSelect={false}
                   hideSelectedOptions={false}
                   isClearable={true}
+
+
+                  onInputChange={(value) => setInputSearch((prev) => ({
+                    ...prev, packageTheme: value
+                  }))}
+                  openMenuOnClick={false}
+                  openMenuOnFocus={false}
+                  menuIsOpen={inputSearch.packageTheme !== "" && inputSearch.packageTheme.length >= 2} // Opens menu only when
+
                 // value={packageTheme}
                 />
               </div>
@@ -2311,6 +2323,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                 onClick={() => {
                   setPage(1); setFormItinaryData([]);
                   setAddCityAndNight([])
+                  setFormItinaryData([])
                 }}
               >
                 Back
