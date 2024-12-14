@@ -217,33 +217,33 @@ const MasterList = () => {
     };
   }, []);
 
-  // useEffect(() => {
-  //   switch (activeTab) {
-  //     case 'country':
-  //       fetchData('country/getall', setCountryData, handleStatusToggle);
-  //       break;
-  //     case 'state':
-  //       fetchData('state/getall', setStateData, handleStatusToggle);
-  //       break;
-  //     case 'destination':
-  //       fetchData('destination/get', setDestinationData, handleStatusToggle);
-  //       break;
-  //     case 'hotel':
-  //       fetchData('hotel/get', setHotelData, handleStatusToggle);
-  //       break;
-  //     case 'customer':
-  //       fetchData('customer/get', setCustomerData, handleStatusToggle);
-  //       break;
-  //     case 'vendor':
-  //       fetchData('vendor/get', setVendorData, handleStatusToggle);
-  //       break;
-  //     case 'department':
-  //       fetchData('department/get', setVendorData, handleStatusToggle);
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  // }, [activeTab]);
+  useEffect(() => {
+    switch (activeTab) {
+      case 'country':
+        fetchData('country/getall', setCountryData, handleStatusToggle);
+        break;
+      case 'state':
+        fetchData('state/getall', setStateData, handleStatusToggle);
+        break;
+      case 'destination':
+        fetchData('destination/get', setDestinationData, handleStatusToggle);
+        break;
+      case 'hotel':
+        fetchData('hotel/get', setHotelData, handleStatusToggle);
+        break;
+      case 'customer':
+        fetchData('customer/get', setCustomerData, handleStatusToggle);
+        break;
+      case 'vendor':
+        fetchData('vendor/get', setVendorData, handleStatusToggle);
+        break;
+      case 'department':
+        fetchData('department/get', setVendorData, handleStatusToggle);
+        break;
+      default:
+        break;
+    }
+  }, [activeTab]);
 
 
   const tabs = [

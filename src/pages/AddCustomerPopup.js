@@ -16,8 +16,8 @@ const AddCustomerPopup = ({ isOpen, onClose }) => {
   const [errors, setErrors] = React.useState(null);
   const [currentCreatedUser, setCurrentCreatedUser] = React.useState(null);
 
-  console.log(ipAddress);
-  console.log(user);
+  // console.log(ipAddress);
+  // console.log(user);
 
   const formik = useFormik({
     initialValues: {
@@ -115,7 +115,7 @@ const AddCustomerPopup = ({ isOpen, onClose }) => {
       });
   }, []);
 
-  console.log(errors);
+  // console.log(errors);
 
   return (
     <div>

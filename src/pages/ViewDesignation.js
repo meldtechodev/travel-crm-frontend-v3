@@ -20,6 +20,9 @@ const ViewDesignations = () => {
   const [allDesignationModules, setAllDesignationModules] = useState([])
   const [designationModules, setDesignationModules] = useState([])
 
+  // const [allDesignationModules, setAllDesignationModules] = useState([])
+  // const [designationModules, setDesignationModules] = useState([])
+
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10); // Set the number of items per page
 
@@ -263,8 +266,9 @@ const ViewDesignations = () => {
         <Permission
           isOpen={addData[0] === "Permission"}
           onClose={() => setAddData([])}
-          designationData={selectedDesignation}
           designationModules={designationModules}
+          designationData={selectedDesignation}
+          // designationModules={designationModules}
           setDesignationModules={setDesignationModules}
         />
       </div>

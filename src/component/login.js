@@ -54,6 +54,10 @@ function Login() {
     const encryptedTokenBase64 = btoa(String.fromCharCode(...encryptedToken));
 
     // Save the key, iv, and encrypted token in localStorage
+    // sessionStorage.setItem('encryptionKey', JSON.stringify(await crypto.subtle.exportKey('jwk', key)));
+    // sessionStorage.setItem('iv', ivBase64);
+    // sessionStorage.setItem('encryptedToken', encryptedTokenBase64);
+
     localStorage.setItem('encryptionKey', JSON.stringify(await crypto.subtle.exportKey('jwk', key)));
     localStorage.setItem('iv', ivBase64);
     localStorage.setItem('encryptedToken', encryptedTokenBase64);
@@ -87,17 +91,15 @@ function Login() {
 
     try {
       const response = await axios.post(
-        `${api.baseUrl}/login`,
-        {
-          email: values.email,
-          password: values.password,
+        `${api.baseUrl}/login`, {
+        email: values.email,
+        password: values.password,
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
         },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-          },
-        }
+      }
       );
 
       const token = response.data;
@@ -137,9 +139,10 @@ function Login() {
     }
   };
 
-  // useEffect(() => {
-  //   localStorage.clear();
-  // }, []);
+  useEffect(() => {
+    localStorage.clear();
+    navigate('/login')
+  }, []);
 
   return (
     <div className="min-h-screen flex overflow-hidden max-w-full">

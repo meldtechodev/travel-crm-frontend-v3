@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 // Icons
@@ -31,6 +31,7 @@ import NewPolicyForm from '../pages/NewPolicyForm'
 import Roles from '../pages/Roles'
 import NewMember from '../pages/NewMember'
 import Customer from "../pages/Customer";
+import { UserContext } from "../contexts/userContext";
 
 const Sidebar = () => {
   const [homeStyle, setHomeStyle] = useState();
@@ -39,9 +40,14 @@ const Sidebar = () => {
   const [parentModule, setParentModule] = useState([])
   const [childModule, setChildModule] = useState([])
   const [modulePermission, setModulePermission] = useState([])
+  const [designationModules, setDesignationModules] = useState([])
+
+  // const { module } = useContext(UserContext);
+
+  // console.log(module)
 
   const [user, setUser] = useState({})
-  // const [token, setTokens] = useState(null)
+  const [token, setTokens] = useState(null)
   async function decryptToken(encryptedToken, key, iv) {
     const dec = new TextDecoder();
 
@@ -79,85 +85,89 @@ const Sidebar = () => {
   useEffect(() => {
     getDecryptedToken()
       .then(async (token) => {
-        axios.get(`${api.baseUrl}/modules/getall`)
-          .then(response =>
-            setModule(response.data)
-          )
-          .catch(error => console.error(error))
 
         return await axios.get(`${api.baseUrl}/username`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Access-Control-Allow-Origin': '*'
           }
-        });
-      })
-      .then(response => {
-        const u = response.data
-        setUser(response.data);
-
-        axios.get(`${api.baseUrl}/designationPermission/getall`)
+        })
           .then(response => {
-            // console.log(response.data)
-            const perm = response.data.filter(item => item.designations.id === u.designation.id);
-            const p = perm.map(item => item.permissions)
-            let arr = new Set(p.map(item => item.modules.parentId))
-            let moduleList = [...arr]
-            // console.log(p)
+            const u = response.data
+            setUser(response.data);
+            // console.log(u)
 
-            let subModuleSet = new Set(p.map(items => items.modules.id))
+            axios.get(`${api.baseUrl}/designationModules/getall`)
+              .then(res => {
+                setDesignationModules(res.data)
+                let mod = res.data.filter(item => item.designations.id === u.designation.id)
+                let filtmod = mod.map(item => item.modules)
+                setModule(filtmod)
+
+                console.log(filtmod)
+
+                axios.get(`${api.baseUrl}/designationPermission/getall`)
+                  .then(response => {
+                    // console.log(response.data)
+                    const perm = response.data.filter(item => item.designations.id === 2);
+                    const p = perm.map(item => item.permissions)
+                    let arr = new Set(p.map(item => item.modules.parentId))
+                    let moduleList = [...arr]
+
+                    let subModuleSet = new Set(p.map(items => items.modules.id))
 
 
-            let subModuleArr = [...subModuleSet]
-            // console.log(subModuleArr)
+                    let subModuleArr = [...subModuleSet]
+                    // console.log(subModuleArr)
 
-            module.forEach(items => {
-              // console.log(items)
-              if (items.parentId !== 0) {
-                for (let i = 0; i < subModuleArr.length; i++) {
-                  if (subModuleArr[i] === items.id) {
-                    // console.log(items)
-                    let check = childModule.filter(it => it.id === items.id)
-                    if (check.length === 0) {
+                    module.forEach(items => {
                       // console.log(items)
-                      childModule.push(items)
-                    }
-                  }
-                }
-              }
-              // console.log(items)
-            })
-            // console.log(childModule)
-            // console.log(childModule)
+                      if (items.parentId !== 0) {
+                        for (let i = 0; i < subModuleArr.length; i++) {
+                          if (subModuleArr[i] === items.id) {
+                            console.log(items)
+                            let check = childModule.filter(it => it.id === items.id)
+                            if (check.length === 0) {
+                              console.log(items)
+                              childModule.push(items)
+                            }
+                          }
+                        }
+                      }
+                    })
+
+                    module.forEach(items => {
+                      if (items.parentId === 0 && (items.moduleName !== 'Quickstart' || items.moduleName !== 'Dashboard')) {
+                        for (let i = 0; i < moduleList.length; i++) {
+                          if (moduleList[i] === items.id) {
+                            let check = parentModule.filter(it => it.id === items.id)
+                            if (check.length === 0) {
+                              parentModule.push(items)
+                            }
+                          }
+                        }
+                      }
+                    })
+                    console.log(p)
 
 
+                  })
 
-            module.forEach(items => {
-              if (items.parentId === 0 && (items.moduleName !== 'Quickstart' || items.moduleName !== 'Dashboard')) {
-                for (let i = 0; i < moduleList.length; i++) {
-                  if (moduleList[i] === items.id) {
-                    let check = parentModule.filter(it => it.id === items.id)
-                    if (check.length === 0) {
-                      parentModule.push(items)
-                    }
-                  }
-                }
-              }
-            })
-            setModulePermission(p)
+              })
+              .catch(error => console.error(error));
+
           })
-          .catch(error => console.error(error));
-
+          .catch(error => console.error(error))
       })
       .catch(error => console.error('Error fetching protected resource:', error));
 
 
 
-    // const pModule = modulePermission.filter(item => item.modules.parentId === 0)
-    // const cModule = modulePermission.filter(item => item.modules.parentId !== 0)
-    // setParentModule(pModule)
-    // setChildModule(cModule)
-    // console.log(cModule)
+    const pModule = modulePermission.filter(item => item.modules.parentId === 0)
+    const cModule = modulePermission.filter(item => item.modules.parentId !== 0)
+    setParentModule(pModule)
+    setChildModule(cModule)
+    console.log(cModule)
 
   }, [])
 
