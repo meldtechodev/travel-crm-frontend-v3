@@ -120,7 +120,7 @@ const ViewDepartments = () => {
       accessor: "actions",
       render: ({ row }) => (
         <div className="flex justify-center items-center space-x-2">
-          <button className="text-blue-500 hover:text-blue-700" onClick={
+          <button className="text-purple-500 hover:text-purple-700" onClick={
             () => handleDepartmentEdit(row)
           }>
             <FaEdit />
