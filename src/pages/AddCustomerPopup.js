@@ -15,8 +15,8 @@ const AddCustomerPopup = ({ isOpen, onClose }) => {
   const [ipAddress, setIpAddress] = React.useState("");
   const [errors, setErrors] = React.useState(null);
 
-  console.log(ipAddress);
-  console.log(user);
+  // console.log(ipAddress);
+  // console.log(user);
 
   const formik = useFormik({
     initialValues: {
@@ -111,7 +111,7 @@ const AddCustomerPopup = ({ isOpen, onClose }) => {
       });
   }, []);
 
-  console.log(errors);
+  // console.log(errors);
 
   return (
     <div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 // Icons
@@ -31,14 +31,19 @@ import NewPolicyForm from '../pages/NewPolicyForm'
 import Roles from '../pages/Roles'
 import NewMember from '../pages/NewMember'
 import Customer from "../pages/Customer";
+import { UserContext } from "../contexts/userContext";
 
 const Sidebar = () => {
   const [homeStyle, setHomeStyle] = useState();
   const [addData, setAddData] = useState('');
-  const [module, setModule] = useState([])
+  // const [module, setModule] = useState([])
   const [parentModule, setParentModule] = useState([])
   const [childModule, setChildModule] = useState([])
   const [modulePermission, setModulePermission] = useState([])
+
+  const { module } = useContext(UserContext);
+
+  // console.log(module)
 
   const [user, setUser] = useState({})
   // const [token, setTokens] = useState(null)
@@ -79,11 +84,7 @@ const Sidebar = () => {
   useEffect(() => {
     getDecryptedToken()
       .then(async (token) => {
-        axios.get(`${api.baseUrl}/modules/getall`)
-          .then(response =>
-            setModule(response.data)
-          )
-          .catch(error => console.error(error))
+
 
         return await axios.get(`${api.baseUrl}/username`, {
           headers: {

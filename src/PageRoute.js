@@ -123,7 +123,7 @@ const PageRoute = () => {
       <Navbar />
       <div className="main-content h-full flex flex-row w-full">
         <Sidebar />
-        <div className='h-full w-full overflow-y-auto'>
+        <div className='h-full w-full overflow-y-auto mb-10'>
           <Routes>
             <Route path='/quickstart' element={<Quickstart />} />
             <Route path='/pdf' element={<PdfFile />} />

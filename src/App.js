@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './component/login';
 import PageRoute from './PageRoute';
 import AdminConfiguration from './pages/AdminConfiguration';
@@ -10,7 +10,6 @@ import { UserContext } from './contexts/userContext';
 
 const App = () => {
 
-  const navigate = useNavigate();
   const [allUsers, setAllUsers] = useState([])
 
   const { isAuthenticated, handleLogout, isLoading } = useContext(UserContext);
@@ -20,7 +19,7 @@ const App = () => {
       if (isSessionExpired()) {
         handleLogout();
       }
-    }, 60000); // Check every 60 seconds
+    }, 60000 * 60 * 24); // Check every 60 seconds
 
     // Clean up the interval on component unmount
     return () => clearInterval(interval);
@@ -38,10 +37,10 @@ const App = () => {
 
 
 
-  if (!isAuthenticated) {
-    localStorage.clear();
-    navigate('/login');
-  };
+  // if (!isAuthenticated) {
+  //   localStorage.clear();
+  //   navigate('/login');
+  // };
 
   useEffect(() => {
     axios.get(`${api.baseUrl}/usergetall`)
@@ -57,9 +56,9 @@ const App = () => {
 
 
   // Protected Route Component
-  // const ProtectedRoute = ({ children }) => {
-  //   return isAuthenticated ? children : allUsers.length === 0 ? <Navigate to="/login" /> : <Navigate to="/login" />;
-  // };
+  const ProtectedRoute = ({ children }) => {
+    return isAuthenticated ? children : allUsers.length !== 0 ? <Navigate to="/login" /> : <Navigate to="/signup" />;
+  };
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -67,20 +66,24 @@ const App = () => {
 
   return (
     <Routes>
-      {isAuthenticated && allUsers.length !== 0 ? (
-        <>
-          <Route path="/" element={<Navigate to="/home" replace />} />
-          <Route path="/home/*" element={<PageRoute />} />
-          <Route path="/*" element={<Navigate to="/home" replace />} />
-        </>
-      ) : (
-        <>
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route exact path="/signup" element={<AdminConfiguration />} />
-          <Route exact path="/success" element={<SuccessPage />} />
-          <Route exact path="/login" element={<Login />} />
-        </>
-      )}
+      {/* {isAuthenticated && allUsers.length !== 0 ? ( */}
+      {/* <> */}
+      <Route path="/" element={<Navigate to="/home" replace />} />
+      <Route path="/home/*" element={
+        <ProtectedRoute>
+          <PageRoute />
+        </ProtectedRoute>} />
+      {/* <Route path="/*" element={<Navigate to="/home" replace />} /> */}
+      {/* </> */}
+
+      {/* ) : ( */}
+      {/* <> */}
+      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route exact path="/signup" element={<AdminConfiguration />} />
+      <Route exact path="/success" element={<SuccessPage />} />
+      <Route exact path="/login" element={<Login />} />
+      {/* </> */}
+      {/* )} */}
     </Routes>
   );
 };

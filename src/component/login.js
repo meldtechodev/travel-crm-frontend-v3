@@ -54,6 +54,10 @@ function Login() {
     const encryptedTokenBase64 = btoa(String.fromCharCode(...encryptedToken));
 
     // Save the key, iv, and encrypted token in localStorage
+    // sessionStorage.setItem('encryptionKey', JSON.stringify(await crypto.subtle.exportKey('jwk', key)));
+    // sessionStorage.setItem('iv', ivBase64);
+    // sessionStorage.setItem('encryptedToken', encryptedTokenBase64);
+
     localStorage.setItem('encryptionKey', JSON.stringify(await crypto.subtle.exportKey('jwk', key)));
     localStorage.setItem('iv', ivBase64);
     localStorage.setItem('encryptedToken', encryptedTokenBase64);
