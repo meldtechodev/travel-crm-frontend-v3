@@ -61,6 +61,7 @@ export const UserProvider = ({ children }) => {
   const { childModule, parentModule } = []
   const [modulePermission, setModulePermission] = useState([])
   const [module, setModule] = useState([])
+
   useEffect(() => {
     const fetchUser = async () => {
       setIsLoading(true);
@@ -73,8 +74,57 @@ export const UserProvider = ({ children }) => {
           }
         });
         setUser(data);
+        axios.get(`${api.baseUrl}/modules/getall`)
+          .then(response => {
+            setModule(response.data);
+            axios.get(`${api.baseUrl}/designationPermission/getall`)
+              .then(res => {
+                // console.log(response.data)
+                const perm = res.data.filter(item => item.designations.id === user.designation.id);
+                const p = perm.map(item => item.permissions)
+                let arr = new Set(p.map(item => item.modules.parentId))
+                let moduleList = [...arr]
+
+                let subModuleSet = new Set(p.map(items => items.modules.id))
+
+                let subModuleArr = [...subModuleSet]
+                // console.log(subModuleArr)
+
+                module.forEach(items => {
+                  // console.log(items)
+                  if (items.parentId !== 0) {
+                    for (let i = 0; i < subModuleArr.length; i++) {
+                      if (subModuleArr[i] === items.id) {
+                        // console.log(items)
+                        let check = childModule.filter(it => it.id === items.id)
+                        if (check.length === 0) {
+                          // console.log(items)
+                          childModule.push(items)
+                        }
+                      }
+                    }
+                  }
+                })
+                module.forEach(items => {
+                  if (items.parentId === 0 && (items.moduleName !== 'Quickstart' || items.moduleName !== 'Dashboard')) {
+                    for (let i = 0; i < moduleList.length; i++) {
+                      if (moduleList[i] === items.id) {
+                        let check = parentModule.filter(it => it.id === items.id)
+                        if (check.length === 0) {
+                          parentModule.push(items)
+                        }
+                      }
+                    }
+                  }
+                })
+                setModulePermission(p)
+              })
+              .catch(error => console.error(error));
+
+          })
+          .catch(error => console.error(error));
+
         setIsAuthenticated(true);
-        modulFetch();
       }
       catch (error) {
         setUser(null);
@@ -86,57 +136,8 @@ export const UserProvider = ({ children }) => {
       }
     };
     fetchUser();
-
     const modulFetch = () => {
-      axios.get(`${api.baseUrl}/modules/getall`)
-        .then(response =>
-          setModule(response.data)
-        )
-        .catch(error => console.error(error))
 
-      axios.get(`${api.baseUrl}/designationPermission/getall`)
-        .then(response => {
-          // console.log(response.data)
-          const perm = response.data.filter(item => item.designations.id === user.designation.id);
-          const p = perm.map(item => item.permissions)
-          let arr = new Set(p.map(item => item.modules.parentId))
-          let moduleList = [...arr]
-
-          let subModuleSet = new Set(p.map(items => items.modules.id))
-
-          let subModuleArr = [...subModuleSet]
-          // console.log(subModuleArr)
-
-          module.forEach(items => {
-            // console.log(items)
-            if (items.parentId !== 0) {
-              for (let i = 0; i < subModuleArr.length; i++) {
-                if (subModuleArr[i] === items.id) {
-                  // console.log(items)
-                  let check = childModule.filter(it => it.id === items.id)
-                  if (check.length === 0) {
-                    // console.log(items)
-                    childModule.push(items)
-                  }
-                }
-              }
-            }
-          })
-          module.forEach(items => {
-            if (items.parentId === 0 && (items.moduleName !== 'Quickstart' || items.moduleName !== 'Dashboard')) {
-              for (let i = 0; i < moduleList.length; i++) {
-                if (moduleList[i] === items.id) {
-                  let check = parentModule.filter(it => it.id === items.id)
-                  if (check.length === 0) {
-                    parentModule.push(items)
-                  }
-                }
-              }
-            }
-          })
-          setModulePermission(p)
-        })
-        .catch(error => console.error(error));
     }
   }, []);
 
