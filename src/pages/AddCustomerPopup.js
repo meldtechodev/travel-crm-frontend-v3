@@ -14,6 +14,7 @@ const AddCustomerPopup = ({ isOpen, onClose }) => {
   const { user } = useContext(UserContext);
   const [ipAddress, setIpAddress] = React.useState("");
   const [errors, setErrors] = React.useState(null);
+  const [currentCreatedUser, setCurrentCreatedUser] = React.useState(null);
 
   // console.log(ipAddress);
   // console.log(user);
@@ -31,6 +32,7 @@ const AddCustomerPopup = ({ isOpen, onClose }) => {
       ipaddress: ipAddress,
       status: 1,
       isdelete: 0,
+      user_id: user.userId,
     },
     enableReinitialize: true,
     validationSchema: Yup.object({
@@ -43,6 +45,7 @@ const AddCustomerPopup = ({ isOpen, onClose }) => {
     }),
     onSubmit: async (values) => {
       console.log(values);
+      setCurrentCreatedUser(values);
       if (
         !values.salutation ||
         !values.fName ||
@@ -67,8 +70,7 @@ const AddCustomerPopup = ({ isOpen, onClose }) => {
       await axios.post(`${api.baseUrl}/customer/create`, values, {
         headers: {
           // 'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
+          
         }
       })
         .then(response => {
@@ -87,8 +89,8 @@ const AddCustomerPopup = ({ isOpen, onClose }) => {
         })
         .catch(error => {
           console.error(error);
-          setErrors(error.response.data);
-          toast.error(error.response.data, {
+          setErrors(error && error.response.data);
+          toast.error(error && error.response.data, {
             position: "top-center",
             autoClose: 5000,
             hideProgressBar: false,
@@ -100,6 +102,8 @@ const AddCustomerPopup = ({ isOpen, onClose }) => {
         });
     },
   });
+
+  console.log(errors)
 
   useEffect(() => {
     axios.get(`${api.baseUrl}/ipAddress`)
@@ -143,30 +147,30 @@ const AddCustomerPopup = ({ isOpen, onClose }) => {
                 ) : null}
               </div>
 
-              {/* {errors && errors.emailId && ( */}
-              {/* <p className="text-red-500 text-sm">
-                  Customer already exists <Link href="/home/customer-profile-popup">view here</Link>
-                </p> */}
-              {/* // )} */}
+              {errors && errors.message && errors.customer && errors.customer.emailId === currentCreatedUser.emailId && (
+              <p className="text-red-500 text-sm">
+                  {errors.message}
+                </p>
+              )}
 
               <div className="flex space-x-2 w-full h-full flex-col">
                 <PhoneInput
-                  country={"eg"}
+                  country={"in"}
                   enableSearch={true}
                   value={formik.values.contactNo}
                   onChange={(contactNo) => formik.setFieldValue("contactNo", contactNo)}
                   onBlur={formik.handleBlur("contactNo")}
                 />
-                {formik.touched.contactNo && formik.errors.phone ? (
-                  <div className="text-red-500 text-sm">{formik.errors.phone}</div>
+                {formik.touched.contactNo && formik.errors.contactNo ? (
+                  <div className="text-red-500 text-sm">{formik.errors.contactNo}</div>
                 ) : null}
               </div>
 
-              {/* {errors && errors.contactNo( */}
+              {errors && errors.message && errors.customer && errors.customer.contactNo === currentCreatedUser.contactNo && (
               <p className="text-red-500 text-sm">
-                Customer already exists <Link to="/home/customer-profile-popup">view here</Link>
+                {errors.message} <Link to={`/home/customer-profile-popup/${errors && errors.customer && errors.customer.id}`}>view here</Link>
               </p>
-              {/* )} */}
+              )}
 
               <div className="flex space-x-2">
                 <div className="flex flex-col">

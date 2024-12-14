@@ -152,11 +152,13 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
   }, []);
 
   const handleNightChange = (e) => {
-    if (packageData.nights >= e.target.value + formItinaryData.length) {
+    // setEditIti(false)
+    if (packageData.nights > e.target.value + formItinaryData - 1) {
       setNights(e.target.value)
       setCheckNights(checkNights + e.target.value)
       setIsOverNight(false)
     } else {
+      setIsOverNight(false)
       setNights(e.target.value)
       setIsOverNight(true)
     }
@@ -234,7 +236,70 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
 
   }
 
+  const [allCountry, setAllCountry] = useState([])
+  const [allState, setAllState] = useState([])
+  const [allList, setAllList] = useState([])
+  const [domesticList, setDomesticList] = useState([])
+  const [internationalList, setInternationalList] = useState([])
+
+
   useEffect(() => {
+    axios.get(`${api.baseUrl}/destination/getallDestination`)
+      .then(response => {
+        const formatDestination = response.data.map((item) => ({
+          ...item,
+          label: item.destinationName + ", (" + item.state.stateName + ") " + item.country.countryName,
+          value: 0
+        }))
+        // console.log(formatDestination)
+
+        axios.get(`${api.baseUrl}/state/getAllState`)
+          .then(res => {
+            const formatState = res.data.map((item) => ({
+              ...item,
+              label: item.stateName + ", " + item.country.countryName,
+              value: 0
+            }))
+            let update = [...formatDestination, ...formatState]
+            setDomesticList(update.map((item, index) => ({
+              ...item,
+              value: index + 1
+            })))
+
+            axios.get(`${api.baseUrl}/country/getallcountry`)
+              .then(r => {
+                const formatCountry = r.data.map((item) => ({
+                  ...item,
+                  label: item.countryName.toUpperCase(),
+                  value: 0
+                }))
+
+                const allData = [...formatState, ...formatCountry]
+                setInternationalList(allData.map((item, index) => ({
+                  ...item,
+                  value: index + 1
+                })))
+
+              }).catch(error => console.error(error))
+
+          }).catch(error => console.error(error))
+
+      }).catch(error => console.error(error));
+
+    // axios.get(`${api.baseUrl}/vendor/getAll`)
+    //   .then(res => {
+    //     const formattedSuppliers = res.data.content.map((item) => ({
+    //       value: item.id,
+    //       label: item.vendorName,
+    //     }));
+    //     setSupplier(formattedSuppliers);
+    //   })
+    //   .catch(error => console.error("Vendor search error," + error))
+
+  }, [])
+
+  useEffect(() => {
+
     Promise.all([
       axios.get(`${api.baseUrl}/destination/getall`), //index 0
       axios.get(`${api.baseUrl}/vendor/getAll`), //index  1
@@ -247,6 +312,8 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
       axios.get(`${api.baseUrl}/activities/getall`), //index 8
       axios.get(`${api.baseUrl}/sightseeing/getAll`), //index 9
       axios.get(`${api.baseUrl}/policy/getallpolicy`), //index 10
+      axios.get(`${api.baseUrl}/country/getall`), //index 11
+      axios.get(`${api.baseUrl}/state/getall`), //index 12
     ]).then((response) => {
       const formattedOptions = response[0].data.content.map((item) => ({
         value: item.id, // or any unique identifier
@@ -258,6 +325,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
         value: item.id,
         label: item.vendorName,
       }));
+      console.log(formattedSuppliers)
       setSupplier(formattedSuppliers);
 
       const formattedPackageThemes = response[2].data.content.map((item) => ({
@@ -315,8 +383,11 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
         label: item.policyName,
         description: item.policyDescription,
       }));
-      // console.log(first)
       setPolicyList(response[10].data.content);
+
+      setAllCountry(response[11].data)
+      setAllState(response[12].data)
+      // const format
     })
       .catch(error => console.error(error));
   }, []);
@@ -534,10 +605,10 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
   }
 
   const handleAddItineraryDay = () => {
-    if (formItinaryData.length + nights < packageData.nights) {
-      setIsOverNight(true)
-      return
-    }
+    // if (formItinaryData.length - 1 + nights > packageData.nights) {
+    //   setIsOverNight(true)
+    //   return
+    // }
 
     if (Number(nights) > 0 && selectedHotelCity !== null) {
       let l = addCityAndNight.length;
@@ -656,9 +727,9 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
       else alert("Select City...");
     }
 
-    if (formItinaryData.length >= packageData.days) {
-      setIsOverNight(true)
-    }
+    // if (formItinaryData.length >= packageData.days) {
+    //   setIsOverNight(true)
+    // }
   };
 
   const handleItinearayProgramData = (data, i) => {
@@ -847,6 +918,12 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
     // setPage(3)
   };
 
+  const handlePackageType = () => {
+    if (selectedPackageType === 'domestic') {
+
+    }
+  }
+
   const handlePageChange = async (e) => {
     e.preventDefault();
 
@@ -930,28 +1007,32 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
     //   console.log(pair[0] + ' = ' + pair[1]);
     // }
 
-    await axios.post(`${api.baseUrl}/packages/create`, formDataPackageMaster, {
-      headers: {
-        // 'Authorization': `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-        "Access-Control-Allow-Origin": "*",
-      },
-    })
-      .then((response) => {
-        setPackageData(response.data)
-        console.log(response.data)
-        toast.success("Package Created...", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-        setPage(2);
+    if (!packageData) {
+      await axios.post(`${api.baseUrl}/packages/create`, formDataPackageMaster, {
+        headers: {
+          // 'Authorization': `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+          "Access-Control-Allow-Origin": "*",
+        },
       })
-      .catch((error) => console.error(error));
+        .then((response) => {
+          setPackageData(response.data)
+          // console.log(response.data)
+          toast.success("Package Created Successfully!", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          setPage(2);
+        })
+        .catch((error) => console.error(error));
+    } else {
+
+    }
   };
   const handleFileChange = (e) => {
     setFormData({
@@ -1080,6 +1161,10 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
     e.preventDefault();
   };
 
+  const [inputStartSearch, setInputStartSearch] = useState("")
+  const [inputEndSearch, setInputEndSearch] = useState("")
+  const [inputSearch, setInputSearch] = useState(["", "", "", "", "", "", ""])
+
   return (
     <div
       className={`fixed top-8 right-0 h-full bg-gray-200 shadow-lg transform transition-transform duration-500 ${isOpen ? "translate-x-0" : `translate-x-[1050px]`
@@ -1149,7 +1234,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                   value="domestic"
                   className="mr-2"
                   checked={selectedPackageType === "domestic"} // Check if domestic is selected
-                  onChange={() => setSelectedPackageType("domestic")} // Set state when clicked
+                  onChange={() => { setSelectedPackageType("domestic"); handlePackageType() }} // Set state when clicked
                 />
                 <label htmlFor="domestic" className="text-sm font-medium">
                   Domestic
@@ -1164,7 +1249,10 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                   value="international"
                   className="mr-2"
                   checked={selectedPackageType === "international"} // Check if international is selected
-                  onChange={() => setSelectedPackageType("international")} // Set state when clicked
+                  onChange={() => {
+                    setSelectedPackageType("international");
+                    handlePackageType()
+                  }} // Set state when clicked
                 />
                 <label htmlFor="international" className="text-sm font-medium">
                   International
@@ -1199,8 +1287,13 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                 <Select
                   className="mt-1 w-full border rounded z-40"
                   value={selectedStartCity}
-                  onChange={handleStartCityChange}
-                  options={destination}
+                  // onChange={handleStartCityChange}
+                  options={selectedPackageType === "international" ? internationalList : domesticList}
+                  onInputChange={(value) => setInputStartSearch(value)}
+                  openMenuOnClick={false}
+                  openMenuOnFocus={false}
+                  menuIsOpen={inputStartSearch !== "" && inputStartSearch.length >= 2} // Opens menu only when typing
+
                 // components={{ Option: CustomOption }}
                 // closeMenuOnSelect={true}
                 // hideSelectedOptions={true}
@@ -1217,12 +1310,18 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                 <Select
                   className="mt-1 w-full border rounded z-40"
                   value={selectedEndCity}
-                  onChange={handleEndCityChange}
-                  options={destination}
-                // components={{ Option: CustomOption }}
-                // closeMenuOnSelect={true}
-                // hideSelectedOptions={true}
-                // isClearable={true}
+                  // onChange={handleEndCityChange}
+                  // onChange={(option) => setSelectedOption(option)} // Handle selection
+
+                  options={selectedPackageType === "international" ? internationalList : domesticList}
+                  onInputChange={(value) => setInputEndSearch(value)}
+                  openMenuOnClick={false}
+                  openMenuOnFocus={false}
+                  // isClearable
+                  menuIsOpen={inputEndSearch !== "" && inputEndSearch.length >= 2} // Opens menu only when typing                // components={{ Option: CustomOption }}
+                  // closeMenuOnSelect={true}
+                  // hideSelectedOptions={true}
+                  isClearable={true}
                 />
               </div>
             </div>
@@ -1240,12 +1339,19 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                   className="mt-1 w-full border rounded z-30"
                   value={selectedDestinations}
                   onChange={handleChange}
-                  options={destination}
+                  // options={destination}
                   isMulti
                   components={{ Option: CustomOption }}
                   closeMenuOnSelect={false}
                   hideSelectedOptions={false}
                   isClearable={true}
+
+                  options={selectedPackageType === "international" ? internationalList : domesticList}
+                  onInputChange={(value) => setInputEndSearch(value)}
+                  openMenuOnClick={false}
+                  openMenuOnFocus={false}
+                  menuIsOpen={inputEndSearch !== "" && inputEndSearch.length >= 2} // Opens menu only when
+
                 />
               </div>
               <div className="w-1/2">
@@ -1571,7 +1677,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
             {editIti && <div className="flex mb-4 gap-2 justify-evenly w-full">
               <div className="w-1/2">
                 <label
-                  htmlFor="destinations"
+                  // htmlFor="destinations"
                   className="block text-sm font-medium"
                 >
                   Add Hotel City
@@ -1586,7 +1692,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
               </div>
               <div className="w-1/3">
                 <label
-                  htmlFor="destinations"
+                  // htmlFor="destinations"
                   className="block text-sm font-medium"
                 >
                   No of Nights
@@ -1610,7 +1716,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                   onClick={handleEditItineraryDay}
                   disabled={checkNights}
                 >
-                  Add
+                  Edit
                 </button>
 
               </div>
@@ -1646,7 +1752,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                   name="noOFDays"
                   value={nights}
                   min={0}
-                  onChange={(e) => handleNightChange(e)}
+                  onChange={handleNightChange}
                   className="mt-1 h-[38px] p-2 w-full border border-1 border-[#e5e7eb] rounded"
                   placeholder="No. of night..."
                 />
@@ -1655,16 +1761,20 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                 <button
                   className={`bg-red-600 py-1 rounded-sm px-2 mb-1 text-white 
      border-[1px] 
-    ${nights + formItinaryData.length >= packageData.nights || 0 ? 'bg-gray-400 text-gray-700 cursor-not-allowed hover:bg-gray-400 hover:text-gray-700' : 'hover:bg-white hover:text-red-600 hover:border-red-600'}`}
+    ${Number(nights) + formItinaryData.length - 1 > packageData.nights ? 'bg-gray-400 text-gray-700 cursor-not-allowed hover:bg-gray-400 hover:text-gray-700' : 'hover:bg-white hover:text-red-600 hover:border-red-600'}`}
                   onClick={handleAddItineraryDay}
-                  disabled={nights + formItinaryData.length >= packageData.nights || 0}
+                  disabled={Number(nights) + formItinaryData.length - 1 > packageData.nights}
                 >
                   Add
                 </button>
 
               </div>
             </div>
-            {isOverNight && <div className="flex justify-center"><p className="text-red-600">You can't add more than {packageData.nights} nights</p></div>}
+            {Number(nights) + formItinaryData.length - 1 > packageData.nights &&
+              <div className="flex justify-center">
+                <p className="text-red-600">You can't add more than {packageData.nights} nights</p>
+              </div>
+            }
             <div className="mb-6 gap-2">
               <label
                 htmlFor="destinations"
@@ -2198,7 +2308,10 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
               <button
                 type="submit"
                 className="bg-red-700 text-white px-4 py-2 rounded shadow mr-1"
-                onClick={() => setPage(1)}
+                onClick={() => {
+                  setPage(1); setFormItinaryData([]);
+                  setAddCityAndNight([])
+                }}
               >
                 Back
               </button>

@@ -127,7 +127,7 @@ const ViewDesignations = () => {
           <button className="text-blue-500 hover:text-blue-700" onClick={() => handlePermission(row)}>
             <MdOutlineSecurityUpdateGood />
           </button>
-          <button className="text-blue-500 hover:text-blue-700" onClick={() => handleEdit(row)}>
+          <button className="text-purple-500 hover:text-purple-700" onClick={() => handleEdit(row)}>
             <FaEdit />
           </button>
           <button className="text-red-500 hover:text-red-700" onClick={() => handleDelete(row)}>
@@ -183,7 +183,7 @@ const ViewDesignations = () => {
 
   return (
     <>
-      <div className="p-4 w-full bg-gray-50 h-full">
+      <div className="p-4 w-full bg-gray-50 mb-12">
         <h1 className="text-xl font-bold mb-6">Designation</h1>
         <div className="flex items-center justify-between gap-2 w-full flex-col md:flex-row">
           <div className="flex justify-between">

@@ -1,8 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import NewQuery from "../pages/NewQuery";
 import { FaTrash } from "react-icons/fa6";
+import { useLocation, useParams } from "react-router-dom";
+import axios from "axios";
+import api from "../apiConfig/config";
 
 const CustomerProfile = () => {
+  // const location = useLocation();
+  // const option = location.state?.option;
+  // console.log(option)
   const queries = [
     {
       date: "2023-01-01",
@@ -26,22 +32,37 @@ const CustomerProfile = () => {
   const [tab, setTab] = React.useState("profile");
   const [addData, setAddData] = React.useState([]);
 
+  const [userData, setUserData] = React.useState({});
+
+  const params = useParams();
+
+  const userId = params.userId;
+
+  console.log(params);
+  console.log(userId);
+
+  useEffect(() => {
+    axios.get(`${api.baseUrl}/customer/getbyid/${userId}`).then((res) => {
+      setUserData(res.data);
+    })
+  }, [userId])
+
   return (
     <div className="p-4 w-full mb-14">
       <div className="bg-white p-4 rounded shadow">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between mb-4">
           <div className="mb-2 md:mb-0">
-            <p>Customer Name : Mr. Gaurav Kr Gupta</p>
+            <p>Customer Name : ${userData.salutation} ${userData.fName} ${userData.lName}</p>
             <p>Owner Name : Gaurav Gupta</p>
           </div>
           <div className="mb-2 md:mb-0">
-            <p>Contact No : 8899008899</p>
+            <p>Contact No : ${userData.contactNo}</p>
             <p>Customer Type: B2C</p>
           </div>
           <div className="mb-2 md:mb-0">
-            <p>Email ID : abc@gmail.com</p>
-            <p>Lead Source: Google</p>
+            <p>Email ID : ${userData.emailId}</p>
+            <p>Lead Source: ${userData.leadSource}</p>
           </div>
           <div className="mb-2 md:mb-0">
             <p>Active Since : 02-Aug-17 05:26:00</p>
@@ -249,7 +270,6 @@ const CustomerProfile = () => {
             <div className="bg-white p-4 rounded shadow w-full md:w-1/2 mt-4 md:mt-0">
               <div className="flex justify-between items-center mb-4">
                 <p className="font-bold">Have Been To:</p>
-                <button className="bg-gray-200 px-4 py-2 rounded">+ Add</button>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left">
@@ -334,6 +354,6 @@ const CustomerProfile = () => {
       )}
     </div>
   );
-};
+}
 
 export default CustomerProfile;

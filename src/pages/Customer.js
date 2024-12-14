@@ -92,7 +92,7 @@ const Customer = ({ isOpen, onClose, customerData, isFormEditEnabled, setIsFormE
     // formDatasend.append('isdelete', formData.isdelete);
     // formDatasend.append('user.userId', user.userId);
 
-    console.log('FORM DATA:', formData);
+    // console.log('FORM DATA:', formData);
 
     if (
       !formData.salutation ||

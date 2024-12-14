@@ -47,91 +47,6 @@ const Navbar = () => {
     return word ? word.charAt(0) : "";
   };
 
-  const [token, setTokens] = useState(null);
-  // async function decryptToken(encryptedToken, key, iv) {
-  //   const dec = new TextDecoder();
-
-  //   const decrypted = await crypto.subtle.decrypt(
-  //     {
-  //       name: "AES-GCM",
-  //       iv: iv,
-  //     },
-  //     key,
-  //     encryptedToken
-  //   );
-
-  //   return dec.decode(new Uint8Array(decrypted));
-  // }
-
-  // // Function to retrieve and decrypt the token
-  // async function getDecryptedToken() {
-  //   const keyData = JSON.parse(localStorage.getItem("encryptionKey"));
-  //   const ivBase64 = localStorage.getItem("iv");
-  //   const encryptedTokenBase64 = localStorage.getItem("encryptedToken");
-
-  //   if (!keyData || !ivBase64 || !encryptedTokenBase64) {
-  //     throw new Error("No token found");
-  //   }
-
-  //   // Convert back from base64
-  //   const key = await crypto.subtle.importKey(
-  //     "jwk",
-  //     keyData,
-  //     { name: "AES-GCM" },
-  //     true,
-  //     ["encrypt", "decrypt"]
-  //   );
-  //   const iv = new Uint8Array(
-  //     atob(ivBase64)
-  //       .split("")
-  //       .map((char) => char.charCodeAt(0))
-  //   );
-  //   const encryptedToken = new Uint8Array(
-  //     atob(encryptedTokenBase64)
-  //       .split("")
-  //       .map((char) => char.charCodeAt(0))
-  //   );
-
-  //   return await decryptToken(encryptedToken, key, iv);
-  // }
-
-  // // // Example usage to make an authenticated request
-  // // useEffect(() => {
-  // //   getDecryptedToken()
-  // //     .then(res => {
-  // //       setTokens(res);
-
-  // //       return axios.get(`${api.baseUrl}/username`, {
-  // //         headers: {
-  // //           'Authorization': `Bearer ${token}`,
-  // //           'Access-Control-Allow-Origin': '*'
-  // //         }
-  // //       });
-  // //     })
-  // //     .then(response => {
-  // //       setUser(response.data);
-  // //     })
-  // //     .catch(error => console.error('Error fetching protected resource:', error))
-  // // }, [])
-
-  // useEffect(() => {
-  //   const token = localStorage.getItem("token");
-
-  //   axios.get(`${api.baseUrl}/username`, {
-  //     headers: {
-  //       Authorization: `Bearer ${token}`,
-  //       "Access-Control-Allow-Origin": "*",
-  //     },
-  //   }).then((response) => {
-  //     setUser(response.data);
-  //   });
-  // }, []);
-
-  // const handleLogout = () => {
-  //   localStorage.clear();
-  //   navigate("/login");
-  // };
-
   // Close the dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -145,6 +60,7 @@ const Navbar = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (isOpenRef.current && !isOpenRef.current.contains(event.target)) {
@@ -160,7 +76,7 @@ const Navbar = () => {
 
   return (
     <div className="w-full flex flex-col md:flex-row">
-      <div className="w-full h-12 z-20 bg-gradient-to-r from-[#db272e] to-[#5b2727] p-5 flex justify-between items-center">
+      <div className="w-full max-h-[50px] z-20 bg-gradient-to-r m-0 from-[#db272e] to-[#5b2727] p-5 flex justify-between items-center">
         <div className="flex-1 flex justify-between items-center">
           <div className="flex items-center space-x-4 md:space-x-8">
             <Link to="/home">
@@ -179,39 +95,44 @@ const Navbar = () => {
                   +
                 </span>
                 {dropdownOpen && (
-                  <div className="absolute top-10 left-0 w-48 bg-white shadow-lg rounded-md  text-black">
+                  <div className="absolute top-10 left-0 w-48 bg-white shadow-lg rounded-md text-black">
                     <ul className="space-y-2">
                       <li
-                        className="hover:bg-gray-200  hover:border-l-4  border-blue-500 p-2 rounded cursor-pointer"
+                        className="hover:bg-gray-200 hover:border-l-4 border-blue-500 p-2 rounded cursor-pointer"
                         onClick={() => {
                           setAddData([]);
                           setAddData(["NewPackageForm"]);
+                          setDropdownOpen(false); // Close dropdown
                         }}
                       >
                         New Package
                       </li>
                       <li
-                        className="hover:bg-gray-200  hover:border-l-4  border-blue-500 p-2 rounded cursor-pointer"
+                        className="hover:bg-gray-200 hover:border-l-4 border-blue-500 p-2 rounded cursor-pointer"
                         onClick={() => {
                           setAddData([]);
                           setAddData(["NewQuery"]);
+                          setDropdownOpen(false); // Close dropdown
                         }}
                       >
                         New Query
                       </li>
-                      <li className="hover:bg-gray-200  hover:border-l-4  border-blue-500 p-2 rounded cursor-pointer"
-                      onClick={() => {
-                        setAddData([]);
-                        setAddData(["AddCustomerPopup"]);
-                      }}
+                      <li
+                        className="hover:bg-gray-200 hover:border-l-4 border-blue-500 p-2 rounded cursor-pointer"
+                        onClick={() => {
+                          setAddData([]);
+                          setAddData(["AddCustomerPopup"]);
+                          setDropdownOpen(false); // Close dropdown
+                        }}
                       >
                         New Customer
                       </li>
                       <li
-                        className="hover:bg-gray-200  hover:border-l-4  border-blue-500 p-2 rounded cursor-pointer"
+                        className="hover:bg-gray-200 hover:border-l-4 border-blue-500 p-2 rounded cursor-pointer"
                         onClick={() => {
                           setAddData([]);
                           setAddData(["Hotel"]);
+                          setDropdownOpen(false); // Close dropdown
                         }}
                       >
                         New Hotels
@@ -221,6 +142,7 @@ const Navbar = () => {
                         onClick={() => {
                           setAddData([]);
                           setAddData(["NewMember"]);
+                          setDropdownOpen(false); // Close dropdown
                         }}
                       >
                         <hr className="absolute top-0 left-0 w-full border-gray-300 m-0" />
@@ -230,6 +152,7 @@ const Navbar = () => {
                   </div>
                 )}
               </div>
+
               {/* Submenu Components */}
               <div
                 className="submenu-menu"

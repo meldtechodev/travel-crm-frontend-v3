@@ -123,7 +123,7 @@ const PageRoute = () => {
       <Navbar />
       <div className="main-content h-full flex flex-row w-full">
         <Sidebar />
-        <div className='h-full w-full overflow-y-auto'>
+        <div className='h-full w-full overflow-y-auto mb-10'>
           <Routes>
             <Route path='/quickstart' element={<Quickstart />} />
             <Route path='/pdf' element={<PdfFile />} />
@@ -143,7 +143,7 @@ const PageRoute = () => {
             {/* <Route path="/department-dashboard" element={<CompanyHierarchy />} /> */}
             {/* <Route path="/profile-page" element={<ProfilePage />} /> */}
             <Route path="/app-settings" element={<SettingsPage />} />
-            <Route path="/company-profile" element={<CompanyProfilePage />} />
+            <Route path={`/company-profile/:id`} element={<CompanyProfilePage />} />
             <Route
               path={'/organization-details/:id'}
               element={<OrganizationDetailsPage />}
@@ -157,7 +157,7 @@ const PageRoute = () => {
               element={<ViewDesignations />}
             />
             <Route
-              path="/customer-profile-popup"
+              path="/customer-profile-popup/:userId"
               element={<CustomerProfilePopup />}
             />
             {/* <Route path='/' /> */}
