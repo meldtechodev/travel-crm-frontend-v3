@@ -13,7 +13,7 @@ const TableComponent = ({ columns, data }) => {
         </tr>
       </thead>
       <tbody>
-        {data.map((row, rowIndex) => (
+        {data && data.map((row, rowIndex) => (
           <tr key={rowIndex} className="border-collapse text-center">
             {columns.map((column, colIndex) => (
               <td key={colIndex} className="py-2 px-4 border">

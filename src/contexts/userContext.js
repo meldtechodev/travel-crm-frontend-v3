@@ -9,11 +9,6 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [ipAddress, setIpAddress] = useState();
-  const [countryDetails, setCountryDetails] = useState([])
-  const [stateDetails, setStateDetails] = useState([])
-  const [destinationDetails, setDestinationDetails] = useState([])
-
   const navigate = useNavigate();
 
   async function decryptToken(encryptedToken, key, iv) {
@@ -63,89 +58,107 @@ export const UserProvider = ({ children }) => {
     return await decryptToken(encryptedToken, key, iv);
   }
 
-  useEffect(() => {
 
+  const [module, setModule] = useState([])
+
+  useEffect(() => {
     getDecryptedToken()
       .then(async (token) => {
+        setIsLoading(true)
         return await axios.get(`${api.baseUrl}/username`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Access-Control-Allow-Origin': '*'
           }
         })
-          .then((response) => {
+          .then(response => {
+            const u = response.data
             setUser(response.data);
             setIsAuthenticated(true)
+            // console.log(u)
+
+            axios.get(`${api.baseUrl}/designationModules/getall`)
+              .then(res => {
+                // setDesignationModules(res.data)
+                let mod = res.data.filter(item => item.designations.id === u.designation.id)
+                let filtmod = mod.map(item => item.modules)
+                setModule(filtmod)
+
+                console.log(filtmod)
+
+                // axios.get(`${api.baseUrl}/designationPermission/getall`)
+                //   .then(response => {
+                //     // console.log(response.data)
+                //     const perm = response.data.filter(item => item.designations.id === u.designation.id);
+                //     const p = perm.map(item => item.permissions)
+                //     let arr = new Set(p.map(item => item.modules.parentId))
+                //     let moduleList = [...arr]
+                //     console.log(p)
+
+                //     let subModuleSet = new Set(p.map(items => items.modules.id))
+
+
+                //     let subModuleArr = [...subModuleSet]
+                //     // console.log(subModuleArr)
+
+                //     module.forEach(items => {
+                //       // console.log(items)
+                //       if (items.parentId !== 0) {
+                //         for (let i = 0; i < subModuleArr.length; i++) {
+                //           if (subModuleArr[i] === items.id) {
+                //             console.log(items)
+                //             let check = childModule.filter(it => it.id === items.id)
+                //             if (check.length === 0) {
+                //               console.log(items)
+                //               childModule.push(items)
+                //             }
+                //           }
+                //         }
+                //       }
+                //       // console.log(items)
+                //     })
+                //     // console.log(childModule)
+                //     // console.log(childModule)
+
+
+
+                //     module.forEach(items => {
+                //       if (items.parentId === 0 && (items.moduleName !== 'Quickstart' || items.moduleName !== 'Dashboard')) {
+                //         for (let i = 0; i < moduleList.length; i++) {
+                //           if (moduleList[i] === items.id) {
+                //             let check = parentModule.filter(it => it.id === items.id)
+                //             if (check.length === 0) {
+                //               parentModule.push(items)
+                //             }
+                //           }
+                //         }
+                //       }
+                //     })
+                //     console.log(p)
+
+
+                //   })
+
+              })
+              .catch(error => console.error(error));
 
           })
-          .catch(error => {
-            console.error("token expired ", error);
-            navigate('/login');
-            setIsAuthenticated(false)
-          });
+          .catch(error => console.error(error))
       })
-      .catch(error => console.error('Error fetching user:', error));
-
-
-    axios.get(`${api.baseUrl}/ipAddress`)
-      .then((response) => {
-        setIpAddress(response.data)
+      .catch(error => console.error('Error fetching protected resource:', error))
+      .finally(() => {
+        setIsLoading(false)
       })
-      .catch((error) => {
-        console.error('Error fetching IP address:', error);
-      });
-
-    axios.get(`${api.baseUrl}/country/getallcountry`)
-      .then(response => {
-        const formattedOptions = response.data.map(item => ({
-          ...item,
-          value: item.id, // or any unique identifier
-          label: item.countryName // or any display label you want
-        }));
-        setCountryDetails(formattedOptions);
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-      });
-
-    axios.get(`${api.baseUrl}/state/getAllState`)
-      .then(response => {
-        const formattedOptions = response.data.map(item => ({
-          ...item,
-          value: item.id, // or any unique identifier
-          label: item.stateName // or any display label you want
-        }));
-        setStateDetails(formattedOptions);
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-      });
-
-    axios.get(`${api.baseUrl}/destination/getall`)
-      .then(response => {
-        const formattedOptions = response.data.content.map(item => ({
-          ...item,
-          value: item.id,
-          label: item.destinationName
-        }));
-        setDestinationDetails(formattedOptions);
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-      });
-
   }, []);
-
 
   const handleLogout = () => {
     localStorage.clear();
-    sessionStorage.clear();
     setUser(null);
     setIsAuthenticated(false);
     navigate('/login');
   };
 
-  return <UserContext.Provider value={{ user, isAuthenticated, setIsAuthenticated, setUser, handleLogout, isLoading, ipAddress, countryDetails, stateDetails, destinationDetails }}>{children}</UserContext.Provider>;
+  return <UserContext.Provider value={{ user, isAuthenticated, setIsAuthenticated, setUser, handleLogout, isLoading, module }}>{children}</UserContext.Provider>;
 };
 
 export { UserContext };

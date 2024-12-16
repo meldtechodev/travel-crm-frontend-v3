@@ -157,7 +157,7 @@ const CustomerProfile = () => {
     {
       header: 'Destination',
       render: ({row}) => (
-        row.destination && row.destination.destinationName && row.destination.destinationName
+        row && row.destination && row.destination.destinationName && row.destination.destinationName
       )
     },
     {
@@ -208,7 +208,7 @@ const CustomerProfile = () => {
             .then((packagesData) => {
               setPackageDetails(packagesData);
 
-              const itineraryDetailsPromises = packagesData.map(packageData => {
+              const itineraryDetailsPromises = packagesData && packagesData.map(packageData => {
                 // /packageitinerary/getAll?packageId=1 
                 return axios.get(`${api.baseUrl}/packageitinerary/getAll?packageId=${packageData.id}`)
                   .then(res => res.data);
@@ -236,18 +236,18 @@ const CustomerProfile = () => {
         <div className="flex flex-col md:flex-row justify-between mb-4">
           <div className="mb-2 md:mb-0">
             <p>
-              Customer Name : {userData.salutation} {userData.fName}{" "}
-              {userData.lName}
+              Customer Name : {userData && userData.salutation} {userData && userData.fName}{" "}
+              {userData && userData.lName}
             </p>
             <p>Owner Name : Gaurav Gupta</p>
           </div>
           <div className="mb-2 md:mb-0">
-            <p>Contact No : {userData.contactNo}</p>
+            <p>Contact No : {userData && userData.contactNo}</p>
             <p>Customer Type: B2C</p>
           </div>
           <div className="mb-2 md:mb-0">
-            <p>Email ID : {userData.emailId}</p>
-            <p>Lead Source: {userData.leadSource}</p>
+            <p>Email ID : {userData && userData.emailId}</p>
+            <p>Lead Source: {userData && userData.leadSource}</p>
           </div>
           <div className="mb-2 md:mb-0">
             <p>Active Since : 02-Aug-17 05:26:00</p>
@@ -514,7 +514,7 @@ const CustomerProfile = () => {
                 </tr>
               </thead>
               <tbody>
-                {queries.map((query, index) => (
+                {queries && queries.map((query, index) => (
                   <tr key={index} className="border-b hover:bg-gray-100">
                     <td className="p-2 border">{query.queryDate}</td>
                     <td className="p-2 border">{query.queryID}</td>
