@@ -15,8 +15,6 @@ const NewQuery = ({ isOpen, onClose }) => {
   const [queryData, setQueryData] = useState();
 
 
-  const [b2b, setB2b] = useState({ value: "B2C", label: "B2C" });
-
   const pdfRef = useRef();
 
   const { user, ipAddress, countryDetails, stateDetails, destinationDetails } = useContext(UserContext);
@@ -34,60 +32,6 @@ const NewQuery = ({ isOpen, onClose }) => {
     { value: 4, label: "Italian" },
     { value: 5, label: "American" },
   ];
-
-
-
-  // const generatePDF = async () => {
-  //   const element = pdfRef.current; // The HTML content to convert into a PDF
-
-  //   const modalContent = document.getElementById("modal-content");
-
-  //   // if (modalContent) {
-  //   const canvas = await html2canvas(modalContent, {
-  //     scale: 2, // Improves quality
-  //   });
-
-  //   const imgData = canvas.toDataURL("image/png");
-  //   const pdf = new jsPDF("p", "mm", "a4");
-
-  //   // Adjust image dimensions for A4 size
-  //   const imgWidth = 190; // A4 width in mm (with margins)
-  //   const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-  //   pdf.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
-  //   pdf.save("data-summary.pdf");
-  // }
-
-  // html2canvas(element).then((canvas) => {
-  //   const imgData = canvas.toDataURL('image/png');
-  //   const pdf = new jsPDF();
-  //   const imgWidth = 190;
-  //   const pageHeight = 295;
-  //   const imgHeight = (canvas.height * imgWidth) / canvas.width;
-  //   let heightLeft = imgHeight;
-  //   let position = 0;
-
-  //   // pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
-  //   heightLeft -= pageHeight;
-
-  //   while (heightLeft >= 0) {
-  //     position = heightLeft - imgHeight;
-  //     pdf.addPage();
-  //     pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
-  //     heightLeft -= pageHeight;
-  // }
-
-  //   pdf.save('generated.pdf');
-
-  // });
-  // const doc = new jsPDF();
-  // doc.text(`Data Summary`, 10, 10);
-  // Object.entries(formData).forEach(([key, value], index) => {
-  //   doc.text(`${key}: ${value}`, 10, 20 + index * 10);
-  // });
-  // doc.save("data-summary.pdf");
-  // };
-
 
 
   const [formData, setFormData] = useState({
@@ -113,7 +57,7 @@ const NewQuery = ({ isOpen, onClose }) => {
     basicCost: 0,
     gst: 0,
     totalCost: 0,
-    queryType: "",
+    queryType: { value: "B2C", label: "B2C" },
     queryCreatedFrom: "",
     emailStatus: 0,
     leadStatus: 0,
@@ -166,44 +110,6 @@ const NewQuery = ({ isOpen, onClose }) => {
 
   const [iti, setIti] = useState([])
   const [packages, setPackages] = useState([])
-  // const [newQuery, setNewQuery] = useState(
-  //   {
-  //     "requirementType": "",
-  //     "travelDate": "",
-  //     "nights": 0,
-  //     "days": 0,
-  //     "totalTravellers": 1,
-  //     "adults": 1,
-  //     "kids": 0,
-  //     "infants": 0,
-  //     "salutation": "",
-  //     "fname": "",
-  //     "lname": "",
-  //     "emailId": "",
-  //     "contactNo": "",
-  //     "leadSource": "",
-  //     "foodPreferences": "",
-  //     "basicCost": 0,
-  //     "gst": 0,
-  //     "totalCost": 0,
-  //     "queryType": "",
-  //     "queryCreatedFrom": "",
-  //     "emailStatus": 0,
-  //     "leadStatus": 0,
-  //     "pkg": {
-  //       "id": 0
-  //     },
-  //     "did": {
-  //       "id": 0
-  //     },
-  //     "fromcityid": {
-  //       "id": 0
-  //     },
-  //     "userId": {
-  //       "id": 0
-  //     }
-  //   }
-  // )
 
   const [hotelList, setHotelList] = useState([])
   useEffect(() => {
@@ -228,6 +134,7 @@ const NewQuery = ({ isOpen, onClose }) => {
   const [selectedPackage, setSelectedPackage] = useState(null)
   const handlePackageChange = (selected) => {
     // console.log(selected)
+    setIti([])
     setViewPolicy([])
     setViewPrice({ markup: 0, basiccost: 0, gst: 0, totalcost: 0, packid: 0 })
     setFormData(prev => ({ ...prev, days: selected.days, nights: selected.nights }))
@@ -238,24 +145,26 @@ const NewQuery = ({ isOpen, onClose }) => {
     let itiList = itinerarys.filter(item => item.packid === selected.value)
     let pkd = pkgItiDet.filter(item => item.packitid.packid === selected.value)
 
-    // console.log(itinerarys)
+    // console.log(pkd)
     let catHote = pkd.map(item => ({
       category: item.category,
       roomtypes: item.roomtypes,
       mealsType: item.mealspackageIds
     }))
-    // console.log(pkgItiDet)
+    console.log(catHote)
 
     let vH = catHote.filter(item => item.roomtypes !== null)
+
+    // console.log(vH)
 
     let viewdat = vH.map(item => ({ category: item.category, hotel: item.roomtypes?.hotel, roomtypes: item.roomtypes }))
     let viewcat = vH.map(item => item.category)
     var newH = new Set(viewcat)
     let catList = [...newH]
-    // console.log(viewdat)
+    // console.log(catList)
     // let data = catList.map(item => item === )
     setViewHotel(viewdat)
-    console.log(viewHotel)
+    // console.log(data)
 
     setIti(itiList)
     // console.log(itiList)
@@ -275,16 +184,12 @@ const NewQuery = ({ isOpen, onClose }) => {
     setCustomerData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleCustomerContact = () => {
-
-  }
 
   const [viewPackage, setViewPackage] = useState([])
   const handleDestinationChange = (selected) => {
-    setViewPackage([])
+    setFormData((prev) => ({ ...prev, pkg: null }))
     setFormData(prev => ({ ...prev, did: selected }))
     let listPack = packages.filter(item => item.toCityId === selected.value)
-    console.log(listPack)
     setViewPackage(listPack)
   }
 
@@ -331,17 +236,17 @@ const NewQuery = ({ isOpen, onClose }) => {
       .catch((error) => console.error(error))
   }, [])
 
-  const [mealPlan, setMealPlan] = useState([])
-  useEffect(() => {
-    axios.get(`${api.baseUrl}/mealspackage/getall`)
-      .then((response) => {
-        const format = response.data.map(item => ({
+  // const [mealPlan, setMealPlan] = useState([])
+  // useEffect(() => {
+  //   axios.get(`${api.baseUrl}/mealspackage/getall`)
+  //     .then((response) => {
+  //       const format = response.data.map(item => ({
 
-        }))
-        setMealPlan(response.data)
-      })
-      .catch((error) => console.error(error))
-  }, [])
+  //       }))
+  //       setMealPlan(response.data)
+  //     })
+  //     .catch((error) => console.error(error))
+  // }, [])
 
 
   useEffect(() => {
@@ -428,30 +333,31 @@ const NewQuery = ({ isOpen, onClose }) => {
       }
     }
 
-    await axios.post(`${api.baseUrl}/query/create`, payload, {
-      headers: {
-        // 'Authorization': `Bearer ${token}`,
-        'Access-Control-Allow-Origin': '*',
-        "Content-Type": "Application/json"
-      }
-    })
-      .then((response) => {
-        setQueryData(response.data)
-        console.log(response.data)
-        toast.success("Query saved Successfully.", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-      })
-      .catch(error => console.error(error));
-    setIsModalOpen(true)
+    // await axios.post(`${api.baseUrl}/query/create`, payload, {
+    //   headers: {
+    //     // 'Authorization': `Bearer ${token}`,
+    //     'Access-Control-Allow-Origin': '*',
+    //     "Content-Type": "Application/json"
+    //   }
+    // })
+    //   .then((response) => {
+    //     setQueryData(response.data)
+    //     console.log(response.data)
+    //     toast.success("Query saved Successfully.", {
+    //       position: "top-center",
+    //       autoClose: 5000,
+    //       hideProgressBar: false,
+    //       closeOnClick: true,
+    //       pauseOnHover: true,
+    //       draggable: true,
+    //       progress: undefined,
+    //     });
+    //   })
+    //   .catch(error => console.error(error));
+    // setIsModalOpen(true)
 
-    // console.log(payload)
+    console.log(payload)
+    console.log(iti)
 
   }
 
@@ -501,10 +407,9 @@ const NewQuery = ({ isOpen, onClose }) => {
                   { value: "B2C", label: "B2C" },
 
                 ]}
-                value={b2b}
+                value={formData.queryType}
                 onChange={(selected) => {
-                  setFormData(prev => ({ ...prev, queryType: selected.label }));
-                  setB2b(selected)
+                  setFormData(prev => ({ ...prev, queryType: selected }));
                 }}
                 placeholder="Select"
               />
@@ -660,7 +565,13 @@ const NewQuery = ({ isOpen, onClose }) => {
                   placeholder=" No of Days"
                   name="pCode"
                   value={formData.days}
-                  onChange={(e) => setFormData(prev => ({ ...prev, days: e.target.value }))}
+                  onChange={(e) => {
+                    setFormData(prev => ({
+                      ...prev, days: e.target.value,
+                      nights: e.target.value > 1 ? Number(e.target.value) - 1
+                        : Number(e.target.value) == 1 ? 1 : 0
+                    }));
+                  }}
                 />
               </div>
               <div className="w-1/3">
@@ -677,7 +588,9 @@ const NewQuery = ({ isOpen, onClose }) => {
                   placeholder="No of Nights"
                   name="pCode"
                   value={formData.nights}
-                  onChange={(e) => setFormData(prev => ({ ...prev, nights: e.target.value }))}
+                  onChange={(e) => {
+                    setFormData(prev => ({ ...prev, days: Number(e.target.value) > 1 ? Number(e.target.value) + 1 : Number(e.target.value) == 1 ? 1 : 0, nights: e.target.value }));
+                  }}
                 />
               </div>
             </div>

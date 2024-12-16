@@ -45,48 +45,7 @@ const PdfFile = ({ data, isModalOpen }) => {
   };
 
 
-  // const generatePDF = async () => {
-  //   const modalContent = document.getElementById("modal-content");
 
-  //   if (modalContent) {
-  //     // Step 1: Render the modal content to a canvas
-  //     const canvas = await html2canvas(modalContent, {
-  //       scale: 2, // High-quality rendering
-  //       useCORS: true, // Handle cross-origin images
-  //     });
-
-  //     // Step 2: Convert the canvas to an image
-  //     const imgData = canvas.toDataURL("image/png");
-
-  //     // Step 3: Define PDF dimensions
-  //     const pdf = new jsPDF("p", "mm", "a4");
-  //     const pdfWidth = pdf.internal.pageSize.getWidth();
-  //     const pdfHeight = pdf.internal.pageSize.getHeight();
-
-  //     const imgWidth = pdfWidth;
-  //     const imgHeight = (canvas.height * pdfWidth) / canvas.width;
-
-  //     let position = 0;
-
-  //     // Step 4: Add pages dynamically
-  //     while (position < imgHeight) {
-  //       pdf.addImage(
-  //         imgData,
-  //         "PNG",
-  //         0,
-  //         position,
-  //         imgWidth,
-  //         Math.min(imgHeight - position, pdfHeight)
-  //       );
-
-  //       position += pdfHeight;
-  //       if (position < imgHeight) pdf.addPage();
-  //     }
-
-  //     // Step 5: Save the PDF
-  //     pdf.save("data-summary.pdf");
-  //   }
-  // };
   return (
     <>
       <div

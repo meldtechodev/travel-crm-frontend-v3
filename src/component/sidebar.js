@@ -45,11 +45,9 @@ const Sidebar = () => {
 
     axios.get(`${api.baseUrl}/designationModules/getall`)
       .then(res => {
-        // setDesignationModules(res.data)
         let mod = res.data.filter(item => item.designations.id === user.designation.id)
         let filtmod = mod.map(item => item.modules)
         setModule(filtmod)
-
       })
       .catch(error => console.error(error));
   }, [])
