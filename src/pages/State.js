@@ -4,19 +4,15 @@ import api from "../apiConfig/config";
 import Select from 'react-select'
 import { toast } from "react-toastify";
 import { UserContext } from "../contexts/userContext";
-import useDecryptedToken from "../hooks/useDecryptedToken";
 
 const State = ({ isOpen, onClose, stateData, isFormEditEnabled, setIsFormEditEnabled }) => {
-  const [countryDetails, setCountryDetails] = useState([])
+  // const [countryDetails, setCountryDetails] = useState([])
   const [selectedOption, setSelectedOption] = useState(null);
   const [countryId, setCountryId] = useState(null)
 
-  // console.log(stateData);
-
   const fileInputRef = useRef(null);
 
-  const {user} = useContext(UserContext);
-  const token = useDecryptedToken();
+  const { user, ipAddress, countryDetails } = useContext(UserContext);
 
   useEffect(() => {
     if (stateData) {
@@ -47,22 +43,9 @@ const State = ({ isOpen, onClose, stateData, isFormEditEnabled, setIsFormEditEna
   const handleFileChange = (event) => {
     setFormData({
       ...formData,
-      simage: event.target.files[0],
+      image: event.target.files[0]
     });
   };
-
-
-  useEffect(() => {
-    axios.get(`${api.baseUrl}/ipAddress`)
-      .then((response) => {
-        setFormData({
-          ...formData, "ipAddress": response.data
-        })
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-      });
-  }, []);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -77,21 +60,6 @@ const State = ({ isOpen, onClose, stateData, isFormEditEnabled, setIsFormEditEna
     image: null, created_by: "", modified_by: ""
   });
 
-  useEffect(() => {
-    axios.get(`${api.baseUrl}/country/getall`
-    )
-      .then(response => {
-        const formattedOptions = response.data.content.map(item => ({
-          value: item.id, // or any unique identifier
-          label: item.countryName // or any display label you want
-        }));
-        setCountryDetails(formattedOptions);
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-      });
-  }, []);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -100,14 +68,17 @@ const State = ({ isOpen, onClose, stateData, isFormEditEnabled, setIsFormEditEna
     formDataToSend.append('stateName', formData.stateName);
     formDataToSend.append('code', formData.code);
     formDataToSend.append('status', formData.status);
-    formDataToSend.append('ipAddress', formData.ipAddress);
+    formDataToSend.append('ipAddress', ipAddress);
     formDataToSend.append('country.id', countryId);
     formDataToSend.append('image', formData.image); // Attach image file
-    formDataToSend.append('created_by', formData.created_by);
+    formDataToSend.append('created_by', user.name);
     formDataToSend.append('modified_by', user.name);
     formDataToSend.append('isdelete', false);
 
-    console.log(formData);
+    // console.log(formData);
+    // for (var pair of formDataToSend.entries()) {
+    //   console.log(pair[0] + ' = ' + pair[1]);
+    // }
 
     // If state name or code is empty, show error
     if (formData.stateName.length === 0 || formData.code.length === 0) {
@@ -126,7 +97,7 @@ const State = ({ isOpen, onClose, stateData, isFormEditEnabled, setIsFormEditEna
     if (stateData && stateData.id) {
       await axios.put(`${api.baseUrl}/state/updatebyid/${stateData.id}`, formDataToSend, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          // 'Authorization': `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
           'Access-Control-Allow-Origin': '*'
         }
@@ -153,7 +124,7 @@ const State = ({ isOpen, onClose, stateData, isFormEditEnabled, setIsFormEditEna
       // Create state API call
       await axios.post(`${api.baseUrl}/state/create`, formDataToSend, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          // 'Authorization': `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
           'Access-Control-Allow-Origin': '*'
         }

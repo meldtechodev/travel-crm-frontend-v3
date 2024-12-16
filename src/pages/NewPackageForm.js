@@ -765,7 +765,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
       ipaddress: ipAddress,
       status: 1,
       isdelete: 0,
-      packid: 4,
+      packid: packageData.id,
     };
 
     await axios
@@ -996,9 +996,9 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
     formDataPackageMaster.append("pkthem", selectedPackageThemeStr);
     formDataPackageMaster.append("image", pkImage);
 
-    for (var pair of formDataPackageMaster.entries()) {
-      console.log(pair[0] + ' = ' + pair[1]);
-    }
+    // for (var pair of formDataPackageMaster.entries()) {
+    //   console.log(pair[0] + ' = ' + pair[1]);
+    // }
 
     if (!packageData) {
       await axios.post(`${api.baseUrl}/packages/create`, formDataPackageMaster, {
@@ -1081,8 +1081,8 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
   const handleItineraryChange = (selectedOption, index) => {
     setSelectedItineraries({ ...selectedItineraries, selectedOption });
     // selectedItineraries.push(selectedOptions)
-    console.log(typeof selectedItineraries);
-    console.log(selectedItineraries);
+    // console.log(typeof selectedItineraries);
+    // console.log(selectedItineraries);
     // console.log(i)
   };
 
@@ -1126,13 +1126,12 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
           id: 2,
         },
       };
-      axios
-        .post(`${api.baseUrl}/policydetails/create`, policyPayload, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Access-Control-Allow-Origin": "*",
-          },
-        })
+      axios.post(`${api.baseUrl}/policydetails/create`, policyPayload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Access-Control-Allow-Origin": "*",
+        },
+      })
         .then((response) => {
           toast.success("Policy Created...", {
             position: "top-center",

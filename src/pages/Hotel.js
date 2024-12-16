@@ -36,9 +36,8 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
   const [thirdPartyPrice, setThirdPartyPrice] = useState("");
   const [addRoomPage, setAddRoomPage] = useState(1)
 
-  const [countryDetails, setCountryDetails] = useState([])
-  const [stateDetails, setStateDetails] = useState([])
-  const [destinationDetails, setDestinationDetails] = useState([])
+  // const [countryDetails, setCountryDetails] = useState([])
+  const [stateData, setStateData] = useState([])
   const [destinationOption, setDestinationOption] = useState([])
   const [roomsSelected, setRoomsSelected] = useState([])
   const [allSelectedRoomType, setAllSelectedRoomType] = useState([])
@@ -46,8 +45,6 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
   const [selectedOption, setSelectedOption] = useState(null)
   const [stateSelected, setStateSelected] = useState(null)
   const [selectedDestination, setSelectedDestinations] = useState(null)
-  const [ipAddress, setIpAddress] = useState("")
-  // const [user, setUser] = useState(null)
   const [hImage, setHImage] = useState(null)
 
   const [seasons, setSeasons] = useState([])
@@ -55,7 +52,7 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
 
   const [formDataRoomMaster, setFormDataRoomMaster] = useState([])
 
-  const { user } = useContext(UserContext);
+  const { user, countryDetails, stateDetails, ipAddress, destinationDetails } = useContext(UserContext);
   const token = useDecryptedToken();
 
   const [formRoomDetails, setFormRoomDetails] = useState({
@@ -142,34 +139,9 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
 
   // Example usage to make an authenticated request
 
-  useEffect(() => {
-    axios.get(`${api.baseUrl}/country/getall`
-    )
-      .then(response => {
-        const formattedOptions = response.data.content.map(item => ({
-          value: item.id, // or any unique identifier
-          label: item.countryName
-        }));
-        setCountryDetails(formattedOptions);
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-      });
-  }, []);
 
   useEffect(() => {
-    axios.get(`${api.baseUrl}/destination/getall`)
-      .then(response => {
-        const formattedOptions = response.data.content.map(item => ({
-          ...item,
-          value: item.id,
-          label: item.destinationName
-        }));
-        setDestinationDetails(formattedOptions);
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-      });
+
   }, []);
 
   const handleDestinationChange = (selectedDestination) => {
@@ -194,23 +166,7 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
     setStateSelected(null);
     setSelectedDestinations(null)
     setDestinationOption([])
-
-    axios.get(`${api.baseUrl}/state/getbycountryid/${selectedOption.value}`,
-      {
-        headers: {
-          'Access-Control-Allow-Origin': '*'
-        }
-      })
-      .then((response) => {
-        const formattedOptions = response.data.map(item => ({
-          value: item.id, // or any unique identifier
-          label: item.stateName // or any display label you want
-        }));
-        setStateDetails(formattedOptions);
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-      });
+    setStateData(stateDetails.filter(item => item.country.id === selectedOption.value))
   };
   const handleNext = () => {
     // setCurrentPage((prev) => prev + 1);
@@ -246,13 +202,6 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
     setCurrentPage(0);
   };
 
-  useEffect(() => {
-    axios.get(`${api.baseUrl}/ipAddress`)
-      .then((response) => setIpAddress(response.data))
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-      });
-  }, []);
 
   useEffect(() => {
     axios.get(`${api.baseUrl}/season/getAll`)
@@ -562,7 +511,7 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
             State Name
           </label>
           <Select
-            options={stateDetails}
+            options={stateData}
             value={stateSelected}
             onChange={handleStateChange}
             placeholder="Select State"

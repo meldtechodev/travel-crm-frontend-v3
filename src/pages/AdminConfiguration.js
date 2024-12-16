@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import api from '../apiConfig/config';
 import axios from 'axios';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
+import { UserContext } from '../contexts/userContext';
 
 const AdminConfiguration = () => {
 
@@ -18,34 +19,14 @@ const AdminConfiguration = () => {
     isdelete: 0,
   });
 
+  const { ipAddress } = useContext(UserContext);
+
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
 
   // Fetch IP address and set in form data
   useEffect(() => {
-    axios.get(`${api.baseUrl}/company/ipAddress`)
-      .then((response) => {
-        setFormData((prevState) => ({
-          ...prevState,
-          ipaddress: response.data,
-        }));
-      })
-      .catch((error) => {
-        console.error('Error fetching IP address:', error);
-      });
-
-    axios.get(`${api.baseUrl}/company/ipAddress`)
-      .then((response) => {
-        setFormData((prevState) => ({
-          ...prevState,
-          ipaddress: response.data,
-        }));
-      })
-      .catch((error) => {
-        console.error('Error fetching IP address:', error);
-      });
-
     axios.get(`${api.baseUrl}/usergetall`)
-      .then(response => response.data.length !== 0 ? navigate('/login') : <></>)
+      .then(response => response.data.length !== 0 && navigate('/login'))
       .catch(error => console.error(error))
 
   }, []);
@@ -62,13 +43,13 @@ const AdminConfiguration = () => {
       ...formData,
       createdBy: formData.name,
       modifiedBy: formData.name,
+      ipaddress: ipAddress,
     }
     // console.log(formDataSend)
 
     await axios
       .post(`${api.baseUrl}/signup`, formDataSend)
       .then((res) => {
-        console.log(res.data);
         navigate('/success');
       })
       .catch((err) => console.log(err));

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Login from './component/login';
 import PageRoute from './PageRoute';
 import AdminConfiguration from './pages/AdminConfiguration';
@@ -14,26 +14,26 @@ const App = () => {
 
   const { isAuthenticated, handleLogout, isLoading } = useContext(UserContext);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (isSessionExpired()) {
-        handleLogout();
-      }
-    }, 60000 * 60 * 24); // Check every 60 seconds
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     if (isSessionExpired()) {
+  //       handleLogout();
+  //     }
+  //   }, 60000 * 60 * 24); // Check every 60 seconds
 
 
-    return () => clearInterval(interval);
+  //   return () => clearInterval(interval);
 
-  }, []);
+  // }, []);
 
   // const handleLogout = () => {
   //   localStorage.clear();
   // };
 
-  const isSessionExpired = () => {
-    const expiryTime = localStorage.getItem('expiryTime');
-    return expiryTime && Date.now() > expiryTime;
-  };
+  // const isSessionExpired = () => {
+  //   const expiryTime = localStorage.getItem('expiryTime');
+  //   return expiryTime && Date.now() > expiryTime;
+  // };
 
 
 
@@ -56,13 +56,15 @@ const App = () => {
 
 
   // Protected Route Component
-  const ProtectedRoute = ({ children }) => {
-    return isAuthenticated ? children : allUsers.length !== 0 ? <Navigate to="/login" /> : <Navigate to="/signup" />;
-  };
+  // const ProtectedRoute = ({ children }) => {
+  //   return isAuthenticated ? children : allUsers.length !== 0 ? <Navigate to="/login" /> : <Navigate to="/signup" />;
+  // };\\
+  const navigate = useNavigate()
 
-  if (!isAuthenticated) {
-    localStorage.clear();
+  if (!isAuthenticated && sessionStorage.length === 0) {
+    navigate("/login")
   }
+
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -70,24 +72,23 @@ const App = () => {
 
   return (
     <Routes>
-      {/* {isAuthenticated && allUsers.length !== 0 ? ( */}
-      {/* <> */}
-      <Route path="/" element={<Navigate to="/home" replace />} />
-      <Route path="/home/*" element={
-        <ProtectedRoute>
-          <PageRoute />
-        </ProtectedRoute>} />
-      {/* <Route path="/*" element={<Navigate to="/home" replace />} /> */}
-      {/* </> */}
+      {isAuthenticated && allUsers.length !== 0 ? (
+        <>
+          <Route path="/" element={<Navigate to="/home" replace />} />
+          <Route path="/home/*" element={
+            // <ProtectedRoute>
+            <PageRoute />} />
+          <Route path="/*" element={<Navigate to="/home" replace />} />
+        </>
 
-      {/* ) : ( */}
-      {/* <> */}
+      ) : (
+        <>
+          <Route exact path="/signup" element={<AdminConfiguration />} />
+          <Route exact path="/success" element={<SuccessPage />} />
+        </>
+      )}
       <Route path="/" element={<Navigate to="/login" replace />} />
-      <Route exact path="/signup" element={<AdminConfiguration />} />
-      <Route exact path="/success" element={<SuccessPage />} />
       <Route exact path="/login" element={<Login />} />
-      {/* </> */}
-      {/* )} */}
     </Routes>
   );
 };

@@ -1,17 +1,16 @@
 import axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import api from "../apiConfig/config";
 import Select from "react-select";
 import { toast } from "react-toastify";
 import PdfFile from "./PdfFile";
 import jsPDF from "jspdf";
 import html2canvas from 'html2canvas';
+import { UserContext } from "../contexts/userContext";
 
 const NewQuery = ({ isOpen, onClose }) => {
   const [customer, setCustomer] = useState([]);
-  const [destination, setDestination] = useState("");
   const [status, setStatus] = useState(true);
-  const [user, setUser] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [queryData, setQueryData] = useState();
 
@@ -19,6 +18,8 @@ const NewQuery = ({ isOpen, onClose }) => {
   const [b2b, setB2b] = useState({ value: "B2C", label: "B2C" });
 
   const pdfRef = useRef();
+
+  const { user, ipAddress, countryDetails, stateDetails, destinationDetails } = useContext(UserContext);
 
   const RoomTypeOptions = [
     { value: "budget", label: "Budget" },
@@ -34,75 +35,7 @@ const NewQuery = ({ isOpen, onClose }) => {
     { value: 5, label: "American" },
   ];
 
-  async function decryptToken(encryptedToken, key, iv) {
-    const dec = new TextDecoder();
 
-    const decrypted = await crypto.subtle.decrypt(
-      {
-        name: "AES-GCM",
-        iv: iv,
-      },
-      key,
-      encryptedToken
-    );
-
-    return dec.decode(new Uint8Array(decrypted));
-  }
-
-  // Function to retrieve and decrypt the token
-  async function getDecryptedToken() {
-    const keyData = JSON.parse(localStorage.getItem("encryptionKey"));
-    const ivBase64 = localStorage.getItem("iv");
-    const encryptedTokenBase64 = localStorage.getItem("encryptedToken");
-
-    if (!keyData || !ivBase64 || !encryptedTokenBase64) {
-      throw new Error("No token found");
-    }
-
-    // Convert back from base64
-    const key = await crypto.subtle.importKey(
-      "jwk",
-      keyData,
-      { name: "AES-GCM" },
-      true,
-      ["encrypt", "decrypt"]
-    );
-    const iv = new Uint8Array(
-      atob(ivBase64)
-        .split("")
-        .map((char) => char.charCodeAt(0))
-    );
-    const encryptedToken = new Uint8Array(
-      atob(encryptedTokenBase64)
-        .split("")
-        .map((char) => char.charCodeAt(0))
-    );
-
-    return await decryptToken(encryptedToken, key, iv);
-  }
-
-  // Example usage to make an authenticated request
-  useEffect(() => {
-    getDecryptedToken()
-      .then((token) => {
-        return axios.get(`${api.baseUrl}/username`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Access-Control-Allow-Origin": "*",
-          },
-        });
-      })
-      .then((response) => {
-        setUser(response.data);
-      })
-      .catch((error) =>
-        console.error("Error fetching protected resource:", error)
-      );
-
-
-    // axios.get(`${api.baseUrl}/customer/getall`)
-    // .then(response => (response.data))
-  }, []);
 
   // const generatePDF = async () => {
   //   const element = pdfRef.current; // The HTML content to convert into a PDF
@@ -158,14 +91,9 @@ const NewQuery = ({ isOpen, onClose }) => {
 
 
   const [formData, setFormData] = useState({
-    customer,
-    // Name: "",
-    // customerEmail: "",
-    // customerPhone: "",
-    // pCode,
     ipAddress: "",
     status,
-
+    customer: null,
     requirementType: "",
     travelDate: "",
     toTravelDate: "",
@@ -195,23 +123,30 @@ const NewQuery = ({ isOpen, onClose }) => {
     userId: {
       id: 0
     }
-
   });
 
+  const [customerData, setCustomerData] = useState({
+    fname: "",
+    lName: "",
+    contactNo: "",
+    emailId: "",
+    salutation: "",
+    id: 0
+
+  })
+  const handleCustomerChange = (selected) => {
+    setFormData((prev) => ({ ...prev, customer: selected }))
+    setCustomerData(prev => ({ ...prev, id: selected.value, salutation: selected.salutation, fname: selected.fName, lName: selected.lName, contactNo: selected.contactNo, emailId: selected.emailId }));
+  }
+
   const handleDateChange = (e) => {
-    // const { name, value } = e.target
-    // if (name === "travelDate") {
-    //   let datef = new Date(value)
-    //   let newDate = new Date()
-    //   newDate.setDate(datef.getDate() + formData.days)
-    //   setFormData(prev => ({ ...prev, travelDate: value, toTravelDate: newDate.toDateString() }))
-    // } else {
-    //   let datef = new Date(value)
-    //   let dateChange = datef.getDate()
-    //   let newDate = new Date()
-    //   newDate.setDate(datef.getDate() - formData.days)
-    //   setFormData(prev => ({ ...prev, travelDate: newDate.toDateString(), toTravelDate: value }))
-    // }
+    const { name, value } = e.target;
+
+    const formattedDateTime = value.includes("T")
+      ? value
+      : `${value}T00:00:00`;
+
+    setFormData(prev => ({ ...prev, [name]: formattedDateTime }))
   }
 
   const handleInputChange = (event) => {
@@ -231,44 +166,44 @@ const NewQuery = ({ isOpen, onClose }) => {
 
   const [iti, setIti] = useState([])
   const [packages, setPackages] = useState([])
-  const [newQuery, setNewQuery] = useState(
-    {
-      "requirementType": "",
-      "travelDate": "",
-      "nights": 0,
-      "days": 0,
-      "totalTravellers": 1,
-      "adults": 1,
-      "kids": 0,
-      "infants": 0,
-      "salutation": "",
-      "fname": "",
-      "lname": "",
-      "emailId": "",
-      "contactNo": "",
-      "leadSource": "",
-      "foodPreferences": "",
-      "basicCost": 0,
-      "gst": 0,
-      "totalCost": 0,
-      "queryType": "",
-      "queryCreatedFrom": "",
-      "emailStatus": 0,
-      "leadStatus": 0,
-      "pkg": {
-        "id": 0
-      },
-      "did": {
-        "id": 0
-      },
-      "fromcityid": {
-        "id": 0
-      },
-      "userId": {
-        "id": 0
-      }
-    }
-  )
+  // const [newQuery, setNewQuery] = useState(
+  //   {
+  //     "requirementType": "",
+  //     "travelDate": "",
+  //     "nights": 0,
+  //     "days": 0,
+  //     "totalTravellers": 1,
+  //     "adults": 1,
+  //     "kids": 0,
+  //     "infants": 0,
+  //     "salutation": "",
+  //     "fname": "",
+  //     "lname": "",
+  //     "emailId": "",
+  //     "contactNo": "",
+  //     "leadSource": "",
+  //     "foodPreferences": "",
+  //     "basicCost": 0,
+  //     "gst": 0,
+  //     "totalCost": 0,
+  //     "queryType": "",
+  //     "queryCreatedFrom": "",
+  //     "emailStatus": 0,
+  //     "leadStatus": 0,
+  //     "pkg": {
+  //       "id": 0
+  //     },
+  //     "did": {
+  //       "id": 0
+  //     },
+  //     "fromcityid": {
+  //       "id": 0
+  //     },
+  //     "userId": {
+  //       "id": 0
+  //     }
+  //   }
+  // )
 
   const [hotelList, setHotelList] = useState([])
   useEffect(() => {
@@ -289,23 +224,27 @@ const NewQuery = ({ isOpen, onClose }) => {
   })
   const [viewPolicy, setViewPolicy] = useState([])
   const [viewHotel, setViewHotel] = useState([])
+
+  const [selectedPackage, setSelectedPackage] = useState(null)
   const handlePackageChange = (selected) => {
-    console.log(selected)
+    // console.log(selected)
     setViewPolicy([])
     setViewPrice({ markup: 0, basiccost: 0, gst: 0, totalcost: 0, packid: 0 })
     setFormData(prev => ({ ...prev, days: selected.days, nights: selected.nights }))
+
+    setSelectedPackage(selected)
 
 
     let itiList = itinerarys.filter(item => item.packid === selected.value)
     let pkd = pkgItiDet.filter(item => item.packitid.packid === selected.value)
 
+    // console.log(itinerarys)
     let catHote = pkd.map(item => ({
       category: item.category,
       roomtypes: item.roomtypes,
       mealsType: item.mealspackageIds
     }))
-    console.log(pkgItiDet)
-    // console.log(catHote)
+    // console.log(pkgItiDet)
 
     let vH = catHote.filter(item => item.roomtypes !== null)
 
@@ -316,11 +255,12 @@ const NewQuery = ({ isOpen, onClose }) => {
     // console.log(viewdat)
     // let data = catList.map(item => item === )
     setViewHotel(viewdat)
-    // console.log([...newH])
+    console.log(viewHotel)
 
     setIti(itiList)
+    // console.log(itiList)
 
-    let price = packagePrice.filter(item => item.id === selected.value)
+    let price = packagePrice.filter(item => item.packid === selected.value)
     if (price.length > 0) {
       setViewPrice({ markup: price[0].markup, basiccost: price[0].basiccost, gst: price[0].gst, totalcost: price[0].totalcost, packid: price[0].packid })
     }
@@ -329,11 +269,21 @@ const NewQuery = ({ isOpen, onClose }) => {
     setFormData(prev => ({ ...prev, pkg: selected }))
   }
 
+  const handleCustomerEmail = (e) => {
+    const { name, value } = e.target
+    // setFormData((prev) => ({ ...prev, customer: ({ ...customer, emailId: e.target.value }) }))
+    setCustomerData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleCustomerContact = () => {
+
+  }
+
   const [viewPackage, setViewPackage] = useState([])
   const handleDestinationChange = (selected) => {
     setViewPackage([])
     setFormData(prev => ({ ...prev, did: selected }))
-    let listPack = packages.filter(item => item.toCityId === selected.id)
+    let listPack = packages.filter(item => item.toCityId === selected.value)
     console.log(listPack)
     setViewPackage(listPack)
   }
@@ -342,7 +292,7 @@ const NewQuery = ({ isOpen, onClose }) => {
   useEffect(() => {
     axios.get(`${api.baseUrl}/policydetails/getall`)
       .then((response) => {
-        setPolicyDetails(response.data)
+        setPolicyDetails(response.data.content)
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -350,13 +300,14 @@ const NewQuery = ({ isOpen, onClose }) => {
   }, []);
 
   useEffect(() => {
-    axios.get(`${api.baseUrl}/packages/getAll`)
+    axios.get(`${api.baseUrl}/packages/getAllPkg`)
       .then((response) => {
-        const formated = response.data.content.map((item) => ({
+        const formated = response.data.map((item) => ({
           ...item,
           value: item.id,
           label: item.pkName,
         }))
+        // console.log(formated)
         setPackages(formated)
       })
       .catch((error) => console.error(error))
@@ -406,18 +357,6 @@ const NewQuery = ({ isOpen, onClose }) => {
       .catch((error) => console.error(error))
   }, [])
 
-  useEffect(() => {
-    axios.get(`${api.baseUrl}/ipAddress`)
-      .then((response) => {
-        setFormData({
-          ...formData,
-          ipAddress: response.data,
-        });
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
 
   const [packagePrice, setPackagePrice] = useState([])
   useEffect(() => {
@@ -430,27 +369,26 @@ const NewQuery = ({ isOpen, onClose }) => {
       });
   }, []);
 
-  useEffect(() => {
-    axios.get(`${api.baseUrl}/destination/getall`)
-      .then((response) => {
-        const format = response.data.map(item => ({
-          ...item,
-          value: item.id,
-          label: item.destinationName
-        }))
-        setDestination(format)
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
+  // useEffect(() => {
+  //   axios.get(`${api.baseUrl}/destination/getall`)
+  //     .then((response) => {
+  //       const format = response.data.map(item => ({
+  //         ...item,
+  //         value: item.id,
+  //         label: item.destinationName
+  //       }))
+  //       setDestination(format)
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching data:", error);
+  //     });
+  // }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const payload = {
-      proposalId: "ABC123",
-      requirementType: "Holiday Package",
+      requirementType: selectedPackage.pkName || " ",
       travelDate: formData.travelDate,
       nights: formData.nights,
       days: formData.days,
@@ -458,61 +396,63 @@ const NewQuery = ({ isOpen, onClose }) => {
       adults: formData.totalTravellers,
       kids: 0,
       infants: 0,
-      salutation: formData.customer.salutation,
-      fname: formData.customer.fname || 'Raj',
-      lname: formData.customer.lname,
-      emailId: formData.customer.emailId || 2,
-      contactNo: formData.customer.contactNo,
+      salutation: customerData.salutation,
+      fname: customerData.fname || ' ',
+      lname: customerData.lName,
+      emailId: customerData.emailId || " ",
+      contactNo: customerData.contactNo,
       leadSource: formData.leadSource,
       foodPreferences: "Veg",
-      basicCost: formData.basicCost,
-      gst: formData.gst,
-      totalCost: formData.totalCost,
-      queryType: formData.queryType,
-      queryCreatedFrom: "Facebook",
+      basicCost: viewPrice.basiccost,
+      gst: viewPrice.gst,
+      totalCost: viewPrice.totalcost,
+      queryType: formData.queryType || " ",
+      queryCreatedFrom: formData.leadSource,
       emailStatus: 0,
       leadStatus: 0,
-      pkg: {
-        // id: formData.pkg.id
-        id: 1
-      },
-      did: {
-        id: formData.did
+      ipAddress: ipAddress,
+      packid: selectedPackage.value,
+      destination: {
+        id: formData.did && formData.did.id
         // id: 1
       },
       fromcityid: {
-        id: formData.fromcityid
+        id: formData.fromcityid && formData.fromcityid.id
         // id: 1
       },
-      userId: {
-        id: user.id || 1
+      userid: {
+        userId: user.userId
         // id: 1
+      }, customer: {
+        id: customerData.id
       }
     }
 
-    // await axios.post(`${api.baseUrl}/query/create`, payload, {
-    //   headers: {
-    //     // 'Authorization': `Bearer ${token}`,
-    //     'Access-Control-Allow-Origin': '*'
-    //   }
-    // })
-    //   .then((response) => {
-    //     setQueryData(response.data)
-    //     toast.success("Query saved Successfully.", {
-    //       position: "top-center",
-    //       autoClose: 5000,
-    //       hideProgressBar: false,
-    //       closeOnClick: true,
-    //       pauseOnHover: true,
-    //       draggable: true,
-    //       progress: undefined,
-    //     });
-    //   })
-    //   .catch(error => console.error(error));
-
-    //   console.log(payload)
-
+    await axios.post(`${api.baseUrl}/query/create`, payload, {
+      headers: {
+        // 'Authorization': `Bearer ${token}`,
+        'Access-Control-Allow-Origin': '*',
+        "Content-Type": "Application/json"
+      }
+    })
+      .then((response) => {
+        setQueryData(response.data)
+        console.log(response.data)
+        toast.success("Query saved Successfully.", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      })
+      .catch(error => console.error(error));
     setIsModalOpen(true)
+
+    // console.log(payload)
+
   }
 
   return (
@@ -584,7 +524,7 @@ const NewQuery = ({ isOpen, onClose }) => {
               <Select
                 options={customer}
                 value={formData.customer}
-                onChange={(selected) => setFormData(prev => ({ ...prev, customer: selected }))}
+                onChange={handleCustomerChange}
                 placeholder="Select Customer"
               />
             </div>
@@ -597,9 +537,9 @@ const NewQuery = ({ isOpen, onClose }) => {
                 id="code"
                 className="mt-1 p-2 w-full border rounded"
                 placeholder=" ******@.com"
-                name="code"
-                value={formData.customer.emailId}
-                onChange={handleInputChange}
+                name="emailId"
+                value={customerData.emailId}
+                onChange={handleCustomerEmail}
               />
             </div>
             <div className="w-1/3">
@@ -611,12 +551,9 @@ const NewQuery = ({ isOpen, onClose }) => {
                 id="countryName"
                 className="mt-1 p-2 w-full border rounded"
                 placeholder=" +91..."
-                name="pCode"
-                value={formData.customer.contactNo}
-                onChange={
-                  handleInputChange
-                  // (e) => setCode(e.target.value)
-                }
+                name="contactNo"
+                value={customerData.contactNo}
+                onChange={handleCustomerEmail}
               />
             </div>
           </div>
@@ -658,7 +595,7 @@ const NewQuery = ({ isOpen, onClose }) => {
               {/* }
             /> */}
               <Select
-                options={destination}
+                options={destinationDetails}
                 value={formData.fromcityid}
                 onChange={(selected) => setFormData(prev => ({ ...prev, fromcityid: selected }))}
                 placeholder="Select"
@@ -672,7 +609,7 @@ const NewQuery = ({ isOpen, onClose }) => {
                 Destination
               </label>
               <Select
-                options={destination}
+                options={destinationDetails}
                 value={formData.did}
                 onChange={handleDestinationChange}
                 placeholder="Select"
@@ -751,7 +688,7 @@ const NewQuery = ({ isOpen, onClose }) => {
                 Travel Date From
               </label>
               <input
-                type="date"
+                type="datetime-local"
                 id="noOfNights"
                 name="travelDate"
                 value={formData.travelDate}
@@ -765,7 +702,7 @@ const NewQuery = ({ isOpen, onClose }) => {
                 Travel Date To
               </label>
               <input
-                type="date"
+                type="datetime-local"
                 id="noOfNights"
                 name="toTravelDate"
                 value={formData.toTravelDate}
@@ -827,24 +764,25 @@ const NewQuery = ({ isOpen, onClose }) => {
               <tbody>
                 <tr>
                   {viewHotel.map(item =>
-                    <td className="py-2 px-4 border-r">
-                      <label className="block text-sm font-medium">
-                        Hotel Name
-                      </label>
-                      <p>{item.hotel?.hname}</p>
-                      <label className="block text-sm font-medium">
-                        Hotel Rating
-                      </label>
-                      <p>{item.hotel?.star_ratings}</p>
-                      <label className="block text-sm font-medium">
-                        Room Type
-                      </label>
-                      <p>{item.roomtypes?.bed_size}</p>
-                      <label className="block text-sm font-medium">
-                        Room Type
-                      </label>
-                      {/* <Select
-                    /> */}
+                    <td className="py-2 px-4 border-r ">
+                      <div className="flex gap-4 p-2 font-normal">
+                        <label className="block text-sm ">
+                          Hotel Name
+                        </label>
+                        <p>{item.hotel?.hname}</p>
+                      </div>
+                      <div className="flex gap-4 p-2 font-normal">
+                        <label className="block text-sm">
+                          Hotel Rating
+                        </label>
+                        <p>{item.hotel?.star_ratings}</p>
+                      </div>
+                      <div className="flex gap-4 p-2 font-normal">
+                        <label className="block text-sm">
+                          Room Type
+                        </label>
+                        <p>{item.roomtypes?.bedSize}</p>
+                      </div>
                     </td>
                   )}
                 </tr>

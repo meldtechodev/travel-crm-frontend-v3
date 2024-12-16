@@ -9,8 +9,7 @@ import { UserContext } from "../contexts/userContext";
 import useDecryptedToken from "../hooks/useDecryptedToken";
 
 const Destination = ({ isOpen, onClose, destinationData, isFormEditEnabled, setIsFormEditEnabled }) => {
-  const [countryDetails, setCountryDetails] = useState([])
-  const [stateDetails, setStateDetails] = useState([])
+  // const [countryDetails, setCountryDetails] = useState([])
   const [inputKeyValue, setInputKeyValue] = useState('');
   const [selectedOption, setSelectedOption] = useState(null);
   const [stateSelected, setStateSlected] = useState(null);
@@ -20,62 +19,8 @@ const Destination = ({ isOpen, onClose, destinationData, isFormEditEnabled, setI
   const [newImage, setNewImage] = useState('')
   const fileInputRef = useRef(null);
 
-  const {user}= useContext(UserContext);
+  const { user, ipAddress, countryDetails, stateDetails } = useContext(UserContext);
   const token = useDecryptedToken();
-
-  // const [user, setUser] = useState({})
-  // const [token, setTokens] = useState(null)
-  // async function decryptToken(encryptedToken, key, iv) {
-  //   const dec = new TextDecoder();
-
-  //   const decrypted = await crypto.subtle.decrypt(
-  //     {
-  //       name: "AES-GCM",
-  //       iv: iv,
-  //     },
-  //     key,
-  //     encryptedToken
-  //   );
-  //   return dec.decode(new Uint8Array(decrypted));
-  // }
-
-  // // Function to retrieve and decrypt the token
-  // async function getDecryptedToken() {
-  //   const keyData = JSON.parse(localStorage.getItem('encryptionKey'));
-  //   const ivBase64 = localStorage.getItem('iv');
-  //   const encryptedTokenBase64 = localStorage.getItem('encryptedToken');
-
-
-  //   if (!keyData || !ivBase64 || !encryptedTokenBase64) {
-  //     throw new Error('No token found');
-  //   }
-
-  //   // Convert back from base64
-  //   const key = await crypto.subtle.importKey('jwk', keyData, { name: "AES-GCM" }, true, ['encrypt', 'decrypt']);
-  //   const iv = new Uint8Array(atob(ivBase64).split('').map(char => char.charCodeAt(0)));
-  //   const encryptedToken = new Uint8Array(atob(encryptedTokenBase64).split('').map(char => char.charCodeAt(0)));
-
-  //   return await decryptToken(encryptedToken, key, iv);
-  // }
-
-  // // Example usage to make an authenticated request
-  // useEffect(() => {
-  //   getDecryptedToken()
-  //     .then(token => {
-  //       setTokens(token);
-
-  //       return axios.get(`${api.baseUrl}/username`, {
-  //         headers: {
-  //           'Authorization': `Bearer ${token}`,
-  //           'Access-Control-Allow-Origin': '*'
-  //         }
-  //       });
-  //     })
-  //     .then(response => {
-  //       setUser(response.data);
-  //     })
-  //     .catch(error => console.error('Error fetching protected resource:', error))
-  // }, [])
 
   const [formData, setFormData] = useState({
     destinationName: "",
@@ -83,28 +28,15 @@ const Destination = ({ isOpen, onClose, destinationData, isFormEditEnabled, setI
     status: true
   });
 
+  const [stateData, setStateData] = useState([])
   const handleChange = (selectedOption) => {
     setSelectedOption(selectedOption);
     setCountryId(selectedOption.value)
     setStateSlected(null);
     setStateId(null)
-
-    axios.get(`${api.baseUrl}/state/getbycountryid/${selectedOption.value}`,
-      {
-        headers: {
-          'Access-Control-Allow-Origin': '*'
-        }
-      })
-      .then((response) => {
-        const formattedOptions = response.data.map(item => ({
-          value: item.id, // or any unique identifier
-          label: item.stateName // or any display label you want
-        }));
-        setStateDetails(formattedOptions);
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-      });
+    setStateData([])
+    let data = stateDetails.filter(item => item.country.id === selectedOption.value)
+    setStateData(data)
   };
 
   const handleStateChange = (stateSelected) => {
@@ -147,29 +79,8 @@ const Destination = ({ isOpen, onClose, destinationData, isFormEditEnabled, setI
   };
 
   useEffect(() => {
-    axios.get(`${api.baseUrl}/country/getall`)
-      .then(response => {
-        const formattedOptions = response.data.content.map(item => ({
-          value: item.id, // or any unique identifier
-          label: item.countryName // or any display label you want
-        }));
-        setCountryDetails(formattedOptions);
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-      });
-  }, []);
 
-  useEffect(() => {
-    axios.get(`${api.baseUrl}/ipAddress`)
-      .then((response) => {
-        setFormData({
-          ...formData, "ipAddress": response.data
-        })
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-      });
+
   }, []);
 
   useEffect(() => {
@@ -222,7 +133,7 @@ const Destination = ({ isOpen, onClose, destinationData, isFormEditEnabled, setI
 
     const formDataToSend = new FormData();
     formDataToSend.append("destinationName", formData.destinationName);
-    formDataToSend.append("ipaddress", formData.ipAddress);
+    formDataToSend.append("ipaddress", ipAddress);
     formDataToSend.append("status", formData.status);
     formDataToSend.append("country.id", countryId);
     formDataToSend.append("state.id", stateId);
@@ -308,7 +219,7 @@ const Destination = ({ isOpen, onClose, destinationData, isFormEditEnabled, setI
         X
       </button>
       <div className="flex justify-between items-center p-4 pl-8 bg-white shadow-md">
-        <h2 className="text-lg font-bold text-black">New Destination</h2>
+        <h2 className="text-lg font-bold text-black">New City</h2>
       </div>
       {/* Line below the title with shadow */}
       <div className="border-b border-gray-300 shadow-sm"></div>
@@ -339,12 +250,12 @@ const Destination = ({ isOpen, onClose, destinationData, isFormEditEnabled, setI
               className="mt-1 w-full border rounded"
               value={stateSelected}
               onChange={handleStateChange}
-              options={stateDetails} />
+              options={stateData} />
           </div>
         </div>
         <div className="mb-4">
           <label htmlFor="destination" className="block text-sm font-medium">
-            Destination Name
+            City Name
           </label>
           <input
             type="text"

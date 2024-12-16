@@ -54,9 +54,9 @@ function Login() {
     const encryptedTokenBase64 = btoa(String.fromCharCode(...encryptedToken));
 
     // Save the key, iv, and encrypted token in localStorage
-    // sessionStorage.setItem('encryptionKey', JSON.stringify(await crypto.subtle.exportKey('jwk', key)));
-    // sessionStorage.setItem('iv', ivBase64);
-    // sessionStorage.setItem('encryptedToken', encryptedTokenBase64);
+    sessionStorage.setItem('encryptionKey', JSON.stringify(await crypto.subtle.exportKey('jwk', key)));
+    sessionStorage.setItem('iv', ivBase64);
+    sessionStorage.setItem('encryptedToken', encryptedTokenBase64);
 
     localStorage.setItem('encryptionKey', JSON.stringify(await crypto.subtle.exportKey('jwk', key)));
     localStorage.setItem('iv', ivBase64);
@@ -127,7 +127,7 @@ function Login() {
       navigate('/home');
     } catch (error) {
       setErrors(error.response?.data?.error?.message || 'Something went wrong');
-      toast.error('Invalid username or password.', {
+      toast.error('Invalid email or password.', {
         position: 'top-center',
         autoClose: 5000,
         hideProgressBar: false,
@@ -141,6 +141,7 @@ function Login() {
 
   useEffect(() => {
     localStorage.clear();
+    sessionStorage.clear();
     navigate('/login')
   }, []);
 

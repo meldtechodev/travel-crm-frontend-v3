@@ -98,9 +98,9 @@ const PdfFile = ({ data, isModalOpen }) => {
 
         <div class="header pdf-header">
           <div>
-            <h1>Breathtaking Dubai Break</h1>
+            <h1>{data?.requirementType}</h1>
             <p class="trip-details">
-              <span>5 Nights / 6 Days</span>
+              <span>{data?.nights} Nights / {data?.days} Days</span>
               Customizable
             </p>
           </div>
@@ -228,8 +228,8 @@ const PdfFile = ({ data, isModalOpen }) => {
           </p>
           <div class="payNowInner">
             <p>
-              <span>&#8377;1,48,696</span>
-              For 2 Adults
+              <span>&#8377;{data?.totalCost}</span>
+              For {data?.totalTravellers} Adults
             </p>
             <a href="#">Pay Now</a>
           </div>
@@ -253,7 +253,7 @@ const PdfFile = ({ data, isModalOpen }) => {
         </div>
         <div class="headerThird">
           <h2>Your Itinerary</h2>
-          <p class="subheader">Breathtaking Dubai Break</p>
+          <p class="subheader">{data?.requirementType}</p>
           <p class="detailsPdf">
             <img src="/assets/images/pdf/flights.png" width="100%" alt="flight-img" />
             Arrival in Dubai by IndiGo Flight 6E-1461 | Departing on 01 Aug, 08:40 AM | Arriving on 01 Aug, 10:50 AM | Includes Check in Baggage

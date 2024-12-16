@@ -74,26 +74,6 @@ const Customer = ({ isOpen, onClose, customerData, isFormEditEnabled, setIsFormE
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // const formDatasend = new FormData();
-    // formDatasend.append('salutation', formData.salutation);
-    // formDatasend.append('fName', formData.fName);
-    // formDatasend.append('lName', formData.lName);
-    // formDatasend.append('emailId', formData.emailId);
-    // formDatasend.append('contactNo', formData.contactNo);
-    // formDatasend.append('marritalStatus', formData.maritalStatus);
-    // formDatasend.append('customerType', formData.customerType);
-    // formDatasend.append('leadSource', formData.leadSource);
-    // formDatasend.append('adharNo', formData.adharNo);
-    // formDatasend.append('passportId', formData.passportId);
-    // formDatasend.append('createdby', user.name);
-    // formDatasend.append('modifiedby', user.name);
-    // formDatasend.append('ipaddress', formData.ipaddress);
-    // formDatasend.append('status', formData.status);
-    // formDatasend.append('isdelete', formData.isdelete);
-    // formDatasend.append('user.userId', user.userId);
-
-    // console.log('FORM DATA:', formData);
-
     if (
       !formData.salutation ||
       !formData.fName ||
@@ -231,7 +211,7 @@ const Customer = ({ isOpen, onClose, customerData, isFormEditEnabled, setIsFormE
       </div>
       <div className="border-b border-gray-300 shadow-sm"></div>
 
-      <form className="p-4">
+      <form className="p-4 overflow-y-visible mb-12">
         {/* Basic Information */}
         <div className="mb-6">
           <h3 className="bg-red-700 text-white p-2 rounded">
