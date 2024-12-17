@@ -10,89 +10,32 @@ import { UserContext } from "../contexts/userContext";
 
 const NewQuery = ({ isOpen, onClose }) => {
   const [customer, setCustomer] = useState([]);
-  const [status, setStatus] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [queryData, setQueryData] = useState();
 
 
-  const [b2b, setB2b] = useState({ value: "B2C", label: "B2C" });
-
   const pdfRef = useRef();
 
-  const { user, ipAddress, countryDetails, stateDetails, destinationDetails } = useContext(UserContext);
+  const { user, ipAddress } = useContext(UserContext);
 
-  const RoomTypeOptions = [
-    { value: "budget", label: "Budget" },
-    { value: "deluxe", label: "Deluxe" },
-    { value: "luxury", label: "Luxury" },
-    { value: "standard", label: "Standard" },
-  ];
-  const MealTypeOptions = [
-    { value: 1, label: "Thai" },
-    { value: 2, label: "Indian" },
-    { value: 3, label: "Chineese" },
-    { value: 4, label: "Italian" },
-    { value: 5, label: "American" },
-  ];
-
-
-
-  // const generatePDF = async () => {
-  //   const element = pdfRef.current; // The HTML content to convert into a PDF
-
-  //   const modalContent = document.getElementById("modal-content");
-
-  //   // if (modalContent) {
-  //   const canvas = await html2canvas(modalContent, {
-  //     scale: 2, // Improves quality
-  //   });
-
-  //   const imgData = canvas.toDataURL("image/png");
-  //   const pdf = new jsPDF("p", "mm", "a4");
-
-  //   // Adjust image dimensions for A4 size
-  //   const imgWidth = 190; // A4 width in mm (with margins)
-  //   const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-  //   pdf.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
-  //   pdf.save("data-summary.pdf");
-  // }
-
-  // html2canvas(element).then((canvas) => {
-  //   const imgData = canvas.toDataURL('image/png');
-  //   const pdf = new jsPDF();
-  //   const imgWidth = 190;
-  //   const pageHeight = 295;
-  //   const imgHeight = (canvas.height * imgWidth) / canvas.width;
-  //   let heightLeft = imgHeight;
-  //   let position = 0;
-
-  //   // pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
-  //   heightLeft -= pageHeight;
-
-  //   while (heightLeft >= 0) {
-  //     position = heightLeft - imgHeight;
-  //     pdf.addPage();
-  //     pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
-  //     heightLeft -= pageHeight;
-  // }
-
-  //   pdf.save('generated.pdf');
-
-  // });
-  // const doc = new jsPDF();
-  // doc.text(`Data Summary`, 10, 10);
-  // Object.entries(formData).forEach(([key, value], index) => {
-  //   doc.text(`${key}: ${value}`, 10, 20 + index * 10);
-  // });
-  // doc.save("data-summary.pdf");
-  // };
-
+  // const RoomTypeOptions = [
+  //   { value: "budget", label: "Budget" },
+  //   { value: "deluxe", label: "Deluxe" },
+  //   { value: "luxury", label: "Luxury" },
+  //   { value: "standard", label: "Standard" },
+  // ];
+  // const MealTypeOptions = [
+  //   { value: 1, label: "Thai" },
+  //   { value: 2, label: "Indian" },
+  //   { value: 3, label: "Chineese" },
+  //   { value: 4, label: "Italian" },
+  //   { value: 5, label: "American" },
+  // ];
 
 
   const [formData, setFormData] = useState({
     ipAddress: "",
-    status,
+    status: true,
     customer: null,
     requirementType: "",
     travelDate: "",
@@ -113,7 +56,7 @@ const NewQuery = ({ isOpen, onClose }) => {
     basicCost: 0,
     gst: 0,
     totalCost: 0,
-    queryType: "",
+    queryType: { value: "B2C", label: "B2C" },
     queryCreatedFrom: "",
     emailStatus: 0,
     leadStatus: 0,
@@ -141,71 +84,33 @@ const NewQuery = ({ isOpen, onClose }) => {
 
   const handleDateChange = (e) => {
     const { name, value } = e.target;
+    // const formattedDateTime = value.includes("T")
+    //   ? value
+    //   : `${value}T00:00:00`;
 
-    const formattedDateTime = value.includes("T")
-      ? value
-      : `${value}T00:00:00`;
-
-    setFormData(prev => ({ ...prev, [name]: formattedDateTime }))
+    setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
+  // const handleInputChange = (event) => {
+  //   const { name, value } = event.target;
+  //   setFormData({
+  //     ...formData,
+  //     [name]: value,
+  //   });
+  // };
 
-  const handleFileChange = (event) => {
-    setFormData({
-      ...formData,
-      image: event.target.files[0],
-    });
-  };
+  // const handleFileChange = (event) => {
+  //   setFormData({
+  //     ...formData,
+  //     image: event.target.files[0],
+  //   });
+  // };
 
   const [iti, setIti] = useState([])
   const [packages, setPackages] = useState([])
-  // const [newQuery, setNewQuery] = useState(
-  //   {
-  //     "requirementType": "",
-  //     "travelDate": "",
-  //     "nights": 0,
-  //     "days": 0,
-  //     "totalTravellers": 1,
-  //     "adults": 1,
-  //     "kids": 0,
-  //     "infants": 0,
-  //     "salutation": "",
-  //     "fname": "",
-  //     "lname": "",
-  //     "emailId": "",
-  //     "contactNo": "",
-  //     "leadSource": "",
-  //     "foodPreferences": "",
-  //     "basicCost": 0,
-  //     "gst": 0,
-  //     "totalCost": 0,
-  //     "queryType": "",
-  //     "queryCreatedFrom": "",
-  //     "emailStatus": 0,
-  //     "leadStatus": 0,
-  //     "pkg": {
-  //       "id": 0
-  //     },
-  //     "did": {
-  //       "id": 0
-  //     },
-  //     "fromcityid": {
-  //       "id": 0
-  //     },
-  //     "userId": {
-  //       "id": 0
-  //     }
-  //   }
-  // )
 
   const [hotelList, setHotelList] = useState([])
+
   useEffect(() => {
     axios.get(`${api.baseUrl}/hotel/getAll`)
       .then((response) => {
@@ -227,7 +132,8 @@ const NewQuery = ({ isOpen, onClose }) => {
 
   const [selectedPackage, setSelectedPackage] = useState(null)
   const handlePackageChange = (selected) => {
-    // console.log(selected)
+    console.log(selected)
+    setIti([])
     setViewPolicy([])
     setViewPrice({ markup: 0, basiccost: 0, gst: 0, totalcost: 0, packid: 0 })
     setFormData(prev => ({ ...prev, days: selected.days, nights: selected.nights }))
@@ -238,24 +144,30 @@ const NewQuery = ({ isOpen, onClose }) => {
     let itiList = itinerarys.filter(item => item.packid === selected.value)
     let pkd = pkgItiDet.filter(item => item.packitid.packid === selected.value)
 
-    // console.log(itinerarys)
+    // console.log(pkd)
     let catHote = pkd.map(item => ({
-      category: item.category,
-      roomtypes: item.roomtypes,
+      ...item,
+      // category: item.category,
+      // roomtypes: item.roomtypes,
       mealsType: item.mealspackageIds
     }))
-    // console.log(pkgItiDet)
 
     let vH = catHote.filter(item => item.roomtypes !== null)
 
-    let viewdat = vH.map(item => ({ category: item.category, hotel: item.roomtypes?.hotel, roomtypes: item.roomtypes }))
-    let viewcat = vH.map(item => item.category)
-    var newH = new Set(viewcat)
-    let catList = [...newH]
+    // console.log(vH)
+
+    let viewdat = vH.map(item => ({
+      category: item.category,
+      hotel: item.roomtypes?.hotel,
+      roomtypes: item.roomtypes
+    }))
+    // let viewcat = vH.map(item => item.category)
+    // var newH = new Set(viewcat)
+    // let catList = [...newH]
     // console.log(viewdat)
     // let data = catList.map(item => item === )
     setViewHotel(viewdat)
-    console.log(viewHotel)
+    // console.log(data)
 
     setIti(itiList)
     // console.log(itiList)
@@ -271,20 +183,15 @@ const NewQuery = ({ isOpen, onClose }) => {
 
   const handleCustomerEmail = (e) => {
     const { name, value } = e.target
-    // setFormData((prev) => ({ ...prev, customer: ({ ...customer, emailId: e.target.value }) }))
     setCustomerData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleCustomerContact = () => {
-
-  }
 
   const [viewPackage, setViewPackage] = useState([])
   const handleDestinationChange = (selected) => {
-    setViewPackage([])
+    setFormData((prev) => ({ ...prev, pkg: null }))
     setFormData(prev => ({ ...prev, did: selected }))
     let listPack = packages.filter(item => item.toCityId === selected.value)
-    console.log(listPack)
     setViewPackage(listPack)
   }
 
@@ -307,11 +214,11 @@ const NewQuery = ({ isOpen, onClose }) => {
           value: item.id,
           label: item.pkName,
         }))
-        // console.log(formated)
         setPackages(formated)
       })
       .catch((error) => console.error(error))
   }, [])
+
 
   const [itinerarys, setItinerays] = useState([])
   useEffect(() => {
@@ -323,26 +230,25 @@ const NewQuery = ({ isOpen, onClose }) => {
   }, [])
 
   const [pkgItiDet, setPkgItiDet] = useState([])
+  const [destinationDetails, setDestinationDetails] = useState([])
   useEffect(() => {
     axios.get(`${api.baseUrl}/packageitinerarydetails/getAll`)
       .then((response) => {
         setPkgItiDet(response.data)
       })
-      .catch((error) => console.error(error))
-  }, [])
+      .catch((error) => console.error(error));
 
-  const [mealPlan, setMealPlan] = useState([])
-  useEffect(() => {
-    axios.get(`${api.baseUrl}/mealspackage/getall`)
-      .then((response) => {
-        const format = response.data.map(item => ({
 
+    axios.get(`${api.baseUrl}/destination/getallDestination`)
+      .then(res => {
+        const format = res.data.map(item => ({
+          ...item,
+          value: item.id,
+          label: item.destinationName
         }))
-        setMealPlan(response.data)
-      })
-      .catch((error) => console.error(error))
+        setDestinationDetails(format)
+      }).catch(error => console.error(error))
   }, [])
-
 
   useEffect(() => {
     axios.get(`${api.baseUrl}/customer/getall`)
@@ -369,27 +275,12 @@ const NewQuery = ({ isOpen, onClose }) => {
       });
   }, []);
 
-  // useEffect(() => {
-  //   axios.get(`${api.baseUrl}/destination/getall`)
-  //     .then((response) => {
-  //       const format = response.data.map(item => ({
-  //         ...item,
-  //         value: item.id,
-  //         label: item.destinationName
-  //       }))
-  //       setDestination(format)
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching data:", error);
-  //     });
-  // }, []);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const payload = {
       requirementType: selectedPackage.pkName || " ",
-      travelDate: formData.travelDate,
+      travelDate: `${formData.travelDate}T00:00:00`,
       nights: formData.nights,
       days: formData.days,
       totalTravellers: formData.totalTravellers,
@@ -406,7 +297,7 @@ const NewQuery = ({ isOpen, onClose }) => {
       basicCost: viewPrice.basiccost,
       gst: viewPrice.gst,
       totalCost: viewPrice.totalcost,
-      queryType: formData.queryType || " ",
+      queryType: formData.queryType.value || " ",
       queryCreatedFrom: formData.leadSource,
       emailStatus: 0,
       leadStatus: 0,
@@ -427,6 +318,7 @@ const NewQuery = ({ isOpen, onClose }) => {
         id: customerData.id
       }
     }
+    console.log(payload)
 
     await axios.post(`${api.baseUrl}/query/create`, payload, {
       headers: {
@@ -436,8 +328,15 @@ const NewQuery = ({ isOpen, onClose }) => {
       }
     })
       .then((response) => {
-        setQueryData(response.data)
-        console.log(response.data)
+        let pkgIt = []
+        if (formData.days > selectedPackage?.days) {
+          pkgIt = [...iti.slice(0, formData.days)]
+        } else {
+          pkgIt = [...iti]
+        }
+
+        setQueryData({ query: response.data, pkgItinerary: pkgIt, pkgItiDetails: pkgItiDet })
+        setIsModalOpen(true)
         toast.success("Query saved Successfully.", {
           position: "top-center",
           autoClose: 5000,
@@ -449,9 +348,9 @@ const NewQuery = ({ isOpen, onClose }) => {
         });
       })
       .catch(error => console.error(error));
-    setIsModalOpen(true)
 
     // console.log(payload)
+    // console.log(iti)
 
   }
 
@@ -501,10 +400,9 @@ const NewQuery = ({ isOpen, onClose }) => {
                   { value: "B2C", label: "B2C" },
 
                 ]}
-                value={b2b}
+                value={formData.queryType}
                 onChange={(selected) => {
-                  setFormData(prev => ({ ...prev, queryType: selected.label }));
-                  setB2b(selected)
+                  setFormData(prev => ({ ...prev, queryType: selected }));
                 }}
                 placeholder="Select"
               />
@@ -660,7 +558,13 @@ const NewQuery = ({ isOpen, onClose }) => {
                   placeholder=" No of Days"
                   name="pCode"
                   value={formData.days}
-                  onChange={(e) => setFormData(prev => ({ ...prev, days: e.target.value }))}
+                  onChange={(e) => {
+                    setFormData(prev => ({
+                      ...prev, days: e.target.value,
+                      nights: e.target.value > 1 ? Number(e.target.value) - 1
+                        : Number(e.target.value) == 1 ? 1 : 0
+                    }));
+                  }}
                 />
               </div>
               <div className="w-1/3">
@@ -677,7 +581,9 @@ const NewQuery = ({ isOpen, onClose }) => {
                   placeholder="No of Nights"
                   name="pCode"
                   value={formData.nights}
-                  onChange={(e) => setFormData(prev => ({ ...prev, nights: e.target.value }))}
+                  onChange={(e) => {
+                    setFormData(prev => ({ ...prev, days: Number(e.target.value) > 1 ? Number(e.target.value) + 1 : Number(e.target.value) == 1 ? 1 : 0, nights: e.target.value }));
+                  }}
                 />
               </div>
             </div>
@@ -688,7 +594,7 @@ const NewQuery = ({ isOpen, onClose }) => {
                 Travel Date From
               </label>
               <input
-                type="datetime-local"
+                type="date"
                 id="noOfNights"
                 name="travelDate"
                 value={formData.travelDate}
@@ -702,7 +608,7 @@ const NewQuery = ({ isOpen, onClose }) => {
                 Travel Date To
               </label>
               <input
-                type="datetime-local"
+                type="date"
                 id="noOfNights"
                 name="toTravelDate"
                 value={formData.toTravelDate}

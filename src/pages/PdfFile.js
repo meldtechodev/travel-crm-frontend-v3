@@ -8,6 +8,8 @@ const PdfFile = ({ data, isModalOpen }) => {
   // const [isModalOpens, setIsModalOpen] = useState(true)
   const pdfRef = useRef(); // Reference to the HTML element
 
+  console.log(data)
+
   const generatePDF = async () => {
     const element = pdfRef.current; // The HTML content to convert into a PDF
 
@@ -43,50 +45,12 @@ const PdfFile = ({ data, isModalOpen }) => {
 
     isModalOpen(false)
   };
+  useEffect(() => {
+    console.log("Test on Query Form for the route.")
+  }, [])
 
 
-  // const generatePDF = async () => {
-  //   const modalContent = document.getElementById("modal-content");
 
-  //   if (modalContent) {
-  //     // Step 1: Render the modal content to a canvas
-  //     const canvas = await html2canvas(modalContent, {
-  //       scale: 2, // High-quality rendering
-  //       useCORS: true, // Handle cross-origin images
-  //     });
-
-  //     // Step 2: Convert the canvas to an image
-  //     const imgData = canvas.toDataURL("image/png");
-
-  //     // Step 3: Define PDF dimensions
-  //     const pdf = new jsPDF("p", "mm", "a4");
-  //     const pdfWidth = pdf.internal.pageSize.getWidth();
-  //     const pdfHeight = pdf.internal.pageSize.getHeight();
-
-  //     const imgWidth = pdfWidth;
-  //     const imgHeight = (canvas.height * pdfWidth) / canvas.width;
-
-  //     let position = 0;
-
-  //     // Step 4: Add pages dynamically
-  //     while (position < imgHeight) {
-  //       pdf.addImage(
-  //         imgData,
-  //         "PNG",
-  //         0,
-  //         position,
-  //         imgWidth,
-  //         Math.min(imgHeight - position, pdfHeight)
-  //       );
-
-  //       position += pdfHeight;
-  //       if (position < imgHeight) pdf.addPage();
-  //     }
-
-  //     // Step 5: Save the PDF
-  //     pdf.save("data-summary.pdf");
-  //   }
-  // };
   return (
     <>
       <div
@@ -98,9 +62,9 @@ const PdfFile = ({ data, isModalOpen }) => {
 
         <div class="header pdf-header">
           <div>
-            <h1>{data?.requirementType}</h1>
+            <h1>{data.query?.requirementType}</h1>
             <p class="trip-details">
-              <span>{data?.nights} Nights / {data?.days} Days</span>
+              <span>{data.query?.nights} Nights / {data.query?.days} Days</span>
               Customizable
             </p>
           </div>
@@ -117,7 +81,7 @@ const PdfFile = ({ data, isModalOpen }) => {
         <div class="contentQuotation">
           <div class="contents">
             <h3>Contents</h3>
-            <ul>
+            <ul className='mt-4'>
               <li>
                 <span>1</span>
                 Your Itinerary
@@ -201,7 +165,7 @@ const PdfFile = ({ data, isModalOpen }) => {
           <div class="viewYourQuotesLeft">
             <h4>
               <img src="/assets/images/pdf/luggage.png" width="100%" alt="luggage-img" />
-              Now, Plan Your Trips with Motherson
+              Now, Plan Your Trips with Meld Techo Travel CRM
             </h4>
             <div class="quoteParagraph">
               <ul>
@@ -228,8 +192,8 @@ const PdfFile = ({ data, isModalOpen }) => {
           </p>
           <div class="payNowInner">
             <p>
-              <span>&#8377;{data?.totalCost}</span>
-              For {data?.totalTravellers} Adults
+              <span>&#8377;{data.query?.totalCost}</span>
+              For {data.query?.totalTravellers} Adults
             </p>
             <a href="#">Pay Now</a>
           </div>
@@ -253,15 +217,15 @@ const PdfFile = ({ data, isModalOpen }) => {
         </div>
         <div class="headerThird">
           <h2>Your Itinerary</h2>
-          <p class="subheader">{data?.requirementType}</p>
-          <p class="detailsPdf">
+          <p class="subheader">{data.query?.requirementType}</p>
+          {/* <p class="detailsPdf">
             <img src="/assets/images/pdf/flights.png" width="100%" alt="flight-img" />
             Arrival in Dubai by IndiGo Flight 6E-1461 | Departing on 01 Aug, 08:40 AM | Arriving on 01 Aug, 10:50 AM | Includes Check in Baggage
           </p>
           <p class="detailsPdf">
             <img src="/assets/images/pdf/transfer.png" width="100%" alt="car-img" />
             Airport to hotel in Dubai
-          </p>
+          </p> */}
         </div>
         <table class="tableSec">
           <thead>
@@ -271,17 +235,19 @@ const PdfFile = ({ data, isModalOpen }) => {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td class="day-header">Thu, Aug 1, Day 1</td>
-              <td>
-                Check in to Sea View Hotel Bur Dubai WT - Holidays Selections, 4 Star
-                <hr />
-                <br />
-                Marina Dhow Cruise Tour with Dinner on Sharing Deluxe Category
-                ZONE-Bur Dubai /Deira /SZR /Downtown / business bay / Al Barsha
-                /Tecom
-              </td>
-            </tr>
+            {data.query?.pkgItinerary && data.query?.pkgItinerary.map((item, i) =>
+              <tr>
+                <td class="day-header">{data.query?.travelDate || 'Thu, Aug 1, Day 1'}</td>
+                <td>
+                  {item.daytitle || 'Check in to Sea View Hotel Bur Dubai WT - Holidays Selections, 4 Star'}
+                  <hr />
+                  <br />
+                  {item.program || `Marina Dhow Cruise Tour with Dinner on Sharing Deluxe Category
+                  ZONE-Bur Dubai /Deira /SZR /Downtown / business bay / Al Barsha
+                  /Tecom`}
+                </td>
+              </tr>
+            )}
             <tr>
               <td class="day-header">Fri, Aug 2, Day 2</td>
               <td>

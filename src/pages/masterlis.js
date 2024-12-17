@@ -129,7 +129,7 @@ const MasterList = () => {
       setCustomerData(prevData => prevData.map(i => (i.id === item.id ? updatedItem : i)));
     } else if (activeTab === 'vendor') {
       setVendorData(prevData => prevData.map(i => (i.id === item.id ? updatedItem : i)));
-    } 
+    }
     // else if (activeTab === 'department') {
     //   setDepartmentData(prevData => prevData.map(i => (i.id === item.id ? updatedItem : i)));
     // }
@@ -165,9 +165,9 @@ const MasterList = () => {
         setCustomerData(prevData => prevData.map(i => (i.id === item.id ? { ...item } : i)));
       } else if (activeTab === 'vendor') {
         setVendorData(prevData => prevData.map(i => (i.id === item.id ? { ...item } : i)));
-      // } else if (activeTab === 'department') {
-      //   setDepartmentData(prevData => prevData.map(i => (i.id === item.id ? { ...item } : i)));
-      // }
+        // } else if (activeTab === 'department') {
+        //   setDepartmentData(prevData => prevData.map(i => (i.id === item.id ? { ...item } : i)));
+        // }
       }
     }
   };
@@ -227,7 +227,7 @@ const MasterList = () => {
       case 'state':
         fetchData('state/getall', setStateData, handleStatusToggle);
         break;
-      case 'destination':
+      case 'city':
         fetchData('destination/get', setDestinationData, handleStatusToggle);
         break;
       case 'hotel':
@@ -252,7 +252,7 @@ const MasterList = () => {
     { header: 'S.No.', accessor: 'S.No.' },
     { key: 'country', label: 'Country' },
     { key: 'state', label: 'State' },
-    { key: 'destination', label: 'Destination' },
+    { key: 'destination', label: 'City' },
     { key: 'hotel', label: 'Hotel' },
     { key: 'customer', label: 'Customer' },
     { key: 'vendor', label: 'Vendor' },
@@ -285,7 +285,7 @@ const MasterList = () => {
     destination: {
       columns: [
         { header: 'S.No.', accessor: 'index' },
-        { header: 'Destination Name', accessor: 'destinationName' },
+        { header: 'City Name', accessor: 'destinationName' },
         { header: 'State Name', accessor: 'stateName' },
         { header: 'Country Name', accessor: 'countryName' },
         { header: 'Attractions', accessor: 'keyofattractions' },

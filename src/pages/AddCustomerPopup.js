@@ -11,8 +11,7 @@ import { Link } from "react-router-dom";
 
 const AddCustomerPopup = ({ isOpen, onClose }) => {
 
-  const { user } = useContext(UserContext);
-  const [ipAddress, setIpAddress] = React.useState("");
+  const { user, ipAddress } = useContext(UserContext);
   const [errors, setErrors] = React.useState(null);
   const [currentCreatedUser, setCurrentCreatedUser] = React.useState(null);
 
@@ -70,7 +69,7 @@ const AddCustomerPopup = ({ isOpen, onClose }) => {
       await axios.post(`${api.baseUrl}/customer/create`, values, {
         headers: {
           // 'Authorization': `Bearer ${token}`,
-          
+
         }
       })
         .then(response => {
@@ -102,18 +101,6 @@ const AddCustomerPopup = ({ isOpen, onClose }) => {
         });
     },
   });
-
-  console.log(errors)
-
-  useEffect(() => {
-    axios.get(`${api.baseUrl}/ipAddress`)
-      .then((response) => {
-        setIpAddress(response.data);
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-      });
-  }, []);
 
   // console.log(errors);
 
@@ -148,7 +135,7 @@ const AddCustomerPopup = ({ isOpen, onClose }) => {
               </div>
 
               {errors && errors.message && errors.customer && errors.customer.emailId === currentCreatedUser.emailId && (
-              <p className="text-red-500 text-sm">
+                <p className="text-red-500 text-sm">
                   {errors.message}
                 </p>
               )}
@@ -167,9 +154,9 @@ const AddCustomerPopup = ({ isOpen, onClose }) => {
               </div>
 
               {errors && errors.message && errors.customer && errors.customer.contactNo === currentCreatedUser.contactNo && (
-              <p className="text-red-500 text-sm">
-                {errors.message} <Link to={`/home/customer-profile-popup/${errors && errors.customer && errors.customer.id}`}>view here</Link>
-              </p>
+                <p className="text-red-500 text-sm">
+                  {errors.message} <Link to={`/home/customer-profile-popup/${errors && errors.customer && errors.customer.id}`}>view here</Link>
+                </p>
               )}
 
               <div className="flex space-x-2">

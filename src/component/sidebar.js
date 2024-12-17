@@ -49,7 +49,7 @@ const Sidebar = () => {
   // const [user, setUser] = useState({})
   // const [token, setTokens] = useState(null)
 
-  const {user} = useContext(UserContext);
+  const { user } = useContext(UserContext);
   async function decryptToken(encryptedToken, key, iv) {
     const dec = new TextDecoder();
 
@@ -88,89 +88,23 @@ const Sidebar = () => {
     getDecryptedToken()
       .then(async (token) => {
 
-        return await axios.get(`${api.baseUrl}/username`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Access-Control-Allow-Origin': '*'
-          }
-        })
-          .then(response => {
-            const u = response.data
-            // setUser(response.data);
-            // console.log(u)
-
-            axios.get(`${api.baseUrl}/designationModules/getall`)
-              .then(res => {
-                setDesignationModules(res.data)
-                let mod = res.data.filter(item => item.designations.id === u.designation.id)
-                let filtmod = mod.map(item => item.modules)
-                setModule(filtmod)
-
-                console.log(filtmod)
-
-                axios.get(`${api.baseUrl}/designationPermission/getall`)
-                  .then(response => {
-                    // console.log(response.data)
-                    const perm = response.data.filter(item => item.designations.id === 2);
-                    const p = perm.map(item => item.permissions)
-                    let arr = new Set(p.map(item => item.modules.parentId))
-                    let moduleList = [...arr]
-
-                    let subModuleSet = new Set(p.map(items => items.modules.id))
-
-
-                    let subModuleArr = [...subModuleSet]
-                    // console.log(subModuleArr)
-
-                    module.forEach(items => {
-                      // console.log(items)
-                      if (items.parentId !== 0) {
-                        for (let i = 0; i < subModuleArr.length; i++) {
-                          if (subModuleArr[i] === items.id) {
-                            console.log(items)
-                            let check = childModule.filter(it => it.id === items.id)
-                            if (check.length === 0) {
-                              console.log(items)
-                              childModule.push(items)
-                            }
-                          }
-                        }
-                      }
-                    })
-
-                    module.forEach(items => {
-                      if (items.parentId === 0 && (items.moduleName !== 'Quickstart' || items.moduleName !== 'Dashboard')) {
-                        for (let i = 0; i < moduleList.length; i++) {
-                          if (moduleList[i] === items.id) {
-                            let check = parentModule.filter(it => it.id === items.id)
-                            if (check.length === 0) {
-                              parentModule.push(items)
-                            }
-                          }
-                        }
-                      }
-                    })
-                    console.log(p)
-
-
-                  })
-
-              })
-              .catch(error => console.error(error));
-
+        axios.get(`${api.baseUrl}/designationModules/getall`)
+          .then(res => {
+            let mod = res.data.filter(item => item.designations.id === user.designation.id)
+            let filtmod = mod.map(item => item.modules)
+            setModule(filtmod)
           })
-          .catch(error => console.error(error))
+          .catch(error => console.error('Error fetching protected resource:', error));
+
+
+
+        // const pModule = modulePermission.filter(item => item.modules.parentId === 0)
+        // const cModule = modulePermission.filter(item => item.modules.parentId !== 0)
+        // setParentModule(pModule)
+        // setChildModule(cModule)
+        // console.log(cModule)
+
       })
-      .catch(error => console.error('Error fetching protected resource:', error));
-
-
-
-    const pModule = modulePermission.filter(item => item.modules.parentId === 0)
-    const cModule = modulePermission.filter(item => item.modules.parentId !== 0)
-    setParentModule(pModule)
-    setChildModule(cModule)
-    console.log(cModule)
-
   }, [])
 
   const navigate = useNavigate();
@@ -240,7 +174,7 @@ const Sidebar = () => {
                 <p className="font-bold text-lg">Home</p>
                 {module.map((item, i) =>
                   (item.moduleName === 'Quickstart' || item.moduleName === 'Dashboard') ?
-                    (<Link to={`/home/${item.moduleName.toLowerCase()}`}>
+                    (<Link to={`/home/${item.moduleName.toLowerCase()}`} key={i}>
                       <button class="w-[90%] mt-6 p-4 flex justify-between items-center bg-gradient-to-r from-[#FFF9F9] to-[#F7C6C6]  cursor-pointer border-none text-left shadow-md">
                         {item.moduleName}
                       </button>
@@ -254,7 +188,7 @@ const Sidebar = () => {
           {/* Sidebar Packages Item */}
           {module.map((items, i) =>
             (items.moduleName !== 'Quickstart' && items.moduleName !== 'Dashboard' && items.parentId === 0) ?
-              (<div className="sidebar-item group relative hover:w-full">
+              (<div className="sidebar-item group relative hover:w-full" key={i}>
                 <div
                   className="sidebar-icons flex flex-col justify-center  items-center p-2 rounded cursor-pointer hover:color-black"
                   style={{ zIndex: "2" }}
@@ -795,12 +729,12 @@ const Sidebar = () => {
           onClose={() => setAddData('')}
         />
       </div>
-      {addData === "state" && <div
+      <div
         className="submenu-menu"
-        style={{ right: addData.toLowerCase().includes("State".toLowerCase()) ? "0" : "-100%" }}
+        style={{ right: addData.toLowerCase().includes("States".toLowerCase()) ? "0" : "-100%" }}
       >
-        <State isOpen={addData.toLowerCase().includes("State".toLowerCase())} onClose={() => setAddData('')} />
-      </div>}
+        <State isOpen={addData.toLowerCase().includes("States".toLowerCase())} onClose={() => setAddData('')} />
+      </div>
       <div
         className="submenu-menu"
         style={{ right: addData.toLowerCase().includes("City".toLowerCase()) ? "0" : "-100%" }}
@@ -869,10 +803,10 @@ const Sidebar = () => {
       </div>
       <div
         className="submenu-menu"
-        style={{ right: addData.toLowerCase().includes("Transportation".toLowerCase()) ? "0" : "-100%" }}
+        style={{ right: addData.toLowerCase().includes("Transport".toLowerCase()) ? "0" : "-100%" }}
       >
         <NewTransportationForm
-          isOpen={addData.toLowerCase().includes("Transportation".toLowerCase())}
+          isOpen={addData.toLowerCase().includes("Transport".toLowerCase())}
           onClose={() => setAddData('')}
         />
       </div>
@@ -912,7 +846,7 @@ const Sidebar = () => {
           onClose={() => setAddData('')}
         />
       </div>
-      {addData === "Company" && <div
+      <div
         className="submenu-menu"
         style={{ right: addData === "Company" ? "0" : "-100%" }}
       >
@@ -920,7 +854,7 @@ const Sidebar = () => {
           isOpen={addData === "Company"}
           onClose={() => setAddData('')}
         />
-      </div>}
+      </div>
     </>
   );
 };

@@ -8,6 +8,7 @@ const CustomerProfile = () => {
   const [tab, setTab] = React.useState('profile');
   const location = useLocation(); // Unix timestamp in milliseconds
   const option = location.state?.option;
+  console.log(option)
 
   const [destination, setDestination] = useState([])
   const [itinerariesList, setItinerayList] = useState([])
@@ -28,18 +29,18 @@ const CustomerProfile = () => {
   // setHotelList(newSet)
 
   const ViewDestination = (view) => {
-    let d = destination.filter(item => item.id === view)
-    let k = d[0]
-    return d.length === 0 ? '' : k.destinationName
+    // let d = destination.filter(item => item.id === view)
+    let k = destination[0]
+    return destination.length === 0 ? '' : ""
   }
   // useEffect(() => {
   //   console.log(option)
   // }, [])
 
   const handleView = (data) => {
-    let site = siteSeeing.filter(item => item.id === data)
+    // let site = siteSeeing.filter(item => item.id === data)
     // site.length === 0 ? '' : site[0].title
-    console.log(site)
+    // console.log(site)
     return ''
   }
 
