@@ -84,28 +84,27 @@ const NewQuery = ({ isOpen, onClose }) => {
 
   const handleDateChange = (e) => {
     const { name, value } = e.target;
+    // const formattedDateTime = value.includes("T")
+    //   ? value
+    //   : `${value}T00:00:00`;
 
-    const formattedDateTime = value.includes("T")
-      ? value
-      : `${value}T00:00:00`;
-
-    setFormData(prev => ({ ...prev, [name]: formattedDateTime }))
+    setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
+  // const handleInputChange = (event) => {
+  //   const { name, value } = event.target;
+  //   setFormData({
+  //     ...formData,
+  //     [name]: value,
+  //   });
+  // };
 
-  const handleFileChange = (event) => {
-    setFormData({
-      ...formData,
-      image: event.target.files[0],
-    });
-  };
+  // const handleFileChange = (event) => {
+  //   setFormData({
+  //     ...formData,
+  //     image: event.target.files[0],
+  //   });
+  // };
 
   const [iti, setIti] = useState([])
   const [packages, setPackages] = useState([])
@@ -220,6 +219,7 @@ const NewQuery = ({ isOpen, onClose }) => {
       .catch((error) => console.error(error))
   }, [])
 
+
   const [itinerarys, setItinerays] = useState([])
   useEffect(() => {
     axios.get(`${api.baseUrl}/packageitinerary/getAll`)
@@ -279,8 +279,8 @@ const NewQuery = ({ isOpen, onClose }) => {
     e.preventDefault();
 
     const payload = {
-      // requirementType: selectedPackage.pkName || " ",
-      travelDate: formData.travelDate,
+      requirementType: selectedPackage.pkName || " ",
+      travelDate: `${formData.travelDate}T00:00:00`,
       nights: formData.nights,
       days: formData.days,
       totalTravellers: formData.totalTravellers,
@@ -297,7 +297,7 @@ const NewQuery = ({ isOpen, onClose }) => {
       basicCost: viewPrice.basiccost,
       gst: viewPrice.gst,
       totalCost: viewPrice.totalcost,
-      queryType: formData.queryType || " ",
+      queryType: formData.queryType.value || " ",
       queryCreatedFrom: formData.leadSource,
       emailStatus: 0,
       leadStatus: 0,
@@ -318,6 +318,7 @@ const NewQuery = ({ isOpen, onClose }) => {
         id: customerData.id
       }
     }
+    console.log(payload)
 
     await axios.post(`${api.baseUrl}/query/create`, payload, {
       headers: {
@@ -327,8 +328,14 @@ const NewQuery = ({ isOpen, onClose }) => {
       }
     })
       .then((response) => {
+        let pkgIt = []
+        if (formData.days > selectedPackage?.days) {
+          pkgIt = [...iti.slice(0, formData.days)]
+        } else {
+          pkgIt = [...iti]
+        }
 
-        setQueryData(response.data)
+        setQueryData({ query: response.data, pkgItinerary: pkgIt, pkgItiDetails: pkgItiDet })
         setIsModalOpen(true)
         toast.success("Query saved Successfully.", {
           position: "top-center",
@@ -587,7 +594,7 @@ const NewQuery = ({ isOpen, onClose }) => {
                 Travel Date From
               </label>
               <input
-                type="datetime-local"
+                type="date"
                 id="noOfNights"
                 name="travelDate"
                 value={formData.travelDate}
@@ -601,7 +608,7 @@ const NewQuery = ({ isOpen, onClose }) => {
                 Travel Date To
               </label>
               <input
-                type="datetime-local"
+                type="date"
                 id="noOfNights"
                 name="toTravelDate"
                 value={formData.toTravelDate}

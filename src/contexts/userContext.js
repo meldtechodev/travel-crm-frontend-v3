@@ -63,6 +63,7 @@ export const UserProvider = ({ children }) => {
   const [countryDetails, setCountryDetails] = useState([])
   const [stateDetails, setStateDetails] = useState([])
   const [destinationDetails, setDestinationDetails] = useState([])
+  const [ipAddress, setIpAddress] = useState()
 
   useEffect(() => {
     getDecryptedToken()
@@ -165,6 +166,12 @@ export const UserProvider = ({ children }) => {
         console.error('Error fetching Room Type Name data :', error);
       });
 
+    axios.get(`${api.baseUrl}/ipAddress`)
+      .then(response => setIpAddress(response.data))
+      .catch((error) => {
+        console.error('Error fetching Room Type Name data :', error);
+      });
+
 
     axios.get(`${api.baseUrl}/state/getall`)
       .then(response => {
@@ -201,7 +208,7 @@ export const UserProvider = ({ children }) => {
     navigate('/login');
   };
 
-  return <UserContext.Provider value={{ user, isAuthenticated, setIsAuthenticated, setUser, handleLogout, isLoading, module, destinationDetails, countryDetails, stateDetails }}>{children}</UserContext.Provider>;
+  return <UserContext.Provider value={{ user, isAuthenticated, setIsAuthenticated, setUser, handleLogout, isLoading, module, destinationDetails, countryDetails, stateDetails, ipAddress }}>{children}</UserContext.Provider>;
 };
 
 export { UserContext };
