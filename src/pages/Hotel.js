@@ -36,7 +36,9 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
   const [thirdPartyPrice, setThirdPartyPrice] = useState("");
   const [addRoomPage, setAddRoomPage] = useState(1)
 
-  // const [countryDetails, setCountryDetails] = useState([])
+  const [countryDetails, setCountryDetails] = useState([])
+  const [stateDetails, setStateDetails] = useState([])
+  const [destinationDetails, setDestinationDetails] = useState([])
   const [stateData, setStateData] = useState([])
   const [destinationOption, setDestinationOption] = useState([])
   const [roomsSelected, setRoomsSelected] = useState([])
@@ -52,7 +54,7 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
 
   const [formDataRoomMaster, setFormDataRoomMaster] = useState([])
 
-  const { user, countryDetails, stateDetails, ipAddress, destinationDetails } = useContext(UserContext);
+  const { user, ipAddress } = useContext(UserContext);
   const token = useDecryptedToken();
 
   const [formRoomDetails, setFormRoomDetails] = useState({
@@ -211,6 +213,7 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
       .catch((error) => {
         console.error('Error fetching Room Type Name data :', error);
       });
+
   }, []);
 
   useEffect(() => {
@@ -709,7 +712,7 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
     </div>,
 
     // Page 2: Room Details
-    <div key="2" className="p-4">
+    <div key={2} className="p-4">
       <h3 className="bg-red-700 text-white p-2 rounded mb-4">Add Room Details</h3>
       {/* {Array.from({ length: addRoomPage }) */}
       {totalRoomDetails.map((roomDetails, index) => (

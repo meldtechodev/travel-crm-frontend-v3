@@ -10,33 +10,32 @@ import { UserContext } from "../contexts/userContext";
 
 const NewQuery = ({ isOpen, onClose }) => {
   const [customer, setCustomer] = useState([]);
-  const [status, setStatus] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [queryData, setQueryData] = useState();
 
 
   const pdfRef = useRef();
 
-  const { user, ipAddress, countryDetails, stateDetails, destinationDetails } = useContext(UserContext);
+  const { user, ipAddress } = useContext(UserContext);
 
-  const RoomTypeOptions = [
-    { value: "budget", label: "Budget" },
-    { value: "deluxe", label: "Deluxe" },
-    { value: "luxury", label: "Luxury" },
-    { value: "standard", label: "Standard" },
-  ];
-  const MealTypeOptions = [
-    { value: 1, label: "Thai" },
-    { value: 2, label: "Indian" },
-    { value: 3, label: "Chineese" },
-    { value: 4, label: "Italian" },
-    { value: 5, label: "American" },
-  ];
+  // const RoomTypeOptions = [
+  //   { value: "budget", label: "Budget" },
+  //   { value: "deluxe", label: "Deluxe" },
+  //   { value: "luxury", label: "Luxury" },
+  //   { value: "standard", label: "Standard" },
+  // ];
+  // const MealTypeOptions = [
+  //   { value: 1, label: "Thai" },
+  //   { value: 2, label: "Indian" },
+  //   { value: 3, label: "Chineese" },
+  //   { value: 4, label: "Italian" },
+  //   { value: 5, label: "American" },
+  // ];
 
 
   const [formData, setFormData] = useState({
     ipAddress: "",
-    status,
+    status: true,
     customer: null,
     requirementType: "",
     travelDate: "",
@@ -112,6 +111,7 @@ const NewQuery = ({ isOpen, onClose }) => {
   const [packages, setPackages] = useState([])
 
   const [hotelList, setHotelList] = useState([])
+
   useEffect(() => {
     axios.get(`${api.baseUrl}/hotel/getAll`)
       .then((response) => {
@@ -147,21 +147,25 @@ const NewQuery = ({ isOpen, onClose }) => {
 
     // console.log(pkd)
     let catHote = pkd.map(item => ({
-      category: item.category,
-      roomtypes: item.roomtypes,
+      ...item,
+      // category: item.category,
+      // roomtypes: item.roomtypes,
       mealsType: item.mealspackageIds
     }))
-    console.log(catHote)
 
     let vH = catHote.filter(item => item.roomtypes !== null)
 
     // console.log(vH)
 
-    let viewdat = vH.map(item => ({ category: item.category, hotel: item.roomtypes?.hotel, roomtypes: item.roomtypes }))
-    let viewcat = vH.map(item => item.category)
-    var newH = new Set(viewcat)
-    let catList = [...newH]
-    // console.log(catList)
+    let viewdat = vH.map(item => ({
+      category: item.category,
+      hotel: item.roomtypes?.hotel,
+      roomtypes: item.roomtypes
+    }))
+    // let viewcat = vH.map(item => item.category)
+    // var newH = new Set(viewcat)
+    // let catList = [...newH]
+    console.log(viewdat)
     // let data = catList.map(item => item === )
     setViewHotel(viewdat)
     // console.log(data)
@@ -180,7 +184,6 @@ const NewQuery = ({ isOpen, onClose }) => {
 
   const handleCustomerEmail = (e) => {
     const { name, value } = e.target
-    // setFormData((prev) => ({ ...prev, customer: ({ ...customer, emailId: e.target.value }) }))
     setCustomerData((prev) => ({ ...prev, [name]: value }))
   }
 
@@ -212,7 +215,6 @@ const NewQuery = ({ isOpen, onClose }) => {
           value: item.id,
           label: item.pkName,
         }))
-        // console.log(formated)
         setPackages(formated)
       })
       .catch((error) => console.error(error))
@@ -228,26 +230,25 @@ const NewQuery = ({ isOpen, onClose }) => {
   }, [])
 
   const [pkgItiDet, setPkgItiDet] = useState([])
+  const [destinationDetails, setDestinationDetails] = useState([])
   useEffect(() => {
     axios.get(`${api.baseUrl}/packageitinerarydetails/getAll`)
       .then((response) => {
         setPkgItiDet(response.data)
       })
-      .catch((error) => console.error(error))
+      .catch((error) => console.error(error));
+
+
+    axios.get(`${api.baseUrl}/destination/getallDestination`)
+      .then(res => {
+        const format = res.data.map(item => ({
+          ...item,
+          value: item.id,
+          label: item.destinationName
+        }))
+        setDestinationDetails(format)
+      }).catch(error => console.error(error))
   }, [])
-
-  // const [mealPlan, setMealPlan] = useState([])
-  // useEffect(() => {
-  //   axios.get(`${api.baseUrl}/mealspackage/getall`)
-  //     .then((response) => {
-  //       const format = response.data.map(item => ({
-
-  //       }))
-  //       setMealPlan(response.data)
-  //     })
-  //     .catch((error) => console.error(error))
-  // }, [])
-
 
   useEffect(() => {
     axios.get(`${api.baseUrl}/customer/getall`)
@@ -274,26 +275,11 @@ const NewQuery = ({ isOpen, onClose }) => {
       });
   }, []);
 
-  // useEffect(() => {
-  //   axios.get(`${api.baseUrl}/destination/getall`)
-  //     .then((response) => {
-  //       const format = response.data.map(item => ({
-  //         ...item,
-  //         value: item.id,
-  //         label: item.destinationName
-  //       }))
-  //       setDestination(format)
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching data:", error);
-  //     });
-  // }, []);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const payload = {
-      requirementType: selectedPackage.pkName || " ",
+      // requirementType: selectedPackage.pkName || " ",
       travelDate: formData.travelDate,
       nights: formData.nights,
       days: formData.days,
@@ -333,31 +319,31 @@ const NewQuery = ({ isOpen, onClose }) => {
       }
     }
 
-    // await axios.post(`${api.baseUrl}/query/create`, payload, {
-    //   headers: {
-    //     // 'Authorization': `Bearer ${token}`,
-    //     'Access-Control-Allow-Origin': '*',
-    //     "Content-Type": "Application/json"
-    //   }
-    // })
-    //   .then((response) => {
-    //     setQueryData(response.data)
-    //     console.log(response.data)
-    //     toast.success("Query saved Successfully.", {
-    //       position: "top-center",
-    //       autoClose: 5000,
-    //       hideProgressBar: false,
-    //       closeOnClick: true,
-    //       pauseOnHover: true,
-    //       draggable: true,
-    //       progress: undefined,
-    //     });
-    //   })
-    //   .catch(error => console.error(error));
-    // setIsModalOpen(true)
+    await axios.post(`${api.baseUrl}/query/create`, payload, {
+      headers: {
+        // 'Authorization': `Bearer ${token}`,
+        'Access-Control-Allow-Origin': '*',
+        "Content-Type": "Application/json"
+      }
+    })
+      .then((response) => {
 
-    console.log(payload)
-    console.log(iti)
+        setQueryData(response.data)
+        setIsModalOpen(true)
+        toast.success("Query saved Successfully.", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      })
+      .catch(error => console.error(error));
+
+    // console.log(payload)
+    // console.log(iti)
 
   }
 

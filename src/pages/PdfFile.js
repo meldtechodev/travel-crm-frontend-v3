@@ -43,6 +43,9 @@ const PdfFile = ({ data, isModalOpen }) => {
 
     isModalOpen(false)
   };
+  useEffect(() => {
+    console.log("Test on Query Form for the route.")
+  }, [])
 
 
 

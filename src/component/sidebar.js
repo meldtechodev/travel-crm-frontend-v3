@@ -98,11 +98,11 @@ const Sidebar = () => {
 
 
 
-        const pModule = modulePermission.filter(item => item.modules.parentId === 0)
-        const cModule = modulePermission.filter(item => item.modules.parentId !== 0)
-        setParentModule(pModule)
-        setChildModule(cModule)
-        console.log(cModule)
+        // const pModule = modulePermission.filter(item => item.modules.parentId === 0)
+        // const cModule = modulePermission.filter(item => item.modules.parentId !== 0)
+        // setParentModule(pModule)
+        // setChildModule(cModule)
+        // console.log(cModule)
 
       })
   }, [])
@@ -174,7 +174,7 @@ const Sidebar = () => {
                 <p className="font-bold text-lg">Home</p>
                 {module.map((item, i) =>
                   (item.moduleName === 'Quickstart' || item.moduleName === 'Dashboard') ?
-                    (<Link to={`/home/${item.moduleName.toLowerCase()}`}>
+                    (<Link to={`/home/${item.moduleName.toLowerCase()}`} key={i}>
                       <button class="w-[90%] mt-6 p-4 flex justify-between items-center bg-gradient-to-r from-[#FFF9F9] to-[#F7C6C6]  cursor-pointer border-none text-left shadow-md">
                         {item.moduleName}
                       </button>
@@ -188,7 +188,7 @@ const Sidebar = () => {
           {/* Sidebar Packages Item */}
           {module.map((items, i) =>
             (items.moduleName !== 'Quickstart' && items.moduleName !== 'Dashboard' && items.parentId === 0) ?
-              (<div className="sidebar-item group relative hover:w-full">
+              (<div className="sidebar-item group relative hover:w-full" key={i}>
                 <div
                   className="sidebar-icons flex flex-col justify-center  items-center p-2 rounded cursor-pointer hover:color-black"
                   style={{ zIndex: "2" }}
@@ -729,12 +729,12 @@ const Sidebar = () => {
           onClose={() => setAddData('')}
         />
       </div>
-      {addData === "state" && <div
+      <div
         className="submenu-menu"
-        style={{ right: addData.toLowerCase().includes("State".toLowerCase()) ? "0" : "-100%" }}
+        style={{ right: addData.toLowerCase().includes("States".toLowerCase()) ? "0" : "-100%" }}
       >
-        <State isOpen={addData.toLowerCase().includes("State".toLowerCase())} onClose={() => setAddData('')} />
-      </div>}
+        <State isOpen={addData.toLowerCase().includes("States".toLowerCase())} onClose={() => setAddData('')} />
+      </div>
       <div
         className="submenu-menu"
         style={{ right: addData.toLowerCase().includes("City".toLowerCase()) ? "0" : "-100%" }}
@@ -803,10 +803,10 @@ const Sidebar = () => {
       </div>
       <div
         className="submenu-menu"
-        style={{ right: addData.toLowerCase().includes("Transportation".toLowerCase()) ? "0" : "-100%" }}
+        style={{ right: addData.toLowerCase().includes("Transport".toLowerCase()) ? "0" : "-100%" }}
       >
         <NewTransportationForm
-          isOpen={addData.toLowerCase().includes("Transportation".toLowerCase())}
+          isOpen={addData.toLowerCase().includes("Transport".toLowerCase())}
           onClose={() => setAddData('')}
         />
       </div>
@@ -846,7 +846,7 @@ const Sidebar = () => {
           onClose={() => setAddData('')}
         />
       </div>
-      {addData === "Company" && <div
+      <div
         className="submenu-menu"
         style={{ right: addData === "Company" ? "0" : "-100%" }}
       >
@@ -854,7 +854,7 @@ const Sidebar = () => {
           isOpen={addData === "Company"}
           onClose={() => setAddData('')}
         />
-      </div>}
+      </div>
     </>
   );
 };

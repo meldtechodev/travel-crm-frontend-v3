@@ -81,7 +81,7 @@ const Navbar = () => {
           <div className="flex items-center space-x-4 md:space-x-8">
             <Link to="/home">
               <img
-                src="/assets/images/motherson_logo.png"
+                src="./favicon.ico"
                 alt="Logo"
                 className="w-auto h-6 md:w-auto md:h-6 filter brightness-0 invert"
               />

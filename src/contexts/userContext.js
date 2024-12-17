@@ -60,6 +60,9 @@ export const UserProvider = ({ children }) => {
 
 
   const [module, setModule] = useState([])
+  const [countryDetails, setCountryDetails] = useState([])
+  const [stateDetails, setStateDetails] = useState([])
+  const [destinationDetails, setDestinationDetails] = useState([])
 
   useEffect(() => {
     getDecryptedToken()
@@ -83,8 +86,6 @@ export const UserProvider = ({ children }) => {
                 let mod = res.data.filter(item => item.designations.id === u.designation.id)
                 let filtmod = mod.map(item => item.modules)
                 setModule(filtmod)
-
-                console.log(filtmod)
 
                 // axios.get(`${api.baseUrl}/designationPermission/getall`)
                 //   .then(response => {
@@ -149,6 +150,48 @@ export const UserProvider = ({ children }) => {
       .finally(() => {
         setIsLoading(false)
       })
+
+
+    axios.get(`${api.baseUrl}/country/getall`)
+      .then(response => {
+        const format = response.data.content.map(item => ({
+          ...item,
+          label: item.countryName,
+          value: item.id
+        }))
+        setCountryDetails(format);
+      })
+      .catch((error) => {
+        console.error('Error fetching Room Type Name data :', error);
+      });
+
+
+    axios.get(`${api.baseUrl}/state/getall`)
+      .then(response => {
+        const format = response.data.content.map(item => ({
+          ...item,
+          label: item.stateName,
+          value: item.id
+        }))
+        setStateDetails(format);
+      })
+      .catch((error) => {
+        console.error('Error fetching Room Type Name data :', error);
+      });
+
+
+    axios.get(`${api.baseUrl}/destination/getall`)
+      .then(response => {
+        const format = response.data.content.map(item => ({
+          ...item,
+          label: item.destinationName,
+          value: item.id
+        }))
+        setDestinationDetails(format);
+      })
+      .catch((error) => {
+        console.error('Error fetching Room Type Name data :', error);
+      });
   }, []);
 
   const handleLogout = () => {
@@ -158,7 +201,7 @@ export const UserProvider = ({ children }) => {
     navigate('/login');
   };
 
-  return <UserContext.Provider value={{ user, isAuthenticated, setIsAuthenticated, setUser, handleLogout, isLoading, module }}>{children}</UserContext.Provider>;
+  return <UserContext.Provider value={{ user, isAuthenticated, setIsAuthenticated, setUser, handleLogout, isLoading, module, destinationDetails, countryDetails, stateDetails }}>{children}</UserContext.Provider>;
 };
 
 export { UserContext };

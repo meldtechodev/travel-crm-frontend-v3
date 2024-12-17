@@ -1,65 +1,67 @@
 import axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import api from "../apiConfig/config";
 import { toast } from "react-toastify";
+import { UserContext } from "../contexts/userContext";
 
 const Department = ({ isOpen, onClose, departmentData }) => {
 
-  const [user, setUser] = useState({})
-  const [token, setTokens] = useState(null)
+  // const [user, setUser] = useState({})
 
-  async function decryptToken(encryptedToken, key, iv) {
-    const dec = new TextDecoder();
+  const { user, ipAddress } = useContext(UserContext)
 
-    const decrypted = await crypto.subtle.decrypt(
-      {
-        name: "AES-GCM",
-        iv: iv,
-      },
-      key,
-      encryptedToken
-    );
+  // async function decryptToken(encryptedToken, key, iv) {
+  //   const dec = new TextDecoder();
 
-    return dec.decode(new Uint8Array(decrypted));
-  }
+  //   const decrypted = await crypto.subtle.decrypt(
+  //     {
+  //       name: "AES-GCM",
+  //       iv: iv,
+  //     },
+  //     key,
+  //     encryptedToken
+  //   );
 
-  // Function to retrieve and decrypt the token
-  async function getDecryptedToken() {
-    const keyData = JSON.parse(localStorage.getItem('encryptionKey'));
-    const ivBase64 = localStorage.getItem('iv');
-    const encryptedTokenBase64 = localStorage.getItem('encryptedToken');
+  //   return dec.decode(new Uint8Array(decrypted));
+  // }
+
+  // // Function to retrieve and decrypt the token
+  // async function getDecryptedToken() {
+  //   const keyData = JSON.parse(localStorage.getItem('encryptionKey'));
+  //   const ivBase64 = localStorage.getItem('iv');
+  //   const encryptedTokenBase64 = localStorage.getItem('encryptedToken');
 
 
-    if (!keyData || !ivBase64 || !encryptedTokenBase64) {
-      throw new Error('No token found');
-    }
+  //   if (!keyData || !ivBase64 || !encryptedTokenBase64) {
+  //     throw new Error('No token found');
+  //   }
 
-    // Convert back from base64
-    const key = await crypto.subtle.importKey('jwk', keyData, { name: "AES-GCM" }, true, ['encrypt', 'decrypt']);
-    const iv = new Uint8Array(atob(ivBase64).split('').map(char => char.charCodeAt(0)));
-    const encryptedToken = new Uint8Array(atob(encryptedTokenBase64).split('').map(char => char.charCodeAt(0)));
+  //   // Convert back from base64
+  //   const key = await crypto.subtle.importKey('jwk', keyData, { name: "AES-GCM" }, true, ['encrypt', 'decrypt']);
+  //   const iv = new Uint8Array(atob(ivBase64).split('').map(char => char.charCodeAt(0)));
+  //   const encryptedToken = new Uint8Array(atob(encryptedTokenBase64).split('').map(char => char.charCodeAt(0)));
 
-    return await decryptToken(encryptedToken, key, iv);
-  }
+  //   return await decryptToken(encryptedToken, key, iv);
+  // }
 
-  // Example usage to make an authenticated request
-  useEffect(() => {
-    getDecryptedToken()
-      .then(token => {
-        setTokens(token);
+  // // Example usage to make an authenticated request
+  // useEffect(() => {
+  //   getDecryptedToken()
+  //     .then(token => {
+  //       setTokens(token);
 
-        return axios.get(`${api.baseUrl}/username`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Access-Control-Allow-Origin': '*'
-          }
-        });
-      })
-      .then(response => {
-        setUser(response.data);
-      })
-      .catch(error => console.error('Error fetching protected resource:', error))
-  }, [])
+  //       return axios.get(`${api.baseUrl}/username`, {
+  //         headers: {
+  //           'Authorization': `Bearer ${token}`,
+  //           'Access-Control-Allow-Origin': '*'
+  //         }
+  //       });
+  //     })
+  //     .then(response => {
+  //       setUser(response.data);
+  //     })
+  //     .catch(error => console.error('Error fetching protected resource:', error))
+  // }, [])
 
 
   //   {
@@ -116,7 +118,7 @@ const Department = ({ isOpen, onClose, departmentData }) => {
         departmentName: formData.departmentName,
         createdBy: formData.createdBy,
         modifiedBy: user.username,
-        ipaddress: ipaddress,
+        ipaddress: ipAddress,
         status: formData.status ? 1 : 0,
         isdelete: 0,
         createdDate: departmentData.createdDate,
@@ -154,7 +156,7 @@ const Department = ({ isOpen, onClose, departmentData }) => {
         "departmentName": formData.departmentName,
         "createdBy": user.username,
         "modifiedBy": user.username,
-        "ipaddress": ipaddress,
+        "ipaddress": ipAddress,
         "status": formData.status ? 1 : 0,
         "isdelete": 0
       }
@@ -199,16 +201,16 @@ const Department = ({ isOpen, onClose, departmentData }) => {
     }
   }, [departmentData]);
 
-  const [ipaddress, setIpAddress] = useState("")
-  useEffect(() => {
-    axios.get(`${api.baseUrl}/company/ipAddress`)
-      .then((response) => {
-        setIpAddress(response.data)
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-      });
-  }, []);
+  // const [ipaddress, setIpAddress] = useState("")
+  // useEffect(() => {
+  //   axios.get(`${api.baseUrl}/company/ipAddress`)
+  //     .then((response) => {
+  //       setIpAddress(response.data)
+  //     })
+  //     .catch((error) => {
+  //       console.error('Error fetching data:', error);
+  //     });
+  // }, []);
 
 
   return (
