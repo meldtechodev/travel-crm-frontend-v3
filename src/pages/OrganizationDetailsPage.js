@@ -14,7 +14,7 @@ const OrganizationDetailsPage = () => {
     organizationPhone: "",
     organizationCountryCode: "",
     organizationWebsite: "",
-    status: "",
+    status: "true",
     organizationLogo: null,
   });
 
@@ -35,7 +35,7 @@ const OrganizationDetailsPage = () => {
             organizationPhone: res.data.companyphone || "",
             organizationCountryCode: res.data.companycountrycode || "",
             organizationWebsite: res.data.companywebsite || "",
-            status: res.data.status || "",
+            status: res.data.status || "true",
             organizationLogo: res.data.companylogo || null,
           });
         }).catch(error => console.error(error));
@@ -124,7 +124,7 @@ const OrganizationDetailsPage = () => {
         organizationPhone: organizationData.companyphone || "",
         organizationCountryCode: organizationData.companycountrycode || "",
         organizationWebsite: organizationData.companywebsite || "",
-        status: organizationData.status || "",
+        status: organizationData.status || "true",
         organizationLogo: organizationData.companylogo || null,
       });
     }
@@ -319,7 +319,7 @@ const OrganizationDetailsPage = () => {
                 />
               </div>
 
-              <div>
+              {/* <div>
                 <label htmlFor="status" className="block text-sm font-medium">
                   Status
                 </label>
@@ -334,7 +334,7 @@ const OrganizationDetailsPage = () => {
                   <option value="true">Active</option>
                   <option value="false">Inactive</option>
                 </select>
-              </div>
+              </div> */}
             </div>
 
             <div className="flex justify-end gap-4 mt-6">
