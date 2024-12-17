@@ -39,6 +39,7 @@ const MasterList = () => {
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [selectedHotelData, setSelectedHotelData] = useState(null);
   const [selectedVendorData, setSelectedVendorData] = useState(null);
+  const [selectedCustomerData, setSelectedCustomerData] = useState(null);
   const [isFormEditEnabled, setIsFormEditEnabled] = useState(false);
   const [addButton, setAddButton] = useState(activeTab);
   const navigate = useNavigate()
@@ -197,6 +198,7 @@ const MasterList = () => {
       console.log(`Editing`, item)
     } else if (activeTab === 'customer') {
       setAddData(["Customer"]);
+      setSelectedCustomerData(item)
     }
   };
 
@@ -692,7 +694,7 @@ const MasterList = () => {
         <Customer
           isOpen={addData[0] === "Customer"}
           onClose={() => setAddData([])}
-          departmentData={selectedDepartment}
+          customerData={selectedCustomerData}
           isFormEditEnabled={isFormEditEnabled}
           setIsFormEditEnabled={setIsFormEditEnabled}
         />

@@ -74,7 +74,7 @@ const Country = ({ isOpen, onClose, countryData, isFormEditEnabled, setIsFormEdi
     if (countryData && countryData.id) {
       await axios.put(`${api.baseUrl}/country/updatebyid/${countryData.id}`, formDatasend, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          // 'Authorization': `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
           'Access-Control-Allow-Origin': '*'
         }
