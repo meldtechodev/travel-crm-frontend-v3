@@ -16,7 +16,7 @@ const NewQuery = ({ isOpen, onClose }) => {
 
   const pdfRef = useRef();
 
-  const { user, ipAddress } = useContext(UserContext);
+  const { user, ipAddress, destinationDetails } = useContext(UserContext);
 
   // const RoomTypeOptions = [
   //   { value: "budget", label: "Budget" },
@@ -51,7 +51,7 @@ const NewQuery = ({ isOpen, onClose }) => {
     lname: "",
     emailId: "",
     contactNo: "",
-    leadSource: "",
+    leadSource: { value: "Website", label: "Website" },
     foodPreferences: "",
     basicCost: 0,
     gst: 0,
@@ -82,13 +82,49 @@ const NewQuery = ({ isOpen, onClose }) => {
     setCustomerData(prev => ({ ...prev, id: selected.value, salutation: selected.salutation, fname: selected.fName, lName: selected.lName, contactNo: selected.contactNo, emailId: selected.emailId }));
   }
 
+  // const addDaysAndFormat = (date, days) => {
+  //   const result = new Date(date);
+  //   result.setDate(result.getDate() + days);
+
+  //   // Format the date back to string in "MM/DD/YYYY" format
+  //   const day = String(result.getDate()).padStart(2, "0");
+  //   const month = String(result.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+  //   const year = result.getFullYear();
+
+  //   return `${day}-${month}-${year}`;
+  // };
+
+  const addDaysAndFormat = (date, days) => {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    // console.log(result)
+    return result.toISOString().split("T")[0]; // Format date as YYYY-MM-DD
+  };
+
+  // Function to format date as DD-MM-YYYY
+  // const formatDate = (date) => {
+  //   const options = { day: "2-digit", month: "2-digit", year: "numeric" };
+  //   const dateObj = new Date(date);
+  //   return dateObj.toLocaleDateString("en-GB", options); // Example: "DD/MM/YYYY"
+  // };
+
+
+  // const [queryDate, setQueryDate] = useState('')
   const handleDateChange = (e) => {
     const { name, value } = e.target;
     // const formattedDateTime = value.includes("T")
     //   ? value
     //   : `${value}T00:00:00`;
 
-    setFormData(prev => ({ ...prev, [name]: value }))
+    const newToDate = new Date(value);
+
+    if (name === "travelDate") {
+      newToDate.setDate(newToDate.getDate() + formData.days);
+      setFormData(prev => ({ ...prev, [name]: value, toTravelDate: newToDate.toISOString().split("T")[0] }))
+    } else {
+      newToDate.setDate(newToDate.getDate() - formData.days);
+      setFormData(prev => ({ ...prev, [name]: value, travelDate: newToDate.toISOString().split("T")[0] }))
+    }
   }
 
   // const handleInputChange = (event) => {
@@ -110,13 +146,20 @@ const NewQuery = ({ isOpen, onClose }) => {
   const [packages, setPackages] = useState([])
 
   const [hotelList, setHotelList] = useState([])
+  const [allPolicyList, setAllPolicyList] = useState([])
 
   useEffect(() => {
     axios.get(`${api.baseUrl}/hotel/getAll`)
       .then((response) => {
         setHotelList(response.data)
       })
-      .catch((error) => console.error(error))
+      .catch((error) => console.error(error));
+
+    axios.get(`${api.baseUrl}/policydetails/getallpkgploicy`)
+      .then((response) => {
+        setAllPolicyList(response.data)
+      })
+      .catch((error) => console.error(error));
   }, [])
 
   const [viewPrice, setViewPrice] = useState({
@@ -131,24 +174,43 @@ const NewQuery = ({ isOpen, onClose }) => {
   const [viewHotel, setViewHotel] = useState([])
 
   const [selectedPackage, setSelectedPackage] = useState(null)
+  const [viewSightSeeing, setViewSightSeeing] = useState([])
+  const [viewActivity, setViewActivity] = useState([])
   const handlePackageChange = (selected) => {
-    console.log(selected)
+    // console.log(selected)
     setIti([])
     setViewPolicy([])
     setViewPrice({ markup: 0, basiccost: 0, gst: 0, totalcost: 0, packid: 0 })
     setFormData(prev => ({ ...prev, days: selected.days, nights: selected.nights }))
 
+    setViewPolicy(allPolicyList.filter(item => item.packitid.id === selected.value))
+
     setSelectedPackage(selected)
+
 
 
     let itiList = itinerarys.filter(item => item.packid === selected.value)
     let pkd = pkgItiDet.filter(item => item.packitid.packid === selected.value)
 
-    // console.log(pkd)
+    setViewPkgDet(pkd)
+    console.log(viewPolicy)
+
+    let check = []
+    for (let i = 0; i < pkd.length; i++) {
+      pkd[i].sightseeingIds?.forEach(item => check.push(sightSeeing.filter(items => items.id === item)[0]))
+      // console.log(pkd[i])
+    }
+    setViewSightSeeing(check.map(item => item.title))
+    check = []
+    for (let i = 0; i < pkd.length; i++) {
+      pkd[i].activitiesIds?.forEach(item => check.push(activities.filter(items => items.id === item)[0]))
+    }
+    setViewActivity(check.map(item => item.title))
+    console.log(viewActivity)
+    console.log(viewSightSeeing)
+
     let catHote = pkd.map(item => ({
       ...item,
-      // category: item.category,
-      // roomtypes: item.roomtypes,
       mealsType: item.mealspackageIds
     }))
 
@@ -170,14 +232,21 @@ const NewQuery = ({ isOpen, onClose }) => {
     // console.log(data)
 
     setIti(itiList)
+    console.log(iti)
+    iti.map(item => ({
+      ...item,
+      sight: viewSightSeeing,
+      activity: viewActivity
+    }))
     // console.log(itiList)
+
 
     let price = packagePrice.filter(item => item.packid === selected.value)
     if (price.length > 0) {
       setViewPrice({ markup: price[0].markup, basiccost: price[0].basiccost, gst: price[0].gst, totalcost: price[0].totalcost, packid: price[0].packid })
     }
-    let policyDet = policyDetails.filter(item => item.packitid.packitid === selected.value)
-    setViewPolicy(policyDet)
+    // let policyDet = policyDetails.filter(item => item.packitid.packitid === selected.value)
+    // console.log(policyDet)
     setFormData(prev => ({ ...prev, pkg: selected }))
   }
 
@@ -197,9 +266,9 @@ const NewQuery = ({ isOpen, onClose }) => {
 
   const [policyDetails, setPolicyDetails] = useState([])
   useEffect(() => {
-    axios.get(`${api.baseUrl}/policydetails/getall`)
+    axios.get(`${api.baseUrl}/policydetails/getallpkgploicy`)
       .then((response) => {
-        setPolicyDetails(response.data.content)
+        setPolicyDetails(response.data)
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -230,7 +299,11 @@ const NewQuery = ({ isOpen, onClose }) => {
   }, [])
 
   const [pkgItiDet, setPkgItiDet] = useState([])
-  const [destinationDetails, setDestinationDetails] = useState([])
+  const [viewPkgDet, setViewPkgDet] = useState([])
+
+  const [sightSeeing, setSightSeeing] = useState([])
+  const [activities, setActivities] = useState([])
+
   useEffect(() => {
     axios.get(`${api.baseUrl}/packageitinerarydetails/getAll`)
       .then((response) => {
@@ -239,15 +312,30 @@ const NewQuery = ({ isOpen, onClose }) => {
       .catch((error) => console.error(error));
 
 
-    axios.get(`${api.baseUrl}/destination/getallDestination`)
-      .then(res => {
-        const format = res.data.map(item => ({
-          ...item,
-          value: item.id,
-          label: item.destinationName
-        }))
-        setDestinationDetails(format)
-      }).catch(error => console.error(error))
+    // axios.get(`${api.baseUrl}/destination/getallDestination`)
+    //   .then(res => {
+    //     const format = res.data.map(item => ({
+    //       ...item,
+    //       value: item.id,
+    //       label: item.destinationName
+    //     }))
+    //     setDestinationDetails(format)
+    //   })
+    //   .catch(error => console.error(error));
+
+    axios.get(`${api.baseUrl}/sightseeing/getAllSightseeing`)
+      .then(response => {
+        setSightSeeing(response.data)
+      })
+      .catch(error => console.error(error)
+      );
+
+    axios.get(`${api.baseUrl}/activities/getAllActivities`)
+      .then(response => {
+        setActivities(response.data)
+      })
+      .catch(error => console.error(error)
+      );
   }, [])
 
   useEffect(() => {
@@ -260,7 +348,20 @@ const NewQuery = ({ isOpen, onClose }) => {
         }))
         setCustomer(formated)
       })
-      .catch((error) => console.error(error))
+      .catch((error) => console.error(error));
+
+    axios.get(`${api.baseUrl}/customer/getall`)
+      .then((response) => {
+        const formated = response.data.content.map((item) => ({
+          ...item,
+          value: item.id,
+          label: item.salutation + " " + item.fName + " " + item.lName,
+        }))
+        setCustomer(formated)
+      })
+      .catch((error) => console.error(error));
+
+
   }, [])
 
 
@@ -274,6 +375,20 @@ const NewQuery = ({ isOpen, onClose }) => {
         console.error("Error fetching data:", error);
       });
   }, []);
+
+  const formatDate = (dateString, addDays) => {
+
+    let newToDate = new Date(dateString)
+
+    newToDate.setDate(newToDate.getDate() + addDays)
+    const date = new Date(dateString); // Convert string to Date object
+    return new Intl.DateTimeFormat("en-US", {
+      weekday: "short", // Short weekday (e.g., Fri)
+      year: "numeric", // Full year (e.g., 2024)
+      month: "short", // Short month (e.g., Aug)
+      day: "numeric", // Day of the month (e.g., 2)
+    }).format(date);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -292,13 +407,13 @@ const NewQuery = ({ isOpen, onClose }) => {
       lname: customerData.lName,
       emailId: customerData.emailId || " ",
       contactNo: customerData.contactNo,
-      leadSource: formData.leadSource,
+      leadSource: formData.leadSource.value,
       foodPreferences: "Veg",
       basicCost: viewPrice.basiccost,
       gst: viewPrice.gst,
       totalCost: viewPrice.totalcost,
       queryType: formData.queryType.value || " ",
-      queryCreatedFrom: formData.leadSource,
+      queryCreatedFrom: formData.leadSource.value,
       emailStatus: 0,
       leadStatus: 0,
       ipAddress: ipAddress,
@@ -328,14 +443,23 @@ const NewQuery = ({ isOpen, onClose }) => {
       }
     })
       .then((response) => {
+
+
         let pkgIt = []
         if (formData.days > selectedPackage?.days) {
           pkgIt = [...iti.slice(0, formData.days)]
         } else {
           pkgIt = [...iti]
         }
+        let update = pkgIt.map((item, i) => ({
+          ...item,
+          date: formatDate(response.data.travelDate, i)
+        }))
 
-        setQueryData({ query: response.data, pkgItinerary: pkgIt, pkgItiDetails: pkgItiDet })
+        setQueryData({
+          query: response.data, pkgItinerary: update, pkgItiDetails: pkgItiDet,
+          destination: formData.did.label, hotel: viewHotel, policy: viewPolicy
+        })
         setIsModalOpen(true)
         toast.success("Query saved Successfully.", {
           position: "top-center",
@@ -468,7 +592,8 @@ const NewQuery = ({ isOpen, onClose }) => {
                   { value: "Facebook", label: "Facebook" },
                   { value: "Instagram", label: "Instagram" },
                 ]}
-                onChange={(selected) => setFormData(prev => ({ ...prev, leadSource: selected.value }))}
+                value={formData.leadSource}
+                onChange={(selected) => setFormData(prev => ({ ...prev, leadSource: selected }))}
                 placeholder="Select"
               />
             </div>
@@ -714,8 +839,9 @@ const NewQuery = ({ isOpen, onClose }) => {
             <label className="block text-sm font-medium">Include Policies</label>
             <div className="flex flex-col">
               {viewPolicy.map(item =>
-                <label className="flex items-center">
-                  <input type="checkbox" className="mr-2" />{item.policytitle}
+                <label className="flex items-center mt-2">
+                  {/* <input type="checkbox" className="mr-2" /> */}
+                  {item.policytitle}: {item.policydescription}
                 </label>
               )}
               {/* <label className="flex items-center">

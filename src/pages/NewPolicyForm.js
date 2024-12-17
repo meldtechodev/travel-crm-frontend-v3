@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
@@ -6,64 +6,67 @@ import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { toast } from "react-toastify";
 import axios from "axios";
 import api from "../apiConfig/config";
+import { UserContext } from "../contexts/userContext";
 
 const NewPolicyForm = ({ isOpen, onClose }) => {
   const [ip, setIp] = React.useState("");
 
-  const [user, setUser] = useState({})
+  // const [user, setUser] = useState({})
 
-  const [token, setTokens] = useState(null)
-  async function decryptToken(encryptedToken, key, iv) {
-    const dec = new TextDecoder();
+  const { user } = useContext(UserContext)
 
-    const decrypted = await crypto.subtle.decrypt(
-      {
-        name: "AES-GCM",
-        iv: iv,
-      },
-      key,
-      encryptedToken
-    );
+  // const [token, setTokens] = useState(null)
+  // async function decryptToken(encryptedToken, key, iv) {
+  //   const dec = new TextDecoder();
 
-    return dec.decode(new Uint8Array(decrypted));
-  }
+  //   const decrypted = await crypto.subtle.decrypt(
+  //     {
+  //       name: "AES-GCM",
+  //       iv: iv,
+  //     },
+  //     key,
+  //     encryptedToken
+  //   );
 
-  // Function to retrieve and decrypt the token
-  async function getDecryptedToken() {
-    const keyData = JSON.parse(localStorage.getItem('encryptionKey'));
-    const ivBase64 = localStorage.getItem('iv');
-    const encryptedTokenBase64 = localStorage.getItem('encryptedToken');
+  //   return dec.decode(new Uint8Array(decrypted));
+  // }
+
+  // // Function to retrieve and decrypt the token
+  // async function getDecryptedToken() {
+  //   const keyData = JSON.parse(localStorage.getItem('encryptionKey'));
+  //   const ivBase64 = localStorage.getItem('iv');
+  //   const encryptedTokenBase64 = localStorage.getItem('encryptedToken');
 
 
-    if (!keyData || !ivBase64 || !encryptedTokenBase64) {
-      throw new Error('No token found');
-    }
+  //   if (!keyData || !ivBase64 || !encryptedTokenBase64) {
+  //     throw new Error('No token found');
+  //   }
 
-    // Convert back from base64
-    const key = await crypto.subtle.importKey('jwk', keyData, { name: "AES-GCM" }, true, ['encrypt', 'decrypt']);
-    const iv = new Uint8Array(atob(ivBase64).split('').map(char => char.charCodeAt(0)));
-    const encryptedToken = new Uint8Array(atob(encryptedTokenBase64).split('').map(char => char.charCodeAt(0)));
+  //   // Convert back from base64
+  //   const key = await crypto.subtle.importKey('jwk', keyData, { name: "AES-GCM" }, true, ['encrypt', 'decrypt']);
+  //   const iv = new Uint8Array(atob(ivBase64).split('').map(char => char.charCodeAt(0)));
+  //   const encryptedToken = new Uint8Array(atob(encryptedTokenBase64).split('').map(char => char.charCodeAt(0)));
 
-    return await decryptToken(encryptedToken, key, iv);
-  }
+  //   return await decryptToken(encryptedToken, key, iv);
+  // }
 
-  // Example usage to make an authenticated request
-  useEffect(() => {
-    getDecryptedToken()
-      .then(token => {
-        setTokens(token);
-        return axios.get(`${api.baseUrl}/username`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Access-Control-Allow-Origin': '*'
-          }
-        });
-      })
-      .then(response => {
-        setUser(response.data);
-      })
-      .catch(error => console.error('Error fetching protected resource:', error))
-  }, [])
+  // // Example usage to make an authenticated request
+  // useEffect(() => {
+  //   getDecryptedToken()
+  //     .then(token => {
+  //       setTokens(token);
+  //       return axios.get(`${api.baseUrl}/username`, {
+  //         headers: {
+  //           'Authorization': `Bearer ${token}`,
+  //           'Access-Control-Allow-Origin': '*'
+  //         }
+  //       });
+  //     })
+  //     .then(response => {
+  //       setUser(response.data);
+  //     })
+  //     .catch(error => console.error('Error fetching protected resource:', error))
+  // }, [])
 
   // Fetch IP address on component mount
   useEffect(() => {
@@ -85,7 +88,6 @@ const NewPolicyForm = ({ isOpen, onClose }) => {
       policyDescription: Yup.string().required("Description is required"),
     }),
     onSubmit: async (values) => {
-      console.log(values)
       try {
         const response = await axios.post(`${api.baseUrl}/policy/create`, {
           ipaddress: ip,
@@ -95,7 +97,7 @@ const NewPolicyForm = ({ isOpen, onClose }) => {
           ...values,
         }, {
           headers: {
-            'Authorization': `Bearer ${token}`,
+            // 'Authorization': `Bearer ${token}`,
             'Access-Control-Allow-Origin': '*'
           }
         });

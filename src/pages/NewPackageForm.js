@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Select, { components } from "react-select";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import e from "cors";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
 import { isArray } from "chart.js/helpers";
+import { UserContext } from "../contexts/userContext";
 
 const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
   // console.log(editablePackageData);
@@ -72,84 +73,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
     },
   ]);
 
-  const [token, setTokens] = useState(null);
-  const [user, setUser] = useState(null);
-  const [ipAddress, setIpAddress] = useState("");
-
-  useEffect(() => {
-    axios
-      .get(`${api.baseUrl}/ipAddress`)
-      .then((response) => setIpAddress(response.data))
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
-  async function decryptToken(encryptedToken, key, iv) {
-    const dec = new TextDecoder();
-
-    const decrypted = await crypto.subtle.decrypt(
-      {
-        name: "AES-GCM",
-        iv: iv,
-      },
-      key,
-      encryptedToken
-    );
-    return dec.decode(new Uint8Array(decrypted));
-  }
-
-  // Function to retrieve and decrypt the token
-  async function getDecryptedToken() {
-    const keyData = JSON.parse(localStorage.getItem("encryptionKey"));
-    const ivBase64 = localStorage.getItem("iv");
-    const encryptedTokenBase64 = localStorage.getItem("encryptedToken");
-
-    if (!keyData || !ivBase64 || !encryptedTokenBase64) {
-      throw new Error("No token found");
-    }
-
-    // Convert back from base64
-    const key = await crypto.subtle.importKey(
-      "jwk",
-      keyData,
-      { name: "AES-GCM" },
-      true,
-      ["encrypt", "decrypt"]
-    );
-    const iv = new Uint8Array(
-      atob(ivBase64)
-        .split("")
-        .map((char) => char.charCodeAt(0))
-    );
-    const encryptedToken = new Uint8Array(
-      atob(encryptedTokenBase64)
-        .split("")
-        .map((char) => char.charCodeAt(0))
-    );
-
-    return await decryptToken(encryptedToken, key, iv);
-  }
-
-  // Example usage to make an authenticated request
-  useEffect(() => {
-    getDecryptedToken()
-      .then((token) => {
-        setTokens(token);
-
-        return axios.get(`${api.baseUrl}/username`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Access-Control-Allow-Origin": "*",
-          },
-        });
-      })
-      .then((response) => {
-        setUser(response.data);
-      })
-      .catch((error) =>
-        console.error("Error fetching protected resource:", error)
-      );
-  }, []);
+  const { user, ipAddress } = useContext(UserContext)
 
   const handleNightChange = (e) => {
     // setEditIti(false)
@@ -244,6 +168,8 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
 
 
   useEffect(() => {
+
+
     axios.get(`${api.baseUrl}/destination/getallDestination`)
       .then(response => {
         const formatDestination = response.data.map((item) => ({
@@ -771,7 +697,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
     await axios
       .post(`${api.baseUrl}/packageprice/create`, pricePackge, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          // Authorization: `Bearer ${token}`,
           "Access-Control-Allow-Origin": "*",
         },
       })
@@ -912,16 +838,15 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
   };
 
   const handlePackageType = () => {
-    if (selectedPackageType === 'domestic') {
-
-    }
+    setSelectedStartCity(null)
+    setSelectedEndCity(null)
   }
 
   const handlePageChange = async (e) => {
     e.preventDefault();
 
     const destinationCoveredStr = isArray(selectedDestinations) ? selectedDestinations
-      .map((option) => option.id)
+      .map((option) => option.value)
       .join(",") : selectedDestinations !== null ? selectedDestinations.value : " ";
     const selectedPackagesStr = selectedPackageTheme
       .map((option) => option.label)
@@ -971,8 +896,8 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
 
     formDataPackageMaster.append("pkName", formData.pkName);
 
-    formDataPackageMaster.append("fromCityId", selectedStartCity.id);
-    formDataPackageMaster.append("toCityId", selectedEndCity.id);
+    formDataPackageMaster.append("fromCityId", selectedStartCity.value);
+    formDataPackageMaster.append("toCityId", selectedEndCity.value);
     formDataPackageMaster.append("destinationCoveredId", destinationCoveredStr);
     formDataPackageMaster.append("description", editorData);
     formDataPackageMaster.append("pkCategory", selectedPackagesStr);
@@ -1120,15 +1045,15 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
         status: 1,
         isdelete: 0,
         policy: {
-          id: policyList[i].id,
+          id: policyList[i].id
         },
         packitid: {
-          id: 2,
+          id: packageData.id
         },
       };
+
       axios.post(`${api.baseUrl}/policydetails/create`, policyPayload, {
         headers: {
-          Authorization: `Bearer ${token}`,
           "Access-Control-Allow-Origin": "*",
         },
       })
@@ -1277,12 +1202,13 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                 </label>
                 <Select
                   className="mt-1 w-full border rounded z-40"
-                  // value={selectedStartCity}
+                  value={selectedStartCity}
                   onChange={handleStartCityChange}
                   options={selectedPackageType === "international" ? internationalList : domesticList}
                   onInputChange={(value) => setInputSearch((prev) => ({ ...prev, startDid: value }))}
                   openMenuOnClick={false}
                   openMenuOnFocus={false}
+                  isClearable
                   menuIsOpen={inputSearch.startDid !== "" && inputSearch.startDid.length >= 2} // Opens menu only when typing
 
                 // components={{ Option: CustomOption }}
@@ -1300,7 +1226,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                 </label>
                 <Select
                   className="mt-1 w-full border rounded z-40"
-                  // value={selectedEndCity}
+                  value={selectedEndCity}
                   onChange={handleEndCityChange}
                   // onChange={(option) => setSelectedOption(option)} // Handle selection
 
@@ -1310,7 +1236,6 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                   }))}
                   openMenuOnClick={false}
                   openMenuOnFocus={false}
-                  // isClearable
                   menuIsOpen={inputSearch.endDid !== "" && inputSearch.endDid.length >= 2} // Opens menu only when typing                // components={{ Option: CustomOption }}
                   // closeMenuOnSelect={true}
                   // hideSelectedOptions={true}
@@ -1361,13 +1286,14 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                     formData.SupplierId = selectedSupplier.value;
                   }}
                   options={supplier}
+                // isClearable
 
-                  onInputChange={(value) => setInputSearch((prev) => ({
-                    ...prev, supplier: value
-                  }))}
-                  openMenuOnClick={false}
-                  openMenuOnFocus={false}
-                  menuIsOpen={inputSearch.supplier !== "" && inputSearch.supplier.length >= 2} // Opens menu only when
+                // onInputChange={(value) => setInputSearch((prev) => ({
+                //   ...prev, supplier: value
+                // }))}
+                // openMenuOnClick={false}
+                // openMenuOnFocus={false}
+                // menuIsOpen={inputSearch.supplier !== "" && inputSearch.supplier.length >= 2} // Opens menu only when
                 />
               </div>
               <div className="w-1/2">
@@ -1414,12 +1340,12 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                   isClearable={true}
 
 
-                  onInputChange={(value) => setInputSearch((prev) => ({
-                    ...prev, packageTheme: value
-                  }))}
-                  openMenuOnClick={false}
-                  openMenuOnFocus={false}
-                  menuIsOpen={inputSearch.packageTheme !== "" && inputSearch.packageTheme.length >= 2} // Opens menu only when
+                // onInputChange={(value) => setInputSearch((prev) => ({
+                //   ...prev, packageTheme: value
+                // }))}
+                // openMenuOnClick={false}
+                // openMenuOnFocus={false}
+                // menuIsOpen={inputSearch.packageTheme !== "" && inputSearch.packageTheme.length >= 2} // Opens menu only when
 
                 // value={packageTheme}
                 />

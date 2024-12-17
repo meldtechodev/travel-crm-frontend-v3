@@ -8,7 +8,7 @@ import useDecryptedToken from "../hooks/useDecryptedToken";
 const Country = ({ isOpen, onClose, countryData, isFormEditEnabled, setIsFormEditEnabled }) => {
   const fileInputRef = useRef(null);
 
-  const {user} = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const token = useDecryptedToken();
 
   const [formData, setFormData] = useState({
@@ -106,7 +106,7 @@ const Country = ({ isOpen, onClose, countryData, isFormEditEnabled, setIsFormEdi
       // Create new country
       await axios.post(`${api.baseUrl}/country/create`, formDatasend, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          // 'Authorization': `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
           'Access-Control-Allow-Origin': '*'
         }

@@ -153,9 +153,9 @@ export const UserProvider = ({ children }) => {
       })
 
 
-    axios.get(`${api.baseUrl}/country/getall`)
+    axios.get(`${api.baseUrl}/country/getallcountry`)
       .then(response => {
-        const format = response.data.content.map(item => ({
+        const format = response.data.map(item => ({
           ...item,
           label: item.countryName,
           value: item.id
@@ -173,9 +173,9 @@ export const UserProvider = ({ children }) => {
       });
 
 
-    axios.get(`${api.baseUrl}/state/getall`)
+    axios.get(`${api.baseUrl}/state/getAllState`)
       .then(response => {
-        const format = response.data.content.map(item => ({
+        const format = response.data.map(item => ({
           ...item,
           label: item.stateName,
           value: item.id
@@ -187,9 +187,9 @@ export const UserProvider = ({ children }) => {
       });
 
 
-    axios.get(`${api.baseUrl}/destination/getall`)
+    axios.get(`${api.baseUrl}/destination/getallDestination`)
       .then(response => {
-        const format = response.data.content.map(item => ({
+        const format = response.data.map(item => ({
           ...item,
           label: item.destinationName,
           value: item.id

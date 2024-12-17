@@ -36,9 +36,9 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
   const [thirdPartyPrice, setThirdPartyPrice] = useState("");
   const [addRoomPage, setAddRoomPage] = useState(1)
 
-  const [countryDetails, setCountryDetails] = useState([])
-  const [stateDetails, setStateDetails] = useState([])
-  const [destinationDetails, setDestinationDetails] = useState([])
+  // const [countryDetails, setCountryDetails] = useState([])
+  // const [stateDetails, setStateDetails] = useState([])
+  // const [destinationDetails, setDestinationDetails] = useState([])
   const [stateData, setStateData] = useState([])
   const [destinationOption, setDestinationOption] = useState([])
   const [roomsSelected, setRoomsSelected] = useState([])
@@ -54,7 +54,7 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
 
   const [formDataRoomMaster, setFormDataRoomMaster] = useState([])
 
-  const { user, ipAddress } = useContext(UserContext);
+  const { user, ipAddress, countryDetails, stateDetails, destinationDetails } = useContext(UserContext);
   const token = useDecryptedToken();
 
   const [formRoomDetails, setFormRoomDetails] = useState({

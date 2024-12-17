@@ -131,7 +131,6 @@ const Customer = ({ isOpen, onClose, customerData, isFormEditEnabled, setIsFormE
         }
       })
         .then(response => {
-          console.log(response);
           toast.success("Customer saved successfully.", {
             position: "top-center",
             autoClose: 5000,
@@ -164,7 +163,6 @@ const Customer = ({ isOpen, onClose, customerData, isFormEditEnabled, setIsFormE
           }
         })
         .catch(error => {
-          console.error(error);
           toast.error(error.response.data, {
             position: "top-center",
             autoClose: 5000,

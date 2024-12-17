@@ -289,7 +289,7 @@ const Roles = ({ isOpen, onClose }) => {
                 </div>
 
               </div>
-              <div className="flex gap-2 mb-4">
+              {/* <div className="flex gap-2 mb-4">
                 <div className="w-full">
                   <label
                     htmlFor="roleName"
@@ -308,7 +308,7 @@ const Roles = ({ isOpen, onClose }) => {
                   />
                 </div>
 
-              </div>
+              </div> */}
             </form>
           ) : (
             /* Select All Permissions page */
