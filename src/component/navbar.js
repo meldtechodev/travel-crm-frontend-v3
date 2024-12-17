@@ -80,11 +80,12 @@ const Navbar = () => {
         <div className="flex-1 flex justify-between items-center">
           <div className="flex items-center space-x-4 md:space-x-8">
             <Link to="/home">
-              <img
+              {/* <img
                 src="./favicon.ico"
                 alt="Logo"
                 className="w-auto h-6 md:w-auto md:h-6 filter brightness-0 invert"
-              />
+              /> */}
+              <h4 className="text-gray-300 hover:text-white">Meld Techo Travel CRM</h4>
             </Link>
             <div className="flex items-center space-x-2">
               <div className="relative" ref={dropdownRef}>

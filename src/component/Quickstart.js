@@ -17,9 +17,9 @@ const Quickstart = () => {
         <div className="quickstartLeft w-3/4 p-4 ">
           {/* Welcome Box */}
           <div className="welcome-box bg-white p-4 mb-4 rounded-lg shadow-md">
-            <h1 className="text-2xl font-bold text-red-500">Welcome to Motherson</h1>
+            <h1 className="text-2xl font-bold text-red-500">Welcome to Meld Techo Travel CRM</h1>
             <p className="mt-2 text-gray-600">
-              Motherson Travel CRM is designed to transform the way you manage your business. Here are some simple steps to get you started
+              Meld Techo Travel CRM is designed to transform the way you manage your business. Here are some simple steps to get you started
             </p>
           </div>
 
@@ -141,28 +141,28 @@ const Quickstart = () => {
         <div className="quickstartRight flex-auto lg:w-1/3 p-4 pl-0">
           {/* Video Boxes */}
           <div className="video-section bg-white p-4 mb-4 rounded-lg shadow-md h-32 sm:h-48">
-            <h2 className="text-lg font-bold">Motherson Video Tour</h2>
+            <h2 className="text-lg font-bold">Meld Techo Travel CRM Video Tour</h2>
             <button className="mt-2 border bg-red-500  text-white  text-sm py-2 px-4 rounded mb-2">
               Watch video
             </button>
           </div>
 
           <div className="video-section bg-white p-4 mb-4 rounded-lg shadow-md h-32 sm:h-48">
-            <h2 className="text-lg font-bold">Motherson Video Tour</h2>
+            <h2 className="text-lg font-bold">Meld Techo Travel CRM Video Tour</h2>
             <button className="mt-2 border bg-red-500  text-white  text-sm py-2 px-4 rounded mb-2">
               Watch video
             </button>
           </div>
 
           <div className="video-section bg-white p-4 mb-4 rounded-lg shadow-md h-32 sm:h-48">
-            <h2 className="text-lg font-bold">Motherson Video Tour</h2>
+            <h2 className="text-lg font-bold">Meld Techo Travel CRM Video Tour</h2>
             <button className="mt-2 border bg-red-500  text-white  text-sm py-2 px-4 rounded mb-2">
               Watch video
             </button>
           </div>
 
           <div className="video-section bg-white p-4 mb-4 rounded-lg shadow-md h-32 sm:h-48">
-            <h2 className="text-lg font-bold">Motherson Video Tour</h2>
+            <h2 className="text-lg font-bold">Meld Techo Travel CRM Video Tour</h2>
             <button className="mt-2 border bg-red-500  text-white  text-sm py-2 px-4 rounded mb-2">
               Watch video
             </button>

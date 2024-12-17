@@ -133,7 +133,7 @@ const NewQuery = ({ isOpen, onClose }) => {
 
   const [selectedPackage, setSelectedPackage] = useState(null)
   const handlePackageChange = (selected) => {
-    // console.log(selected)
+    console.log(selected)
     setIti([])
     setViewPolicy([])
     setViewPrice({ markup: 0, basiccost: 0, gst: 0, totalcost: 0, packid: 0 })
@@ -165,7 +165,7 @@ const NewQuery = ({ isOpen, onClose }) => {
     // let viewcat = vH.map(item => item.category)
     // var newH = new Set(viewcat)
     // let catList = [...newH]
-    console.log(viewdat)
+    // console.log(viewdat)
     // let data = catList.map(item => item === )
     setViewHotel(viewdat)
     // console.log(data)
