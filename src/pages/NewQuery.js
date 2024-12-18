@@ -193,21 +193,22 @@ const NewQuery = ({ isOpen, onClose }) => {
     let pkd = pkgItiDet.filter(item => item.packitid.packid === selected.value)
 
     setViewPkgDet(pkd)
-    console.log(viewPolicy)
+    // console.log(viewPolicy)
 
     let check = []
     for (let i = 0; i < pkd.length; i++) {
       pkd[i].sightseeingIds?.forEach(item => check.push(sightSeeing.filter(items => items.id === item)[0]))
       // console.log(pkd[i])
     }
-    setViewSightSeeing(check.map(item => item.title))
+    let ne = new Set(check.map(item => item.title))
+    setViewSightSeeing({ ...ne })
     check = []
     for (let i = 0; i < pkd.length; i++) {
       pkd[i].activitiesIds?.forEach(item => check.push(activities.filter(items => items.id === item)[0]))
     }
-    setViewActivity(check.map(item => item.title))
+    ne = new Set(check.map(item => item.title))
+    setViewActivity([...ne])
     console.log(viewActivity)
-    console.log(viewSightSeeing)
 
     let catHote = pkd.map(item => ({
       ...item,
@@ -231,14 +232,13 @@ const NewQuery = ({ isOpen, onClose }) => {
     setViewHotel(viewdat)
     // console.log(data)
 
-    setIti(itiList)
-    console.log(iti)
-    iti.map(item => ({
+    // console.log(iti)
+    setIti(itiList.map(item => ({
       ...item,
       sight: viewSightSeeing,
       activity: viewActivity
-    }))
-    // console.log(itiList)
+    })))
+    console.log(iti)
 
 
     let price = packagePrice.filter(item => item.packid === selected.value)
@@ -470,6 +470,38 @@ const NewQuery = ({ isOpen, onClose }) => {
           draggable: true,
           progress: undefined,
         });
+
+        // setFormData({
+        //   ipAddress: "",
+        //   status: true,
+        //   customer: null,
+        //   requirementType: "",
+        //   travelDate: "",
+        //   toTravelDate: "",
+        //   nights: 0,
+        //   days: 0,
+        //   totalTravellers: 1,
+        //   adults: 1,
+        //   kids: 0,
+        //   infants: 0,
+        //   salutation: "",
+        //   fname: "",
+        //   lname: "",
+        //   emailId: "",
+        //   contactNo: "",
+        //   leadSource: { value: "Website", label: "Website" },
+        //   foodPreferences: "",
+        //   basicCost: 0,
+        //   gst: 0,
+        //   totalCost: 0,
+        //   queryType: { value: "B2C", label: "B2C" },
+        //   queryCreatedFrom: "",
+        //   emailStatus: 0,
+        //   leadStatus: 0,
+        //   pkg: null,
+        //   did: null,
+        //   fromcityid: null,
+        // })
       })
       .catch(error => console.error(error));
 

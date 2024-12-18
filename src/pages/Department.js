@@ -98,7 +98,7 @@ const Department = ({ isOpen, onClose, departmentData }) => {
     })
   };
 
-  console.log("FORM DATA", formData);
+  // console.log("FORM DATA", formData);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

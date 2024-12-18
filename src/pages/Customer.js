@@ -11,7 +11,7 @@ const Customer = ({ isOpen, onClose, customerData, isFormEditEnabled, setIsFormE
   const { user } = useContext(UserContext);
   const token = useDecryptedToken();
 
-  console.log(customerData);
+  // console.log(customerData);
 
   const [formData, setFormData] = useState({
     salutation: "",
@@ -56,8 +56,8 @@ const Customer = ({ isOpen, onClose, customerData, isFormEditEnabled, setIsFormE
     }
   };
 
-  console.log(formData)
-  console.log('cUSTOMER DTA', customerData)
+  // console.log(formData)
+  // console.log('cUSTOMER DTA', customerData)
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
