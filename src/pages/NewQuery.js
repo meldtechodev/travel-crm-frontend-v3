@@ -922,7 +922,7 @@ const NewQuery = ({ isOpen, onClose }) => {
 
         <div className="fixed inset-0 flex bg-black bg-opacity-50 w-full z-50 overflow-y-scroll  justify-center">
           <div className="bg-white rounded-lg shadow-lg w-2/3">
-            <PdfFile data={queryData} isModalOpen={() => setIsModalOpen(false)} />
+            <PdfFile data={queryData} isModalOpen={() => setIsModalOpen(false)} onClose={onClose} />
 
           </div>
         </div>

@@ -7,7 +7,7 @@ import api from '../apiConfig/config';
 import { UserContext } from '../contexts/userContext';
 // import logo from './assets/images/pdf/logo2.jpg'
 
-const PdfFile = ({ data, isModalOpen }) => {
+const PdfFile = ({ data, isModalOpen, onClose }) => {
   // const [isModalOpens, setIsModalOpen] = useState(true)
   const pdfRef = useRef(); // Reference to the HTML element
 
@@ -49,6 +49,7 @@ const PdfFile = ({ data, isModalOpen }) => {
     }
 
     isModalOpen(false)
+    onClose(true)
   };
 
   return (

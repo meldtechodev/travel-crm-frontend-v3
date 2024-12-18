@@ -147,42 +147,45 @@ const Permission = ({ isOpen, onClose, designationData, designationModules, setD
         </h3>
 
 
-        <div className="w-full mb-2 mr-4 p-4 overflow-y-scroll ">
-          {module.map(items =>
-            <div className="flex items-center justify-between bg-gray-100 p-2 rounded mb-2 mr-4 ">
-              <div key={items.id} className="w-full gap-2 " style={{ marginTop: '20px' }}>
-                <h4>Select all of {items.moduleName}</h4>
-                <button
-                  type="button"
-                  onClick={() => handleSelectAll(items)}
-                  className="bg-red-700 text-white px-2 py-1 rounded my-2"
-                >
-                  Select All
-                </button>
-                <div className="flex w-full gap-4 mb-2">
-                  {designationModules.map(item => item.parentId === items.id
-                    && (
-                      <label key={item.id} className="flex max-w-fit gap-2 my-2 items-center text-sm">
+        <div className="m-0 p-0 overflow-y-scroll h-full">
 
-                        {/* <input
+          <div className="w-fit mr-4 p-4 overflow-y-scroll mb-48">
+            {module.map(items =>
+              <div className="flex items-center justify-between bg-gray-100 p-2 rounded mb-2 mr-4 ">
+                <div key={items.id} className="w-full gap-2 " style={{ marginTop: '20px' }}>
+                  <h4>Select all of {items.moduleName}</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleSelectAll(items)}
+                    className="bg-red-700 text-white px-2 py-1 rounded my-2"
+                  >
+                    Select All
+                  </button>
+                  <div className="flex w-full gap-4 mb-2">
+                    {designationModules.map(item => item.parentId === items.id
+                      && (
+                        <label key={item.id} className="flex max-w-fit gap-2 my-2 items-center text-sm">
+
+                          {/* <input
                         type="checkbox"
                         className="h-4 w-5"
                         // checked={item.value}
                         /> */}
-                        <input className="checkBox"
-                          type="checkbox"
-                          checked={item.value}
-                          onChange={(e) => handleToggle(item.id, !item.value)}
-                        // onChange={() => handleToggle(section, action)}
-                        />
-                        {/* {action.replace(/([A-Z])/g, ' $1').trim()} */}
-                        {item.moduleName}
-                      </label>
-                    ))}
+                          <input className="checkBox"
+                            type="checkbox"
+                            checked={item.value}
+                            onChange={(e) => handleToggle(item.id, !item.value)}
+                          // onChange={() => handleToggle(section, action)}
+                          />
+                          {/* {action.replace(/([A-Z])/g, ' $1').trim()} */}
+                          {item.moduleName}
+                        </label>
+                      ))}
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
         {/* <div className="flex gap-2">
           <div className="w-1/2 mb-4">
@@ -208,34 +211,30 @@ const Permission = ({ isOpen, onClose, designationData, designationModules, setD
             />
           </div> */}
         {/* </div> */}
-        <div className="flex justify-between items-center p-3 bg-white shadow-lg rounded w-full fixed bottom-12">
-          <div className="flex justify-start space-x-4">
-            {/* <button
+
+        {/* <div className="fixed bottom-12"> */}
+        <div className="flex justify-start items-center p-3 gap-4 bg-white shadow-lg rounded w-full fixed bottom-12">
+          {/* <div className="flex justify-start space-x-4">
+          </div> */}
+          <button
             type="button"
-            className={`text-white px-4 py-2 rounded shadow ${currentPage === 1 ? 'disabled bg-gray-300 cursor-auto' : 'bg-red-700 '}`}
-            onClick={handlePrev}
+            className="bg-red-700 text-white px-4 py-2 rounded shadow relative"
+            // onClick={currentPage ? handleSubmit : handlePermission}
+            onClick={handleSubmit}
           >
-            Prev
-          </button> */}
-            <button
-              type="button"
-              className="bg-red-700 text-white px-4 py-2 rounded shadow"
-              // onClick={currentPage ? handleSubmit : handlePermission}
-              onClick={handleSubmit}
-            >
-              {/* {currentPage === 1 ? <>Next</> : <>Submit</>} */}
-              Submit
-            </button>
-            <button
-              type="button"
-              className="bg-red-700 text-white px-4 py-2 rounded shadow"
-            // onClick={handleReset}
-            >
-              Reset
-            </button>
-          </div>
+            {/* {currentPage === 1 ? <>Next</> : <>Submit</>} */}
+            Submit
+          </button>
+          <button
+            type="button"
+            className="bg-red-700 text-white px-4 py-2 rounded shadow"
+          // onClick={handleReset}
+          >
+            Reset
+          </button>
         </div>
       </div>
+      {/* </div > */}
     </>
   )
 }
