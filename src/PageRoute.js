@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import ProfilePage from './pages/ProfilePage'
 // import CompanyHierarchy from './pages/CompanyHierarchy'
 import SettingsPage from './pages/SettingsPage'
@@ -129,7 +129,7 @@ const PageRoute = () => {
             <Route path='/pdf' element={<PdfFile />} />
             <Route path='/' element={<Quickstart />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            {/* <Route path="/packages" element={<Packages />} /> */}
+            <Route path="/packages" element={<Navigate to="/home/packageDashboard" replace />} />
             <Route path="/packageDashboard" element={<PackageDashboard isListView={true} />} />
             <Route path={'/package-list/:id'} element={<CustomerProfile />} />
             <Route path="/masters" element={<MasterList />} />

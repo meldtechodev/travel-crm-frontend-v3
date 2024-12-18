@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaCaretDown, FaFilter, FaSort, FaArrowsAltH, FaPlus, FaEdit, FaTrashAlt, FaSearch ,FaEye } from "react-icons/fa";
+import { FaCaretDown, FaFilter, FaSort, FaArrowsAltH, FaPlus, FaEdit, FaTrashAlt, FaSearch, FaEye } from "react-icons/fa";
 import axios from "axios";
 import api from "../apiConfig/config";
 import TableComponent from '../component/TableComponent';
@@ -122,25 +122,26 @@ const ListView = () => {
       header: "Action",
       render: (row) => (
         <div className="flex gap-2 justify-center">
-  <FaEye
-    className="text-blue-600 cursor-pointer"
-    onClick={() => handleView(row.row)}
-  />
-  <FaEdit
-    className="text-purple-600 cursor-pointer"
-    onClick={() => setAddData(['New Package'])}
-  />
-  <FaTrashAlt
-    className="text-red-600 cursor-pointer"
-    // onClick={() => handleDelete(item)}
-  />
-</div>
+          <FaEye
+            className="text-blue-600 cursor-pointer"
+            onClick={() => handleView(row.row)}
+          />
+          <FaEdit
+            className="text-purple-600 cursor-pointer"
+            onClick={() => setAddData(['New Package'])}
+          />
+          <FaTrashAlt
+            className="text-red-600 cursor-pointer"
+          // onClick={() => handleDelete(item)}
+          />
+        </div>
       )
     },
   ]
 
   const handleView = (option) => {
     // console.log(option)
+    // console.log(packIti)
     const pack = packIti.filter(item => option.id === item.packid)
     option.itinary = pack
 
@@ -157,7 +158,7 @@ const ListView = () => {
     for (let i = 0; i < k.length; i++) {
       site.push(...k[i].sightseeingIds)
     }
-    console.log(k)
+    // console.log(k)
 
     let newSet = new Set(site)
     let siteSeeing = []
@@ -248,7 +249,7 @@ const ListView = () => {
     const fetchData = async () => {
       await axios.get(`${api.baseUrl}/packageitinerary/getAll`)
         .then((response) => {
-          setPackIti(response.data.content)
+          setPackIti(response.data)
         })
         .catch((error) => {
           console.error('Error fetching data:', error);

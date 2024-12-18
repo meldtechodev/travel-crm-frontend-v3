@@ -193,8 +193,7 @@ const Sidebar = () => {
                   className="sidebar-icons flex flex-col justify-center  items-center p-2 rounded cursor-pointer hover:color-black"
                   style={{ zIndex: "2" }}
                   onMouseEnter={() => setHomeStyle(items.moduleName)}
-                  onMouseLeave={() => setHomeStyle()}
-                >
+                  onMouseLeave={() => setHomeStyle()}>
                   <FiPackage
                     size="30px"
                     color={homeStyle === items.moduleName ? "#fff" : "#B4B4B8"}
@@ -209,8 +208,8 @@ const Sidebar = () => {
                   style={{ width: "340px" }} >
                   <div className="flex flex-col">
                     <p className="font-bold text-lg">{items.moduleName}</p>
-                    <div className="mt-4 border-b-2" onClick={() => handleModuleList(items.moduleName)}>
-                      <h6 className="flex  gap-4 items-center">
+                    <div className="mt-4 border-b-2 " onClick={() => handleModuleList(items.moduleName)}>
+                      <h6 className="flex gap-4 items-center hover:cursor-pointer">
                         <FaListUl size="18px" />
                         {items.moduleName} List
                       </h6>
