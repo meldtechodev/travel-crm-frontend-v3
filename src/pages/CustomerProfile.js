@@ -29,9 +29,9 @@ const CustomerProfile = () => {
   // setHotelList(newSet)
 
   const ViewDestination = (view) => {
-    // let d = destination.filter(item => item.id === view)
-    let k = destination[0]
-    return destination.length === 0 ? '' : ""
+    let d = destination.filter(item => item.id === view)
+    let k = d[0]
+    return d.length === 0 ? '' : k?.destinationName
   }
   // useEffect(() => {
   //   console.log(option)
@@ -59,9 +59,9 @@ const CustomerProfile = () => {
   }, []);
 
   useEffect(() => {
-    axios.get(`${api.baseUrl}/destination/getall`)
+    axios.get(`${api.baseUrl}/destination/getallDestination`)
       .then((response) => {
-        setDestination(response.data.content)
+        setDestination(response.data)
       })
       .catch((error) => {
         console.error('Error fetching data:', error);

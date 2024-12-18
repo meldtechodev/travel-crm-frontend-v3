@@ -212,7 +212,7 @@ const Itinerary = ({ isOpen, onClose }) => {
         console.error('Error fetching country data:', error)
       )
 
-    axios.get(`${api.baseUrl}/mealspackage/getall`)
+    axios.get(`${api.baseUrl}/mealspackage/getAll`)
       .then((response) => {
         const formattedData = response.data.content.map(item => ({
           ...item,

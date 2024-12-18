@@ -275,7 +275,7 @@ const ListView = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      await axios.get(`${api.baseUrl}/packageTheme/getall`)
+      await axios.get(`${api.baseUrl}/packageTheme/getAll`)
         .then((response) => {
           setPackageThemeList(response.data);
         })

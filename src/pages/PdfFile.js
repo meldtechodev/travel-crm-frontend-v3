@@ -447,7 +447,6 @@ const PdfFile = ({ data, isModalOpen }) => {
                 </h2>
                 <p class="date">{item.date} </p>
               </div>
-              <p>{item.program}</p>
               <p class="daysSchedulePara">
                 &#x1F374; Day Meals &nbsp;&nbsp; &#x2705; {item.meals} :
                 Selections , {item.cityname}
@@ -471,8 +470,8 @@ const PdfFile = ({ data, isModalOpen }) => {
                   </p>
                   <p>{item.sight}
                   </p>
-                  <p>
-                    &#x23F0;  Duration 4 Hours
+                  <p>{item.program}
+
                   </p>
                 </div>
               </div>
@@ -918,7 +917,7 @@ const PdfFile = ({ data, isModalOpen }) => {
           <div>
             <strong>Pay Online</strong>
             <br />
-            <a href="#">https://app.mmt.com/Xm2V/oqxkzmst</a>
+            {/* <a href="#">https://app.mmt.com/Xm2V/oqxkzmst</a> */}
           </div>
           <div>
             <strong>Contact Travel Expert</strong>
