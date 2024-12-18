@@ -66,7 +66,7 @@ const App = () => {
   }
 
 
-  if (isLoading && !isAuthenticated) {
+  if (isLoading && isAuthenticated) {
     return <div>Loading...</div>;
   }
 

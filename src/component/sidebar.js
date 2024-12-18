@@ -119,7 +119,7 @@ const Sidebar = () => {
   // }, [])
 
   const handleModuleList = (moduleName) => {
-    navigate(`/home/${moduleName.toLowerCase() === 'packages' ? 'packageDashboard' : moduleName.toLowerCase()}`)
+    navigate(`/home/${moduleName.toLowerCase()}`)
   }
 
   const handlePageAndForm = (word) => {
