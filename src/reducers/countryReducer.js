@@ -3,7 +3,7 @@ import { ADD_COUNTRY, DELETE_COUNTRY, FETCH_COUNTRY, UPDATE_COUNTRY } from '../a
 
 
 const initialState = {
-  bookings: [],
+  country: [],
 };
 
 

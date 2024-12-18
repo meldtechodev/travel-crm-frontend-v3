@@ -40,6 +40,15 @@ const NewVendorForm = ({ isOpen, onClose, selectedVendorData }) => {
   useEffect(() => {
     if (selectedVendorData) {
       setFormData(selectedVendorData);
+    } else {
+      setFormData({
+        vendorName: "",
+        vendorContactNo: "",
+        vendorEmail: "",
+        vendorAddress: "",
+        status: true,
+        ipAddress: ""
+      })
     }
   }, [selectedVendorData])
 
@@ -59,6 +68,8 @@ const NewVendorForm = ({ isOpen, onClose, selectedVendorData }) => {
       "createdby": user.name,
       "modifiedby": user.name
     }
+
+    console.log('asdadasdasdasdadsaad', selectedVendorData)
 
     if (selectedVendorData !== null) {
       await axios.put(`${api.baseUrl}/vendor/updateby/${selectedVendorData.id}`, payload, {

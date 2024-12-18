@@ -1,32 +1,30 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useContext, useEffect, useState } from "react";
 import Select, { components } from 'react-select';
+import api from "../apiConfig/config";
+import { toast } from "react-toastify";
+import { UserContext } from "../contexts/userContext";
+import useDecryptedToken from "../hooks/useDecryptedToken";
 
-const NewTransportationForm = ({ isOpen, onClose }) => {
-  const [selectedDestinations, setSelectedDestinations] = useState([]);
-  const [selectedItineraries, setSelectedItineraries] = useState([]);
-  const [selectedInclusions, setSelectedInclusions] = useState([]);
-  const [selectedExclusions, setSelectedExclusions] = useState([]);
+const NewTransportationForm = ({ isOpen, onClose, selectedTransportData }) => {
+  const [ip, setIp] = React.useState("");
+
+  const { user } = useContext(UserContext);
+  const token = useDecryptedToken();
+
   const [formData, setFormData] = useState({
-    transportMode: "",
-    transportSupplier: "",
-    pricePerDay: 0,
+    transportmode: "",
+    transportsupplier: "",
+    priceperday: 0,
     status: false,
   });
 
-  // Custom Option Component
-  const CustomOption = (props) => {
-    return (
-      <components.Option {...props}>
-        <input
-          type="checkbox"
-          checked={props.isSelected}
-          onChange={() => null}
-          style={{ marginRight: 10 }}
-        />
-        {props.label}
-      </components.Option>
-    );
-  };
+  useEffect(() => {
+    axios.get(`${api.baseUrl}/ipAddress`)
+      .then((r) => {
+        setIp(r.data);
+      });
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -36,26 +34,64 @@ const NewTransportationForm = ({ isOpen, onClose }) => {
     });
   }
 
-  const handleChange = (selectedOptions) => {
-    setSelectedDestinations(selectedOptions);
-  };
-
-  const handleItineraryChange = (selectedOptions) => {
-    setSelectedItineraries(selectedOptions);
-  };
-
-  const handleInclusionChange = (selectedOptions) => {
-    setSelectedInclusions(selectedOptions);
-  };
-
-  const handleExclusionChange = (selectedOptions) => {
-    setSelectedExclusions(selectedOptions);
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    selectedDestinations.map(option => option.label).join(', ');
+    try {
+      await axios.post(`${api.baseUrl}/transport/create`, {
+        ...formData,
+        ipaddress: ip,
+        status: 1,
+        isdelete: 0,
+        createdby: user.name,
+        modifiedby: user.name,
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Access-Control-Allow-Origin': '*'
+        }
+      });
+
+      // Success toast notification
+      toast.success("Transportation created successfully!", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    } catch (e) {
+      toast.error("Failed to create Transportation.", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+    // selectedDestinations.map(option => option.label).join(', ');
   };
+
+  useEffect(() => {
+    if (selectedTransportData) {
+      setFormData({
+        transportmode: selectedTransportData.transportmode,
+        transportsupplier: selectedTransportData.transportsupplier,
+        priceperday: selectedTransportData.priceperday,
+        status: selectedTransportData.status,
+      });
+    } else {
+      setFormData({
+        transportmode: "",
+        transportsupplier: "",
+        priceperday: 0,
+        status: false,
+      })
+    }
+  }, [selectedTransportData]);
 
   return (
     <div className={`fixed top-0 right-0 h-full bg-gray-200 shadow-lg transform transition-transform duration-500 ${isOpen ? "translate-x-0" : "translate-x-[850px]"} mt-4 sm:mt-8 md:mt-12 lg:w-[800px] sm:w-[400px] md:w-[500px] z-50`}>
@@ -73,9 +109,9 @@ const NewTransportationForm = ({ isOpen, onClose }) => {
           <label htmlFor="vendors" className="block text-sm font-medium">Transport Mode</label>
           <input
             type="text"
-            id="vendorName"
-            name="vendorName"
-            value={formData.transportMode}
+            id="transportmode"
+            name="transportmode"
+            value={formData.transportmode}
             onChange={handleInputChange}
             className="mt-1 p-2 w-full border rounded"
             placeholder="Enter Transport Mode"
@@ -86,9 +122,9 @@ const NewTransportationForm = ({ isOpen, onClose }) => {
             <label htmlFor="destinations" className="block text-sm font-medium">Transport Supplier</label>
             <input
               type="text"
-              id="vendorContactNo"
-              name="vendorContactNo"
-              value={formData.transportSupplier}
+              id="transportsupplier"
+              name="transportsupplier"
+              value={formData.transportsupplier}
               onChange={handleInputChange}
               className="mt-1 p-2 w-full border rounded"
               placeholder="Enter Transport Supplier"
@@ -97,10 +133,10 @@ const NewTransportationForm = ({ isOpen, onClose }) => {
           <div className="w-1/2 mr-2">
             <label htmlFor="destinations" className="block text-sm font-medium">Price per day</label>
             <input
-              type="email"
-              id="vendorEmail"
-              name="vendorEmail"
-              value={formData.pricePerDay}
+              type="number"
+              id="priceperday"
+              name="priceperday"
+              value={formData.priceperday}
               onChange={handleInputChange}
               className="mt-1 p-2 w-full border rounded"
               placeholder="Enter Price per day"

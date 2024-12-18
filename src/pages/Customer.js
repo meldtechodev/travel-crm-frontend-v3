@@ -11,7 +11,7 @@ const Customer = ({ isOpen, onClose, customerData, isFormEditEnabled, setIsFormE
   const { user } = useContext(UserContext);
   const token = useDecryptedToken();
 
-  // console.log(token);
+  console.log(customerData);
 
   const [formData, setFormData] = useState({
     salutation: "",
@@ -55,6 +55,9 @@ const Customer = ({ isOpen, onClose, customerData, isFormEditEnabled, setIsFormE
       fileInputRef.current.value = "";  // Clear the file input
     }
   };
+
+  console.log(formData)
+  console.log('cUSTOMER DTA', customerData)
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -131,6 +134,7 @@ const Customer = ({ isOpen, onClose, customerData, isFormEditEnabled, setIsFormE
         }
       })
         .then(response => {
+          console.log(response);
           toast.success("Customer saved successfully.", {
             position: "top-center",
             autoClose: 5000,
@@ -163,7 +167,8 @@ const Customer = ({ isOpen, onClose, customerData, isFormEditEnabled, setIsFormE
           }
         })
         .catch(error => {
-          toast.error(error.response.data, {
+          console.error(error);
+          toast.error(error.response.data.message || error.response.data, {
             position: "top-center",
             autoClose: 5000,
             hideProgressBar: false,
@@ -177,8 +182,10 @@ const Customer = ({ isOpen, onClose, customerData, isFormEditEnabled, setIsFormE
   };
 
   useEffect(() => {
-    if (customerData && customerData.id) {
+    if (customerData) {
       setFormData(customerData);
+    } else {
+      handleReset();
     }
   }, [customerData]);
 

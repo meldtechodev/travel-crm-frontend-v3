@@ -1,16 +1,11 @@
-import { applyMiddleware, combineReducers, legacy_createStore } from 'redux';
-import thunk from 'redux-thunk';
+import { createStore, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
-
-import packagesReducer from './reducers/packagesReducer';
-import bookingReducer from './reducers/bookingReducer';
+// import { thunk } from 'redux-thunk';
 import countryReducer from './reducers/countryReducer';
-import { configureStore } from '@reduxjs/toolkit';
 
-const store = configureStore({
-  reducer: countryReducer,
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
-});
-
+const store = createStore(
+  countryReducer,
+  // composeWithDevTools(applyMiddleware(thunk))
+);
 
 export default store;

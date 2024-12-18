@@ -3,7 +3,7 @@ import axios from 'axios';
 import Table from './TableComponent';
 import { useNavigate } from 'react-router-dom';
 import api from '../apiConfig/config';
-import { FaEdit, FaSearch, FaTrashAlt } from 'react-icons/fa';
+import { FaEdit, FaEye, FaSearch, FaTrashAlt } from 'react-icons/fa';
 import NewVendorForm from "../pages/NewVendorForm";
 import NewPackageForm from "../pages/NewPackageForm";
 import NewTransportationForm from "../pages/NewTransportationForm";
@@ -18,6 +18,8 @@ import { UserContext } from '../contexts/userContext';
 import useDecryptedToken from '../hooks/useDecryptedToken';
 import { IoArrowBack, IoArrowForward } from 'react-icons/io5';
 import { FiFilter } from 'react-icons/fi';
+import NewPolicyForm from './NewPolicyForm';
+import Itinerary from './Itinerary';
 
 
 
@@ -29,6 +31,9 @@ const MasterList = () => {
   const [hotelData, setHotelData] = useState([]);
   const [customerData, setCustomerData] = useState([]);
   const [vendorData, setVendorData] = useState([]);
+  const [policyData, setPolicyData] = useState([]);
+  const [transportData, setTransportData] = useState([]);
+  const [itineraryData, setItineraryData] = useState([]);
   const [departmentData, setDepartmentData] = useState([]);
   const [addData, setAddData] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -39,6 +44,10 @@ const MasterList = () => {
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [selectedHotelData, setSelectedHotelData] = useState(null);
   const [selectedVendorData, setSelectedVendorData] = useState(null);
+  const [selectedCustomerData, setSelectedCustomerData] = useState(null);
+  const [selectedPolicyData, setSelectedPolicyData] = useState(null);
+  const [selectedItineraryData, setSelectedItineraryData] = useState(null);
+  const [selectedTransportData, setSelectedTransportData] = useState(null);
   const [isFormEditEnabled, setIsFormEditEnabled] = useState(false);
   const [addButton, setAddButton] = useState(activeTab);
   const navigate = useNavigate()
@@ -67,13 +76,49 @@ const MasterList = () => {
   };
 
   const addIconsToData = (data, updateStatus) =>
-    data.map((item) => ({
+    data && data.map((item) => ({
       ...item,
       status: (
-        <ToggleSwitch
-          isOn={item.status}
-          handleToggle={() => updateStatus(item)}
-        />
+        <div className="flex items-center justify-center">
+          <label className="relative inline-flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              className="sr-only peer"
+              checked={item.status}
+            // onChange={() => handleStatusToggle(row.id)}
+            />
+            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:bg-green-500 dark:bg-gray-700 dark:peer-focus:ring-green-800">
+              <div
+                className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${item.status ? "translate-x-5" : ""
+                  }`}
+              ></div>
+            </div>
+          </label>
+        </div>
+      ),
+      destination: (
+        <div>
+          <p>{item && item.destination && item.destination.destinationName && item.destination.destinationName}</p>
+        </div>
+      ),
+      itineraryAction: (
+        <div className="flex gap-2 justify-center">
+          <FaEye
+            className="text-purple-600 cursor-pointer"
+            onClick={() => { }}
+          />
+          <FaEdit
+            className="text-purple-600 cursor-pointer"
+            onClick={() => {
+              setIsFormEditEnabled(true);
+              handleEdit(item);
+            }}
+          />
+          <FaTrashAlt
+            className="text-red-600 cursor-pointer"
+            onClick={() => handleDelete(item)}
+          />
+        </div>
       ),
       Action: (
         <div className="flex gap-2 justify-center">
@@ -91,18 +136,6 @@ const MasterList = () => {
         </div>
       ),
     }));
-  const fetchData = async (endpoint, setData, updateStatus) => {
-    try {
-      const response = await axios.get(`${api.baseUrl}/${endpoint}`);
-      const formattedData = await response.data.content.map((item) => ({
-        ...item,
-        status: item.status ? 'Active' : 'Inactive',
-      }));
-      setData(addIconsToData(formattedData, updateStatus));
-    } catch (error) {
-      console.error(`Error fetching ${endpoint} data:`, error);
-    }
-  };
 
   const handleStatusToggle = async (item) => {
     const updatedStatus = item.status ? false : true;  // Toggle the status
@@ -120,7 +153,7 @@ const MasterList = () => {
       setCountryData(prevData => prevData.map(i => (i.id === item.id ? updatedItem : i)));
     } else if (activeTab === 'state') {
       setStateData(prevData => prevData.map(i => (i.id === item.id ? updatedItem : i)));
-    } else if (activeTab === 'destination') {
+    } else if (activeTab === 'city') {
       setDestinationData(prevData => prevData.map(i => (i.id === item.id ? updatedItem : i)));
     } else if (activeTab === 'hotel') {
       setHotelData(prevData => prevData.map(i => (i.id === item.id ? updatedItem : i)));
@@ -128,10 +161,9 @@ const MasterList = () => {
       setCustomerData(prevData => prevData.map(i => (i.id === item.id ? updatedItem : i)));
     } else if (activeTab === 'vendor') {
       setVendorData(prevData => prevData.map(i => (i.id === item.id ? updatedItem : i)));
+    } else if (activeTab === 'itinerary') {
+      setItineraryData(prevData => prevData.map(i => (i.id === item.id ? updatedItem : i)));
     }
-    // else if (activeTab === 'department') {
-    //   setDepartmentData(prevData => prevData.map(i => (i.id === item.id ? updatedItem : i)));
-    // }
 
     console.log(activeTab);
 
@@ -156,7 +188,7 @@ const MasterList = () => {
         setCountryData(prevData => prevData.map(i => (i.id === item.id ? { ...item } : i)));
       } else if (activeTab === 'state') {
         setStateData(prevData => prevData.map(i => (i.id === item.id ? { ...item } : i)));
-      } else if (activeTab === 'destination') {
+      } else if (activeTab === 'city') {
         setDestinationData(prevData => prevData.map(i => (i.id === item.id ? { ...item } : i)));
       } else if (activeTab === 'hotel') {
         setHotelData(prevData => prevData.map(i => (i.id === item.id ? { ...item } : i)));
@@ -164,10 +196,10 @@ const MasterList = () => {
         setCustomerData(prevData => prevData.map(i => (i.id === item.id ? { ...item } : i)));
       } else if (activeTab === 'vendor') {
         setVendorData(prevData => prevData.map(i => (i.id === item.id ? { ...item } : i)));
-        // } else if (activeTab === 'department') {
-        //   setDepartmentData(prevData => prevData.map(i => (i.id === item.id ? { ...item } : i)));
-        // }
+      } else if (activeTab === 'department') {
+        setItineraryData(prevData => prevData.map(i => (i.id === item.id ? { ...item } : i)));
       }
+      // }
     }
   };
 
@@ -175,28 +207,40 @@ const MasterList = () => {
   const handleEdit = (item) => {
     console.log('Editing:', item);
 
+    setIsFormEditEnabled(!!item);
+
     if (activeTab === 'country') {
       setAddData(["Country"]);
       console.log(item);
-      setSelectedCountry(item);
+      setSelectedCountry(item || null);
     } else if (activeTab === 'state') {
-      setSelectedState(item);
+      setSelectedState(item || null);
       setAddData(["State"]);
-    } else if (activeTab === 'destination') {
-      setAddData(["Destination"]);
-      setSelectedDestination(item);
+    } else if (activeTab === 'city') {
+      setAddData(["City"]);
+      setSelectedDestination(item || null);
     } else if (activeTab === 'department') {
       setAddData(["Department"]);
-      setSelectedDepartment(item);
+      setSelectedDepartment(item || null);
     } else if (activeTab === 'hotel') {
       setAddData(["Hotel"]);
-      setSelectedHotelData(item);
+      setSelectedHotelData(item || null);
     } else if (activeTab === 'vendor') {
       setAddData(["Vendor"]);
-      setSelectedVendorData(item);
+      setSelectedVendorData(item || null);
       console.log(`Editing`, item)
     } else if (activeTab === 'customer') {
       setAddData(["Customer"]);
+      setSelectedCustomerData(item || null)
+    } else if (activeTab === 'policy') {
+      setAddData(["Policy"]);
+      setSelectedPolicyData(item || null)
+    } else if (activeTab === 'itinerary') {
+      setAddData(["Itinerary"]);
+      setSelectedItineraryData(item || null)
+    } else if (activeTab === 'transport') {
+      setAddData(["Transport"]);
+      setSelectedTransportData(item || null)
     }
   };
 
@@ -217,43 +261,17 @@ const MasterList = () => {
     };
   }, []);
 
-  useEffect(() => {
-    switch (activeTab) {
-      case 'country':
-        fetchData('country/getall', setCountryData, handleStatusToggle);
-        break;
-      case 'state':
-        fetchData('state/getall', setStateData, handleStatusToggle);
-        break;
-      case 'city':
-        fetchData('destination/get', setDestinationData, handleStatusToggle);
-        break;
-      case 'hotel':
-        fetchData('hotel/get', setHotelData, handleStatusToggle);
-        break;
-      case 'customer':
-        fetchData('customer/get', setCustomerData, handleStatusToggle);
-        break;
-      case 'vendor':
-        fetchData('vendor/get', setVendorData, handleStatusToggle);
-        break;
-      case 'department':
-        fetchData('department/get', setVendorData, handleStatusToggle);
-        break;
-      default:
-        break;
-    }
-  }, [activeTab]);
-
-
   const tabs = [
     { header: 'S.No.', accessor: 'S.No.' },
     { key: 'country', label: 'Country' },
     { key: 'state', label: 'State' },
-    { key: 'destination', label: 'City' },
+    { key: 'city', label: 'City' },
     { key: 'hotel', label: 'Hotel' },
     { key: 'customer', label: 'Customer' },
     { key: 'vendor', label: 'Vendor' },
+    { key: 'policy', label: 'Policy' },
+    { key: 'itinerary', label: 'Itinerary' },
+    { key: 'transport', label: 'Transport' },
     // { key: 'department', label: 'Department' },
   ];
 
@@ -280,7 +298,7 @@ const MasterList = () => {
       ],
       data: addIconsToData(stateData, handleStatusToggle),
     },
-    destination: {
+    city: {
       columns: [
         { header: 'S.No.', accessor: 'index' },
         { header: 'City Name', accessor: 'destinationName' },
@@ -329,15 +347,35 @@ const MasterList = () => {
       ],
       data: addIconsToData(vendorData, handleStatusToggle),
     },
-    // department: {
-    //   columns: [
-    //     { header: 'S.No.', accessor: 'index' },
-    //     { header: 'Name', accessor: 'departmentName' },
-    //     { header: 'Status', accessor: 'status' },
-    //     { header: 'Action', accessor: 'Action' },
-    //   ],
-    //   data: addIconsToData(departmentData, handleStatusToggle)
-    // },
+    policy: {
+      columns: [
+        { header: 'S.No.', accessor: 'index' },
+        { header: 'Policy Name', accessor: 'policyName' },
+        { header: 'Policy Description', accessor: 'policyDescription' },
+        { header: 'Status', accessor: 'status' },
+        { header: 'Action', accessor: 'Action' },
+      ],
+      data: addIconsToData(policyData, handleStatusToggle),
+    },
+    itinerary: {
+      columns: [
+        { header: 'S.No.', accessor: 'index' },
+        { header: 'Destination Name', accessor: 'destination' },
+        { header: 'Action', accessor: 'itineraryAction' },
+      ],
+      data: addIconsToData(itineraryData, handleStatusToggle),
+    },
+    transport: {
+      columns: [
+        { header: 'S.No.', accessor: 'index' },
+        { header: 'Transport Mode', accessor: 'transportmode' },
+        { header: 'Transport Supplier', accessor: 'transportsupplier' },
+        { header: 'Price Per Day', accessor: 'priceperday' },
+        // { header: 'Status', accessor: 'status' },
+        { header: 'Action', accessor: 'Action' },
+      ],
+      data: addIconsToData(transportData, handleStatusToggle),
+    },
   };
 
   useEffect(() => {
@@ -455,31 +493,53 @@ const MasterList = () => {
       }
     }
 
-    // const fetchDepartmentData = async () => {
-    //   try {
-    //     const response = await axios.get(`${api.baseUrl}/departments/getall?page=${currentPage}&size=10`);
-    //     const formattedData = await response.data.content.map((item) => ({
-    //       ...item,
-    //       status: item.status
-    //     }));
-    //     const newData = await formattedData.map((item, index) => ({
-    //       ...item,
-    //       index: index + 1
-    //     }))
-    //     setDepartmentData(newData);
-    //     setTotalPages(response.data.totalPages);
-    //   } catch (error) {
-    //     console.error('Error fetching country data:', error);
-    //   }
-    // };
+    const fetchPolicyData = async () => {
+      try {
+        const response = await axios.get(`${api.baseUrl}/policy/getallpolicy?page=${currentPage}&size=10`);
+        const newData = response.data.content.map((item, index) => ({
+          ...item,
+          index: index + 1
+        }))
+        setPolicyData(newData);
+        setTotalPages(response.data.totalPages);
+      } catch (error) {
+        console.error('Error fetching state data:', error);
+      }
+    }
 
+    const fetchItineraryData = async () => {
+      try {
+        const response = await axios.get(`${api.baseUrl}/itinerarys/getAll?page=${currentPage}&size=10`);
+        const newData = response.data.content.map((item, index) => ({
+          ...item,
+          index: index + 1
+        }))
+        setItineraryData(newData);
+        setTotalPages(response.data.totalPages);
+      } catch (error) {
+        console.error('Error fetching state data:', error);
+      }
+    }
 
+    const fetchTransportData = async () => {
+      try {
+        const response = await axios.get(`${api.baseUrl}/transport/getAll?page=${currentPage}&size=10`);
+        const newData = response.data.content.map((item, index) => ({
+          ...item,
+          index: index + 1
+        }));
+        setTransportData(newData);
+        setTotalPages(response.data.totalPages);
+      } catch (error) {
+        console.error('Error fetching state data:', error);
+      }
+    }
 
     if (activeTab === 'country') {
       fetchCountryData();
     } else if (activeTab === 'state') {
       fetchStateData();
-    } else if (activeTab === 'destination') {
+    } else if (activeTab === 'city') {
       fetchDestinationData();
     } else if (activeTab === 'hotel') {
       fetchHotelData();
@@ -487,6 +547,12 @@ const MasterList = () => {
       fetchCustomerData()
     } else if (activeTab === 'vendor') {
       fetchVendorData()
+    } else if (activeTab === 'policy') {
+      fetchPolicyData();
+    } else if (activeTab === 'itinerary') {
+      fetchItineraryData();
+    } else if (activeTab === 'transport') {
+      fetchTransportData();
     }
     // } else if (activeTab === 'department') {
     //   fetchDepartmentData()
@@ -544,11 +610,45 @@ const MasterList = () => {
               </button>
             </div>
             <button className="flex items-center justify-center bg-red-500  text-white p-2 rounded-md hover:bg-red-700 mt-2 md:mt-0 md:ml-2"
-              onClick={
-                () => {
-                  setAddData([`${activeTab[0].toUpperCase()}${activeTab.substring(1)}`])
+              onClick={() => {
+                setAddData([`${activeTab[0].toUpperCase()}${activeTab.substring(1)}`]);
+                setIsFormEditEnabled(false);
+
+                // Reset selected data based on active tab
+                switch (activeTab) {
+                  case 'country':
+                    setSelectedCountry(null);
+                    break;
+                  case 'state':
+                    setSelectedState(null);
+                    break;
+                  case 'city':
+                    setSelectedDestination(null);
+                    break;
+                  case 'department':
+                    setSelectedDepartment(null);
+                    break;
+                  case 'hotel':
+                    setSelectedHotelData(null);
+                    break;
+                  case 'vendor':
+                    setSelectedVendorData(null);
+                    break;
+                  case 'customer':
+                    setSelectedCustomerData(null);
+                    break;
+                  case 'policy':
+                    setSelectedPolicyData(null);
+                    break;
+                  case 'itinerary':
+                    setSelectedItineraryData(null);
+                    break;
+                  case 'transport':
+                    setSelectedTransportData(null);
+                    break;
+                  default:
                 }
-              }
+              }}
             >
               New {`${activeTab[0].toUpperCase()}${activeTab.substring(1)}`}
             </button>
@@ -628,15 +728,6 @@ const MasterList = () => {
           onClose={() => setAddData([])}
         />
       </div>
-      {/* <div
-        className="submenu-menu"
-        style={{ right: addData[0] === "NewMember" ? "0" : "-100%" }}
-      >
-        <NewMember
-          isOpen={addData[0] === "NewMember"}
-          onClose={() => setAddData([])}
-        />
-      </div> */}
       <div
         className="submenu-menu"
         style={{ right: addData[0] === "Country" ? "0" : "-100%" }}
@@ -663,10 +754,10 @@ const MasterList = () => {
       </div>
       <div
         className="submenu-menu"
-        style={{ right: addData[0] === "Destination" ? "0" : "-100%" }}
+        style={{ right: addData[0] === "City" ? "0" : "-100%" }}
       >
         <Destination
-          isOpen={addData[0] === "Destination"}
+          isOpen={addData[0] === "City"}
           onClose={() => setAddData([])}
           destinationData={selectedDestination}
           isFormEditEnabled={isFormEditEnabled}
@@ -692,7 +783,7 @@ const MasterList = () => {
         <Customer
           isOpen={addData[0] === "Customer"}
           onClose={() => setAddData([])}
-          departmentData={selectedDepartment}
+          customerData={selectedCustomerData}
           isFormEditEnabled={isFormEditEnabled}
           setIsFormEditEnabled={setIsFormEditEnabled}
         />
@@ -716,7 +807,43 @@ const MasterList = () => {
         <NewVendorForm
           isOpen={addData[0] === "Vendor"}
           onClose={() => setAddData([])}
-          selectedVendorData={selectedVendorData}
+          selectedVendorData={selectedVendorData && selectedVendorData}
+          isFormEditEnabled={isFormEditEnabled}
+          setIsFormEditEnabled={setIsFormEditEnabled}
+        />
+      </div>
+      <div
+        className="submenu-menu"
+        style={{ right: addData[0] === "Policy" ? "0" : "-100%" }}
+      >
+        <NewPolicyForm
+          isOpen={addData[0] === "Policy"}
+          onClose={() => setAddData([])}
+          selectedPolicyData={selectedPolicyData && selectedPolicyData}
+          isFormEditEnabled={isFormEditEnabled}
+          setIsFormEditEnabled={setIsFormEditEnabled}
+        />
+      </div>
+      <div
+        className="submenu-menu"
+        style={{ right: addData[0] === "Transport" ? "0" : "-100%" }}
+      >
+        <NewTransportationForm
+          isOpen={addData[0] === "Transport"}
+          onClose={() => setAddData([])}
+          selectedTransportData={selectedTransportData && selectedTransportData}
+          isFormEditEnabled={isFormEditEnabled}
+          setIsFormEditEnabled={setIsFormEditEnabled}
+        />
+      </div>
+      <div
+        className="submenu-menu"
+        style={{ right: addData[0] === "Itinerary" ? "0" : "-100%" }}
+      >
+        <Itinerary
+          isOpen={addData[0] === "Itinerary"}
+          onClose={() => setAddData([])}
+          selectedItineraryData={selectedItineraryData && selectedItineraryData}
           isFormEditEnabled={isFormEditEnabled}
           setIsFormEditEnabled={setIsFormEditEnabled}
         />

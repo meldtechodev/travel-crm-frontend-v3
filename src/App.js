@@ -66,8 +66,12 @@ const App = () => {
   }
 
 
-  if (isLoading && isAuthenticated) {
-    return <div>Loading...</div>;
+  if (isLoading && !isAuthenticated) {
+    return (
+      <div className="flex w-full h-screen items-center justify-center">
+        <img src="/assets/images/Loaders/loader-updated.gif" alt="Loading..." />
+      </div>
+    );
   }
 
   return (

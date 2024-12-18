@@ -203,7 +203,7 @@ const Designation = ({ isOpen, onClose, designationData }) => {
         createdBy: formData.createdBy,
         modifiedBy: user.username,
         ipaddress: ipaddress,
-        status: formData.status ? 1 : 0,
+        status: formData.status,
         isdelete: 0,
         createdDate: designationData.createdDate,
         modifiedDate: current.getDate
@@ -243,7 +243,7 @@ const Designation = ({ isOpen, onClose, designationData }) => {
         createdBy: user.username,
         modifiedBy: user.username,
         ipaddress: ipaddress,
-        status: formData.status ? 1 : 0,
+        status: formData.status,
         isdelete: 0,
         departments: {
           id: formData.departmentId,
@@ -303,6 +303,16 @@ const Designation = ({ isOpen, onClose, designationData }) => {
         createdBy: designationData.createdBy || "",
         modifiedBy: designationData.modifiedBy || "",
       });
+    } else {
+      setFormData({
+        ...designationData,
+        departmentName: '',
+        designationName: '',
+        departmentId: '',
+        status: '',
+        createdBy: '',
+        modifiedBy: ''
+      })
     }
   }, [designationData]);
 

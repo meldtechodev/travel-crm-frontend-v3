@@ -107,7 +107,7 @@ const ViewDesignations = () => {
               type="checkbox"
               className="sr-only peer"
               checked={row.status}
-              onChange={() => handleStatusToggle(row.id)}
+            // onChange={() => handleStatusToggle(row.id)}
             />
             <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:bg-green-500 dark:bg-gray-700 dark:peer-focus:ring-green-800">
               <div
@@ -203,7 +203,10 @@ const ViewDesignations = () => {
             </button>
           </div>
           {/* <p onClick={() => setAddData(['Permission'])}>View Permission</p> */}
-          <button className="flex items-center justify-center  bg-red-500  text-white p-2 rounded-md hover:bg-red-700 mt-2 md:mt-0 md:ml-2" onClick={() => setAddData(['Designation'])}>New Designation +</button>
+          <button className="flex items-center justify-center  bg-red-500  text-white p-2 rounded-md hover:bg-red-700 mt-2 md:mt-0 md:ml-2" onClick={() => {
+            setAddData(['Designation'])
+            setSelectedDesignation(null);
+          }}>New Designation +</button>
         </div>
         <hr className="my-4" />
         <div className="w-full overflow-auto">
@@ -267,7 +270,7 @@ const ViewDesignations = () => {
           isOpen={addData[0] === "Permission"}
           onClose={() => setAddData([])}
           designationModules={designationModules}
-          designationData={selectedDesignation}
+          designationData={selectedDesignation && selectedDesignation}
           // designationModules={designationModules}
           setDesignationModules={setDesignationModules}
         />

@@ -22,6 +22,8 @@ const State = ({ isOpen, onClose, stateData, isFormEditEnabled, setIsFormEditEna
         label: stateData.country.countryName,
       });
       setCountryId(stateData.country.id);
+    } else {
+      handleReset();
     }
   }, [stateData]);
 

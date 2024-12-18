@@ -7,66 +7,13 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import api from "../apiConfig/config";
 import { UserContext } from "../contexts/userContext";
+import useDecryptedToken from "../hooks/useDecryptedToken";
 
-const NewPolicyForm = ({ isOpen, onClose }) => {
+const NewPolicyForm = ({ isOpen, onClose, selectedPolicyData }) => {
   const [ip, setIp] = React.useState("");
 
-  // const [user, setUser] = useState({})
-
-  const { user } = useContext(UserContext)
-
-  // const [token, setTokens] = useState(null)
-  // async function decryptToken(encryptedToken, key, iv) {
-  //   const dec = new TextDecoder();
-
-  //   const decrypted = await crypto.subtle.decrypt(
-  //     {
-  //       name: "AES-GCM",
-  //       iv: iv,
-  //     },
-  //     key,
-  //     encryptedToken
-  //   );
-
-  //   return dec.decode(new Uint8Array(decrypted));
-  // }
-
-  // // Function to retrieve and decrypt the token
-  // async function getDecryptedToken() {
-  //   const keyData = JSON.parse(localStorage.getItem('encryptionKey'));
-  //   const ivBase64 = localStorage.getItem('iv');
-  //   const encryptedTokenBase64 = localStorage.getItem('encryptedToken');
-
-
-  //   if (!keyData || !ivBase64 || !encryptedTokenBase64) {
-  //     throw new Error('No token found');
-  //   }
-
-  //   // Convert back from base64
-  //   const key = await crypto.subtle.importKey('jwk', keyData, { name: "AES-GCM" }, true, ['encrypt', 'decrypt']);
-  //   const iv = new Uint8Array(atob(ivBase64).split('').map(char => char.charCodeAt(0)));
-  //   const encryptedToken = new Uint8Array(atob(encryptedTokenBase64).split('').map(char => char.charCodeAt(0)));
-
-  //   return await decryptToken(encryptedToken, key, iv);
-  // }
-
-  // // Example usage to make an authenticated request
-  // useEffect(() => {
-  //   getDecryptedToken()
-  //     .then(token => {
-  //       setTokens(token);
-  //       return axios.get(`${api.baseUrl}/username`, {
-  //         headers: {
-  //           'Authorization': `Bearer ${token}`,
-  //           'Access-Control-Allow-Origin': '*'
-  //         }
-  //       });
-  //     })
-  //     .then(response => {
-  //       setUser(response.data);
-  //     })
-  //     .catch(error => console.error('Error fetching protected resource:', error))
-  // }, [])
+  const { user } = useContext(UserContext);
+  const token = useDecryptedToken();
 
   // Fetch IP address on component mount
   useEffect(() => {
@@ -88,33 +35,61 @@ const NewPolicyForm = ({ isOpen, onClose }) => {
       policyDescription: Yup.string().required("Description is required"),
     }),
     onSubmit: async (values) => {
+      console.log(values)
       try {
-        const response = await axios.post(`${api.baseUrl}/policy/create`, {
-          ipaddress: ip,
-          createdBy: user.username,
-          modifiedby: user.username,
-          isdelete: false,
-          ...values,
-        }, {
-          headers: {
-            // 'Authorization': `Bearer ${token}`,
-            'Access-Control-Allow-Origin': '*'
-          }
-        });
+        if (selectedPolicyData) {
+          await axios.post(`${api.baseUrl}/policy/updatedby/${selectedPolicyData && selectedPolicyData.id}`, {
+            ...values,
+            ipaddress: ip,
+            createdBy: selectedPolicyData.createdBy,
+            modifiedby: user.name,
+            isdelete: false,
+          }, {
+            headers: {
+              // 'Authorization': `Bearer ${token}`,
+              'Access-Control-Allow-Origin': '*'
+            }
+          });
 
-        // Success toast notification
-        toast.success("Policy created successfully!", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
+          // Success toast notification
+          toast.success("Policy created successfully!", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        }
 
-        // Reset form after successful submission
-        formik.resetForm();
+        else {
+          await axios.post(`${api.baseUrl}/policy/create`, {
+            ...values,
+            ipaddress: ip,
+            createdBy: user.name,
+            modifiedby: user.name,
+            isdelete: false,
+          }, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Access-Control-Allow-Origin': '*'
+            }
+          });
+
+          // Success toast notification
+          toast.success("Policy created successfully!", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          // Reset form after successful submission  
+          formik.resetForm();
+        }
       } catch (error) {
         console.error("Error:", error);
 
@@ -152,6 +127,22 @@ const NewPolicyForm = ({ isOpen, onClose }) => {
       progress: undefined,
     });
   };
+
+  useEffect(() => {
+    if (selectedPolicyData) {
+      formik.setValues({
+        policyName: selectedPolicyData.policyName,
+        policyDescription: selectedPolicyData.policyDescription,
+        status: selectedPolicyData.status,
+      });
+    } else {
+      formik.setValues({
+        policyName: "",
+        policyDescription: "",
+        status: true,
+      });
+    }
+  }, [selectedPolicyData]);
 
   return (
     <div
@@ -250,8 +241,8 @@ const NewPolicyForm = ({ isOpen, onClose }) => {
             value={formik.values.status}
             onChange={formik.handleChange}
           >
-            <option value={1}>Active</option>
-            <option value={0}>Inactive</option>
+            <option value={true}>Active</option>
+            <option value={false}>Inactive</option>
           </select>
         </div>
       </form>

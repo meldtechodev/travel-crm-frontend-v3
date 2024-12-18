@@ -77,12 +77,14 @@ const Department = ({ isOpen, onClose, departmentData }) => {
 
 
   const [formData, setFormData] = useState({
-    departmentName: "", status: true
+    departmentName: "",
+    status: true
   });
 
   const handleReset = () => {
     setFormData({
-      departmentName: "", status: true
+      departmentName: "",
+      status: true
     })
   }
 
@@ -96,6 +98,7 @@ const Department = ({ isOpen, onClose, departmentData }) => {
     })
   };
 
+  console.log("FORM DATA", formData);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -119,7 +122,7 @@ const Department = ({ isOpen, onClose, departmentData }) => {
         createdBy: formData.createdBy,
         modifiedBy: user.username,
         ipaddress: ipAddress,
-        status: formData.status ? 1 : 0,
+        status: formData.status,
         isdelete: 0,
         createdDate: departmentData.createdDate,
         modifiedDate: current.getDate
@@ -157,7 +160,7 @@ const Department = ({ isOpen, onClose, departmentData }) => {
         "createdBy": user.username,
         "modifiedBy": user.username,
         "ipaddress": ipAddress,
-        "status": formData.status ? 1 : 0,
+        "status": formData.status,
         "isdelete": 0
       }
 
@@ -198,6 +201,14 @@ const Department = ({ isOpen, onClose, departmentData }) => {
         createdBy: departmentData.createdBy || "",
         modifiedBy: departmentData.modifiedBy || "",
       });
+    } else {
+      setFormData({
+        ...departmentData,
+        departmentName: "",
+        status: true,
+        createdBy: "",
+        modifiedBy: "",
+      })
     }
   }, [departmentData]);
 
