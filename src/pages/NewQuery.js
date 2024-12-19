@@ -208,7 +208,6 @@ const NewQuery = ({ isOpen, onClose }) => {
     }
     ne = new Set(check.map(item => item.title))
     setViewActivity([...ne])
-    console.log(viewActivity)
 
     let catHote = pkd.map(item => ({
       ...item,
@@ -238,7 +237,6 @@ const NewQuery = ({ isOpen, onClose }) => {
       sight: viewSightSeeing,
       activity: viewActivity
     })))
-    console.log(iti)
 
 
     let price = packagePrice.filter(item => item.packid === selected.value)

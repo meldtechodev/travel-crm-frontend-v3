@@ -1,15 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Select from "react-select";
 import axios from "axios";
 import api from "../apiConfig/config";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import { UserContext } from "../contexts/userContext";
 
 const Itinerary = ({ isOpen, onClose }) => {
-  const [destinationOptions, setDestinationOptions] = useState([]);
   const [editorData, setEditorData] = useState("");
   const [selectedDestination, setSelectedDestination] = useState(null);
   // const [selectedActivity, setSelectedAct] = useState(null);
+
+  const { user, destinationDetails, ipAddress } = useContext(UserContext)
 
   const [formData, setFormData] = useState([
     {
@@ -23,7 +25,7 @@ const Itinerary = ({ isOpen, onClose }) => {
       sightseeing: null
     }
   ]);
-  const [user, setUser] = useState({});
+
   const RoomTypeOptions = [
     { value: "budget", label: "Budget" },
     { value: "deluxe", label: "Deluxe" },
@@ -37,80 +39,7 @@ const Itinerary = ({ isOpen, onClose }) => {
   //   { value: 5, label: "American" },
   // ];
   // Fetch destinations
-  useEffect(() => {
-    axios
-      .get(`${api.baseUrl}/destination/getall`)
-      .then((response) => {
-        const options = response.data.content.map((destination) => ({
-          value: destination.id,
-          label: destination.destinationName,
-        }));
-        setDestinationOptions(options);
-      })
-      .catch((error) => console.error("Error fetching destinations:", error));
-  }, []);
 
-  // Decrypt Token and Fetch User Info
-  async function decryptToken(encryptedToken, key, iv) {
-    const dec = new TextDecoder();
-    const decrypted = await crypto.subtle.decrypt(
-      {
-        name: "AES-GCM",
-        iv: iv,
-      },
-      key,
-      encryptedToken
-    );
-    return dec.decode(new Uint8Array(decrypted));
-  }
-
-  async function getDecryptedToken() {
-    const keyData = JSON.parse(localStorage.getItem("encryptionKey"));
-    const ivBase64 = localStorage.getItem("iv");
-    const encryptedTokenBase64 = localStorage.getItem("encryptedToken");
-
-    if (!keyData || !ivBase64 || !encryptedTokenBase64) {
-      throw new Error("No token found");
-    }
-
-    const key = await crypto.subtle.importKey(
-      "jwk",
-      keyData,
-      { name: "AES-GCM" },
-      true,
-      ["encrypt", "decrypt"]
-    );
-    const iv = new Uint8Array(
-      atob(ivBase64)
-        .split("")
-        .map((char) => char.charCodeAt(0))
-    );
-    const encryptedToken = new Uint8Array(
-      atob(encryptedTokenBase64)
-        .split("")
-        .map((char) => char.charCodeAt(0))
-    );
-
-    return await decryptToken(encryptedToken, key, iv);
-  }
-
-  useEffect(() => {
-    getDecryptedToken()
-      .then((token) => {
-        return axios.get(`${api.baseUrl}/username`, {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Access-Control-Allow-Origin": "*",
-          },
-        });
-      })
-      .then((response) => {
-        setUser(response.data);
-      })
-      .catch((error) =>
-        console.error("Error fetching protected resource:", error)
-      );
-  }, []);
 
   // Handle input changes for the current day
   const handleInputChange = (event, dayIndex) => {
@@ -124,22 +53,6 @@ const Itinerary = ({ isOpen, onClose }) => {
 
     const update = formData.map((prev, i) => dayIndex === i ? { ...prev, [name]: checked } : prev)
     setFormData(update)
-    // setFormData((prevState) => {
-    //   const updatedDays = [...prevState.days];
-    //   updatedDays[dayIndex] = {
-    //     ...updatedDays[dayIndex],
-    //     meals: {
-    //       ...updatedDays[dayIndex].meals,
-    //       [name]: checked,
-    //     },
-    //   };
-    //   return {
-    //     ...prevState,
-    //     days: updatedDays,
-    //   };
-    // });
-
-
   };
 
   const [hotelList, setHotelList] = useState([])
@@ -149,17 +62,8 @@ const Itinerary = ({ isOpen, onClose }) => {
   const [siteSeeingList, setSiteSeeingList] = useState([])
   const [activityList, setActivityList] = useState([])
   const [mealTypeOptions, setMealTypeOptions] = useState([])
-  const [ipaddress, setIpAddress] = useState("")
 
   useEffect(() => {
-    axios.get(`${api.baseUrl}/ipAddress`)
-      .then((response) => {
-        setIpAddress(response.data)
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-      })
-
     axios.get(`${api.baseUrl}/hotel/getAll`)
       .then((response) => {
         const formattedData = response.data.map(item => ({
@@ -173,13 +77,12 @@ const Itinerary = ({ isOpen, onClose }) => {
         console.error('Error fetching country data:', error)
       )
 
-    axios.get(`${api.baseUrl}/roomtypes/getAll`)
+    axios.get(`${api.baseUrl}/roomtypes/getall`)
       .then((response) => {
-        const formattedData = response.data.content.map(item => ({
+        const formattedData = response.data.map(item => ({
           ...item,
           value: item.id,
-          label: item.bed_size,
-          status: item.status ? 'Active' : 'Inactive'
+          label: item.bedSize
         }));
         setRoomTypeList(formattedData)
       }).catch(error =>
@@ -246,10 +149,14 @@ const Itinerary = ({ isOpen, onClose }) => {
   };
 
   const handleHotelChange = (selected, hIndex, mainIndex) => {
+    setViewRoomTypeList([])
     let updateData = [...formData]
     let hotelUpdate = [...updateData[mainIndex].hotelOptionsIds]
 
-    hotelUpdate[hIndex] = selected
+    hotelUpdate[hIndex] = selected;
+    let updateRoomtype = roomTypeList.filter(item => item.hotel?.id === selected.value)
+    setViewRoomTypeList(updateRoomtype)
+
 
     const update = formData.map((prev, i) => mainIndex === i ? { ...prev, hotelOptionsIds: hotelUpdate } : prev)
     setFormData(update)
@@ -320,7 +227,7 @@ const Itinerary = ({ isOpen, onClose }) => {
         createdby: user.name,
         modifiedby: user.name,
         isdelete: false,
-        ipaddress: ipaddress,
+        ipaddress: ipAddress,
         status: 0
         // itinerary: formData,
       };
@@ -412,7 +319,7 @@ const Itinerary = ({ isOpen, onClose }) => {
               </label>
               <Select
                 id="destinationName"
-                options={destinationOptions}
+                options={destinationDetails}
                 value={selectedDestination}
                 onChange={handleDestinationChange}
                 placeholder="Select..."
@@ -749,7 +656,7 @@ const Itinerary = ({ isOpen, onClose }) => {
                   </div>
                 </div>
                 {/* </div> */}
-                <div className="mb-4">
+                {/* <div className="mb-4">
                   <label
                     htmlFor={`transportationDetails-${index}`}
                     className="block text-sm font-medium bg-red-700 text-white p-2 rounded"
@@ -764,7 +671,7 @@ const Itinerary = ({ isOpen, onClose }) => {
                     // value={formData.transportationDetails}
                     onChange={(e) => handleInputChange(e, index)}
                   />
-                </div>
+                </div> */}
               </div>
             </div>
           ))}

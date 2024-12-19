@@ -141,11 +141,6 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
 
   // Example usage to make an authenticated request
 
-
-  useEffect(() => {
-
-  }, []);
-
   const handleDestinationChange = (selectedDestination) => {
     setSelectedDestinations(selectedDestination)
   }
@@ -306,9 +301,9 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
         formDataHotelRoomType.append('rooms.id', allSelectedRoomType[i].value)
         formDataHotelRoomType.append('image', totalRoomDetails[i].image)
 
-        for (var pair of formDataHotelRoomType.entries()) {
-          console.log(pair[0] + ', ' + pair[1]);
-        }
+        // for (var pair of formDataHotelRoomType.entries()) {
+        //   console.log(pair[0] + ', ' + pair[1]);
+        // }
 
         await axios.post(`${api.baseUrl}/roomtypes/create`, formDataHotelRoomType, {
           headers: {
@@ -404,14 +399,14 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
     formDataHotelMaster.append('modified_by', user.name)
     formDataHotelMaster.append('image', hImage)
 
-    for (var pair of formDataHotelMaster.entries()) {
-      console.log(pair[0] + ', ' + pair[1]);
-    }
+    // for (var pair of formDataHotelMaster.entries()) {
+    //   console.log(pair[0] + ', ' + pair[1]);
+    // }
 
 
     await axios.post(`${api.baseUrl}/hotel/create`, formDataHotelMaster, {
       headers: {
-        'Authorization': `Bearer ${token}`,
+        // 'Authorization': `Bearer ${token}`,
         'Content-Type': 'multipart/form-data',
         'Access-Control-Allow-Origin': '*'
       }
@@ -476,15 +471,14 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
       //     "id": seasons[val].id
       //   }
       // }
-      console.log(priceMaster[i])
+      // console.log(priceMaster[i])
       await axios.post(`${api.baseUrl}/hotelprice/create`, priceMaster[i], {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          // 'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         }
       })
         .then(async (response) => {
-          console.log(response.data)
         })
         .catch(error => console.log(error));
       val += 1;
