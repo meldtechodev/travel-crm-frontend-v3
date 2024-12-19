@@ -245,26 +245,22 @@ const Itinerary = ({ isOpen, onClose }) => {
             "Access-Control-Allow-Origin": "*",
           },
         });
-
-        alert("Itinerary created successfully");
-        setFormData([
-          {
-            daytitle: "",
-            breakfast: false,
-            lunch: false,
-            dinner: false,
-            program: "",
-            activities: null,
-            sightseeing: null,
-            hotelOptionsIds: [null, null, null, null]
-          },
-
-        ]);
       } catch (error) {
         console.error("Error creating itinerary:", error);
         alert("Error creating itinerary, please try again.");
       }
     })
+    setFormData[{
+      daytitle: "",
+      program: "",
+      breakfast: false,
+      lunch: false,
+      dinner: false,
+      activities: null,
+      sightseeing: null,
+      hotelOptionsIds: [null, null, null, null],
+    }]
+
   };
 
   // Handle form reset
