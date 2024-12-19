@@ -162,20 +162,40 @@ const Itinerary = ({ isOpen, onClose }) => {
     setFormData(update)
   }
 
+  const handleDelete = (id) => {
+    let update = formData.filter((item, i) => i !== id)
+    setFormData(update)
+  }
   // Add a new day form
   const addNewDay = () => {
-    setFormData([...formData,
-    {
-      daytitle: "",
-      program: "",
-      breakfast: false,
-      lunch: false,
-      dinner: false,
-      activities: null,
-      sightseeing: null,
-      hotelOptionsIds: [null, null, null, null],
+    if (formData.length === 0) {
+      setFormData([
+        {
+          daytitle: "",
+          program: "",
+          breakfast: false,
+          lunch: false,
+          dinner: false,
+          activities: null,
+          sightseeing: null,
+          hotelOptionsIds: [null, null, null, null],
+        }])
+
+    } else {
+
+      setFormData([...formData,
+      {
+        daytitle: "",
+        program: "",
+        breakfast: false,
+        lunch: false,
+        dinner: false,
+        activities: null,
+        sightseeing: null,
+        hotelOptionsIds: [null, null, null, null],
+      }
+      ]);
     }
-    ]);
   };
 
   // Submit the form
@@ -183,18 +203,6 @@ const Itinerary = ({ isOpen, onClose }) => {
     e.preventDefault();
 
     formData.map(item => {
-      // let payload = {
-      //   ...item,
-      //   destination: {
-      //     id: selectedDestination.value
-      //   },
-      //   ipaddress: ipaddress,
-      //   status: 1,
-      //   isdelete: 0,
-      // }
-
-      // console.log(payload)
-
       const hotel = item.hotelOptionsIds.filter(data => data !== null)
       const hotelList = hotel.map(item => item.id)
 
@@ -229,11 +237,7 @@ const Itinerary = ({ isOpen, onClose }) => {
         isdelete: false,
         ipaddress: ipAddress,
         status: 0
-        // itinerary: formData,
       };
-
-      console.log(dataToSend)
-      // console.log(formData)
       try {
         axios.post(`${api.baseUrl}/itinerarys/create`, dataToSend, {
           headers: {
@@ -243,8 +247,6 @@ const Itinerary = ({ isOpen, onClose }) => {
         });
 
         alert("Itinerary created successfully");
-
-        // Reset the form and selected destination after successful submission
         setFormData([
           {
             daytitle: "",
@@ -279,7 +281,7 @@ const Itinerary = ({ isOpen, onClose }) => {
         activities: "",
         transportation: "",
         transportationDetails: "",
-      },
+      }
     ]);
     setEditorData('')
     setSelectedDestination(null);
@@ -327,7 +329,7 @@ const Itinerary = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          {formData.map((item, index) => (
+          {formData.length > 0 && formData.map((item, index) => (
             <div key={index} className="mb-6">
               <div className="shadow-md p-4 bg-white rounded-lg">
                 <div className="flex justify-between mb-4 bg-red-700 rounded">
@@ -336,14 +338,15 @@ const Itinerary = ({ isOpen, onClose }) => {
                   <button
                     type="button"
                     onClick={() => {
-                      setFormData((prevState) => {
-                        const updatedDays = [...prevState];
-                        updatedDays.splice(index, 1);
-                        return {
-                          ...prevState,
-                          updatedDays,
-                        };
-                      });
+                      handleDelete(index)
+                      // setFormData((prevState) => {
+                      //   const updatedDays = [...prevState];
+                      //   updatedDays.splice(index, 1);
+                      //   return {
+                      //     ...prevState,
+                      //     updatedDays,
+                      //   };
+                      // });
                     }}
                     className="text-white p-2 rounded font-bold"
                   >
