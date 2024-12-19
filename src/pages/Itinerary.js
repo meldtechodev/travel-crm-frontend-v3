@@ -250,7 +250,7 @@ const Itinerary = ({ isOpen, onClose }) => {
         alert("Error creating itinerary, please try again.");
       }
     })
-    setFormData[{
+    setFormData([{
       daytitle: "",
       program: "",
       breakfast: false,
@@ -259,7 +259,7 @@ const Itinerary = ({ isOpen, onClose }) => {
       activities: null,
       sightseeing: null,
       hotelOptionsIds: [null, null, null, null],
-    }]
+    }])
 
   };
 
