@@ -846,8 +846,8 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
     e.preventDefault();
 
     const destinationCoveredStr = isArray(selectedDestinations) ? selectedDestinations
-      .map((option) => option.value)
-      .join(",") : selectedDestinations !== null ? selectedDestinations.value : " ";
+      .map((option) => option.id)
+      .join(",") : selectedDestinations !== null ? selectedDestinations.id : "";
     const selectedPackagesStr = selectedPackageTheme
       .map((option) => option.label)
       .join(",");
@@ -896,8 +896,8 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
 
     formDataPackageMaster.append("pkName", formData.pkName);
 
-    formDataPackageMaster.append("fromCityId", selectedStartCity.value);
-    formDataPackageMaster.append("toCityId", selectedEndCity.value);
+    formDataPackageMaster.append("fromCityId", selectedStartCity.id);
+    formDataPackageMaster.append("toCityId", selectedEndCity.id);
     formDataPackageMaster.append("destinationCoveredId", destinationCoveredStr);
     formDataPackageMaster.append("description", editorData);
     formDataPackageMaster.append("pkCategory", selectedPackagesStr);
@@ -921,9 +921,10 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
     formDataPackageMaster.append("pkthem", selectedPackageThemeStr);
     formDataPackageMaster.append("image", pkImage);
 
-    // for (var pair of formDataPackageMaster.entries()) {
-    //   console.log(pair[0] + ' = ' + pair[1]);
-    // }
+    for (var pair of formDataPackageMaster.entries()) {
+      console.log(pair[0] + ' = ' + pair[1]);
+    }
+    // console.log(packageData)
 
     if (!packageData) {
       await axios.post(`${api.baseUrl}/packages/create`, formDataPackageMaster, {

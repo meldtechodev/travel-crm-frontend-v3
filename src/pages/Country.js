@@ -5,10 +5,10 @@ import { toast } from "react-toastify";
 import { UserContext } from "../contexts/userContext";
 import useDecryptedToken from "../hooks/useDecryptedToken";
 
-const Country = ({ isOpen, onClose, countryData, isFormEditEnabled, setIsFormEditEnabled }) => {
+const Country = ({ con, isOpen, onClose, countryData, isFormEditEnabled, setIsFormEditEnabled }) => {
   const fileInputRef = useRef(null);
 
-  const { user } = useContext(UserContext);
+  const { user, ipAddress } = useContext(UserContext);
   const token = useDecryptedToken();
 
   const [formData, setFormData] = useState({
@@ -49,7 +49,7 @@ const Country = ({ isOpen, onClose, countryData, isFormEditEnabled, setIsFormEdi
     formDatasend.append('countryName', formData.countryName);
     formDatasend.append('code', formData.code);
     formDatasend.append('pCode', formData.pCode);
-    formDatasend.append('ipAddress', formData.ipAddress);
+    formDatasend.append('ipAddress', ipAddress);
     formDatasend.append('status', formData.status);
     formDatasend.append('image', formData.image);
     formDatasend.append('createdby', user.name);
@@ -145,17 +145,32 @@ const Country = ({ isOpen, onClose, countryData, isFormEditEnabled, setIsFormEdi
     }
   }, [countryData]);
 
-  useEffect(() => {
-    axios.get(`${api.baseUrl}/ipAddress`)
-      .then((response) => {
-        setFormData({
-          ...formData, "ipAddress": response.data
-        })
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-      });
-  }, []);
+  // const [val, setval] = useState(con)
+
+  // if (val < 5 && isOpen) {
+  // axios.get(`${api.baseUrl}/ipAddress`)
+  //   .then((response) => {
+  //     setFormData({
+  //       ...formData, "ipAddress": response.data
+  //     })
+  //     console.log('country ip', response.data)
+  //   })
+  //   .catch((error) => {
+  //     console.error('Error fetching data:', error);
+  //   });
+  // }
+  // useEffect(() => {
+  // axios.get(`${api.baseUrl}/ipAddress`)
+  //   .then((response) => {
+  //     setFormData({
+  //       ...formData, "ipAddress": response.data
+  //     })
+  //     console.log('country ip', response.data)
+  //   })
+  //   .catch((error) => {
+  //     console.error('Error fetching data:', error);
+  //   });
+  // }, []);
 
 
   return (
@@ -165,7 +180,7 @@ const Country = ({ isOpen, onClose, countryData, isFormEditEnabled, setIsFormEdi
     >
       {/* "X" button positioned outside the form box */}
       <button
-        onClick={() => onClose(true)}
+        onClick={() => { onClose(true); con = '' }}
         className="absolute top-[12px] left-[-22px] font-semibold text-white text-sm bg-red-700 square px-3  py-1.5 border border-1 border-transparent hover:border-red-700 hover:bg-white hover:text-red-700"
       >
         X

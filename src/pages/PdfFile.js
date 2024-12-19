@@ -13,7 +13,7 @@ const PdfFile = ({ data, isModalOpen, onClose }) => {
 
   const { user } = useContext(UserContext)
 
-  console.log(data)
+  // console.log(data)
 
   const generatePDF = async () => {
     const element = pdfRef.current; // The HTML content to convert into a PDF
@@ -45,7 +45,7 @@ const PdfFile = ({ data, isModalOpen, onClose }) => {
         heightLeft -= pageHeight;
       }
 
-      pdf.save("generated.pdf");
+      pdf.save("meld-techo-travel-crm.pdf");
     }
 
     isModalOpen(false)
