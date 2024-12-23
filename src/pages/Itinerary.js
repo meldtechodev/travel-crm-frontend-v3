@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
-import Select from "react-select";
+import Select, { components } from "react-select";
+import CreatableSelect from "react-select/creatable";
 import axios from "axios";
 import api from "../apiConfig/config";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
@@ -9,7 +10,6 @@ import { UserContext } from "../contexts/userContext";
 const Itinerary = ({ isOpen, onClose }) => {
   const [editorData, setEditorData] = useState("");
   const [selectedDestination, setSelectedDestination] = useState(null);
-  // const [selectedActivity, setSelectedAct] = useState(null);
 
   const { user, destinationDetails, ipAddress } = useContext(UserContext)
 
@@ -21,25 +21,12 @@ const Itinerary = ({ isOpen, onClose }) => {
       lunch: false,
       dinner: false,
       hotelOptionsIds: [null, null, null, null],
-      activities: null,
-      sightseeing: null
+      roomtypes: [null, null, null, null],
+      mealspackage: [null, null, null, null],
+      activities: [null],
+      sightseeing: [null]
     }
   ]);
-
-  const RoomTypeOptions = [
-    { value: "budget", label: "Budget" },
-    { value: "deluxe", label: "Deluxe" },
-    { value: "luxury", label: "Luxury" },
-    { value: "standard", label: "Standard" },
-  ];
-  //   { value: 1, label: "Thai" },
-  //   { value: 2, label: "Indian" },
-  //   { value: 3, label: "Chineese" },
-  //   { value: 4, label: "Italian" },
-  //   { value: 5, label: "American" },
-  // ];
-  // Fetch destinations
-
 
   // Handle input changes for the current day
   const handleInputChange = (event, dayIndex) => {
@@ -127,8 +114,21 @@ const Itinerary = ({ isOpen, onClose }) => {
       }).catch(error =>
         console.error('Error fetching country data:', error)
       )
-
   }, []);
+
+  const CustomOption = (props) => {
+    return (
+      <components.Option {...props}>
+        <input
+          type="checkbox"
+          checked={props.isSelected}
+          onChange={() => null}
+          style={{ marginRight: 10 }}
+        />
+        {props.label}
+      </components.Option>
+    );
+  };
 
   const handleActivityChange = (selectedOption, index) => {
     const update = formData.map((item, i) => i === index ? { ...item, activities: selectedOption } : item)
@@ -144,7 +144,7 @@ const Itinerary = ({ isOpen, onClose }) => {
   const handleDestinationChange = (selectedOption) => {
     setViewHotelList([])
     setSelectedDestination(selectedOption);
-    let hotel = hotelList.filter(item => item.destination.id === selectedOption.value)
+    let hotel = hotelList.filter(item => item.destination.id === selectedOption.id)
     setViewHotelList(hotel)
   };
 
@@ -156,9 +156,21 @@ const Itinerary = ({ isOpen, onClose }) => {
     hotelUpdate[hIndex] = selected;
     let updateRoomtype = roomTypeList.filter(item => item.hotel?.id === selected.value)
     setViewRoomTypeList(updateRoomtype)
-
-
     const update = formData.map((prev, i) => mainIndex === i ? { ...prev, hotelOptionsIds: hotelUpdate } : prev)
+    setFormData(update)
+  }
+  const handleRoomTypeChange = (select, rIndex, mainIndex) => {
+    let updateData = [...formData]
+    let roomUpdate = [...updateData[mainIndex].roomtypes]
+    roomUpdate[rIndex] = select;
+    let update = formData.map((prev, i) => mainIndex === i ? { ...prev, roomtypes: roomUpdate } : prev)
+    setFormData(update)
+  }
+  const handleMealsPackage = (select, mIndex, mainIndex) => {
+    let updateData = [...formData]
+    let roomUpdate = [...updateData[mainIndex].mealspackage]
+    roomUpdate[mIndex] = select;
+    let update = formData.map((prev, i) => mainIndex === i ? { ...prev, mealspackage: roomUpdate } : prev)
     setFormData(update)
   }
 
@@ -176,9 +188,11 @@ const Itinerary = ({ isOpen, onClose }) => {
           breakfast: false,
           lunch: false,
           dinner: false,
-          activities: null,
-          sightseeing: null,
           hotelOptionsIds: [null, null, null, null],
+          roomtypes: [null, null, null, null],
+          mealspackage: [null, null, null, null],
+          activities: [null],
+          sightseeing: [null]
         }])
 
     } else {
@@ -190,9 +204,11 @@ const Itinerary = ({ isOpen, onClose }) => {
         breakfast: false,
         lunch: false,
         dinner: false,
-        activities: null,
-        sightseeing: null,
         hotelOptionsIds: [null, null, null, null],
+        roomtypes: [null, null, null, null],
+        mealspackage: [null, null, null, null],
+        activities: [null],
+        sightseeing: [null]
       }
       ]);
     }
@@ -202,10 +218,81 @@ const Itinerary = ({ isOpen, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    formData.map(item => {
+    for (let i = 0; formData.length > i; i++) {
+      let activit = formData[i].activities.filter(it => it.__isNew__)
+      // let a = [...activit.map(item => item.label)]
+      let a = []
+
+      activit.length > 0 && activit.forEach((act) => {
+        let activityPayload = {
+          "title": act.label,
+          "ipaddress": ipAddress,
+          "status": 1,
+          "isdelete": 0,
+          "createdby": user.name,
+          "modifiedby": user.name
+        }
+        axios.post(`${api.baseUrl}/activities/create`, activityPayload, {
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
+        }).then(response => {
+          a.push(response.data.id)
+          setActivityList(...activityList, { ...response.data, label: response.data.title, value: response.data.id })
+          console.log(response.data)
+        })
+          .catch(error => console.error("error creating activities in Itinary ", error))
+      });
+
+      activit = formData[i].activities.filter(ite => !ite.__isNew__)
+      activit = activit.map(ite => ite.id)
+
+      let sight = formData[i].sightseeing.filter(it => it.__isNew__)
+      // let s = [...sight.map(item => item.label)]
+      let s = []
+      sight.length > 0 && sight.forEach((sight) => {
+        let sightseeingPayload = {
+          "title": sight.label,
+          "ipaddress": ipAddress,
+          "status": 1,
+          "isdelete": 0,
+          "createdby": user.name,
+          "modifiedby": user.name
+        }
+        axios.post(`${api.baseUrl}/sightseeing/create`, sightseeingPayload, {
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
+        })
+          .then(response => {
+            s.push(response.data.id)
+            setSiteSeeingList(...siteSeeingList, { ...response.data, label: response.data.title, value: response.data.id })
+            console.log(response.data)
+          })
+          .catch(error => console.error("error creating activities in Itinary ", error))
+      })
+      // formData[i].activities = [...activit, ...a]
+      // formData[i].sightseeing = [...sight, ...s]
+      sight = formData[i].sightseeing.filter(ite => !ite.__isNew__)
+      sight = sight.map(ite => ite.id)
+
+      formData[i].activities = [...activit, ...a]
+      formData[i].sightseeing = [...sight, ...s]
+
+      // let update = formData.map((item, ind) => ind === i ? { ...item, activities: [...activit, ...a], sightseeing: [...sight, ...s] } : item)
+      // setFormData(update)
+    }
+    console.log(formData)
+
+    formData.forEach((item, i) => {
       const hotel = item.hotelOptionsIds.filter(data => data !== null)
       const hotelList = hotel.map(item => item.id)
 
+
+      let room = item.roomtypes.filter(item => item !== null)
+      let mealspack = item.mealspackage.filter(item => item !== null)
 
       var meald = ""
       if (item.breakfast) {
@@ -217,27 +304,31 @@ const Itinerary = ({ isOpen, onClose }) => {
       if (item.dinner) {
         meald = meald + (item.breakfast ? ', Dinner' : 'Dinner')
       }
+      // let sight = item.sightseeing.map(item => item.id)
 
       const dataToSend = {
         daytitle: item.daytitle,
         program: item.program,
         meals: meald,
-        activities: {
-          id: item.activities ? item.activities.id : null
-        },
-        sightseeing: {
-          id: item.sightseeing ? item.sightseeing.id : null
-        },
+        activitiesIds: item.activities,
+        sightseeingIds: item.sightseeing,
         hotelOptionIds: hotelList,
         destination: {
           id: selectedDestination ? selectedDestination.value : null,
         },
+        roomtypes: {
+          id: room.length > 0 ? room[0].id : 1
+        },
+        mealspackage: {
+          id: mealspack.length > 0 ? mealspack[0].id : 1
+        },
         createdby: user.name,
         modifiedby: user.name,
-        isdelete: false,
+        isdelete: 0,
         ipaddress: ipAddress,
-        status: 0
+        status: 1
       };
+      console.log(dataToSend)
       try {
         axios.post(`${api.baseUrl}/itinerarys/create`, dataToSend, {
           headers: {
@@ -250,35 +341,32 @@ const Itinerary = ({ isOpen, onClose }) => {
         alert("Error creating itinerary, please try again.");
       }
     })
+    // setFormData([{
+    //   daytitle: "",
+    //   program: "",
+    //   breakfast: false,
+    //   lunch: false,
+    //   dinner: false,
+    //   activities: [null],
+    //   sightseeing: [null],
+    //   hotelOptionsIds: [null, null, null, null],
+    // }])
+    // setEditorData("")
+
+  };
+
+  // Handle form reset
+  const handleReset = () => {
     setFormData([{
       daytitle: "",
       program: "",
       breakfast: false,
       lunch: false,
       dinner: false,
-      activities: null,
-      sightseeing: null,
+      activities: [null],
+      sightseeing: [null],
       hotelOptionsIds: [null, null, null, null],
-    }])
-
-  };
-
-  // Handle form reset
-  const handleReset = () => {
-    setFormData([
-      {
-        title: "",
-        meals: {
-          breakfast: false,
-          lunch: false,
-          dinner: false,
-        },
-        description: "",
-        activities: "",
-        transportation: "",
-        transportationDetails: "",
-      }
-    ]);
+    }]);
     setEditorData('')
     setSelectedDestination(null);
   };
@@ -482,6 +570,8 @@ const Itinerary = ({ isOpen, onClose }) => {
                                 </label>
                                 <Select
                                   options={viewRoomTypeList}
+                                  value={item.roomtypes[i]}
+                                  onChange={(select) => handleRoomTypeChange(select, i, index)}
                                   placeholder="Rating"
                                   className="mt-1"
                                 />
@@ -492,6 +582,8 @@ const Itinerary = ({ isOpen, onClose }) => {
                                 </label>
                                 <Select
                                   options={mealTypeOptions}
+                                  value={item.mealspackage[i]}
+                                  onChange={(select) => handleMealsPackage(select, i, index)}
                                   placeholder="Meals"
                                   className="mt-1"
                                 />
@@ -622,12 +714,23 @@ const Itinerary = ({ isOpen, onClose }) => {
                     >
                       Activities
                     </label>
-                    <Select
+                    {/* <Select
                       options={activityList}
                       placeholder="Activity"
                       value={item.activities}
                       className="mt-1"
                       onChange={(e) => handleActivityChange(e, index)}
+                    /> */}
+                    <CreatableSelect
+                      isMulti
+                      value={item.activities}
+                      onChange={(e) => handleActivityChange(e, index)}
+                      options={activityList}
+                      closeMenuOnSelect={false}
+                      hideSelectedOptions={false}
+                      components={{ Option: CustomOption }}
+                      isClearable={true}
+                      placeholder="Type or select options..."
                     />
                   </div>
                 </div>
@@ -645,13 +748,25 @@ const Itinerary = ({ isOpen, onClose }) => {
                     >
                       Sight View
                     </label>
-                    <Select
+                    {/* <Select
                       options={siteSeeingList}
                       placeholder="Site Seeing"
                       className="mt-1"
                       value={item.sightseeing}
                       onChange={(e) => handleSiteseeingChange(e, index)}
+                    /> */}
+                    <CreatableSelect
+                      isMulti
+                      value={item.sightseeing}
+                      onChange={(e) => handleSiteseeingChange(e, index)}
+                      options={siteSeeingList}
+                      closeMenuOnSelect={false}
+                      hideSelectedOptions={false}
+                      components={{ Option: CustomOption }}
+                      isClearable={true}
+                      placeholder="Type or select options..."
                     />
+
                   </div>
                 </div>
                 {/* </div> */}

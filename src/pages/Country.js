@@ -12,14 +12,14 @@ const Country = ({ con, isOpen, onClose, countryData, isFormEditEnabled, setIsFo
   const token = useDecryptedToken();
 
   const [formData, setFormData] = useState({
-    countryName: "", code: "", pCode: "", ipAddress: "", status: true,
+    countryName: "", code: "", pCode: "", status: true,
     image: null,
   });
 
   const handleReset = () => {
     setFormData({
       countryName: "", code: "", pCode: "",
-      image: null,
+      image: null, status: true
     })
     if (fileInputRef.current) {
       fileInputRef.current.value = "";  // Clear the file input
@@ -56,8 +56,6 @@ const Country = ({ con, isOpen, onClose, countryData, isFormEditEnabled, setIsFo
     formDatasend.append('modifiedby', user.name);
     formDatasend.append('isdelete', false);
 
-    console.log(formData);
-
     if (formData.countryName === '' || formData.code === '' || formData.pCode === '' || formData.image === null) {
       toast.error("Please fill all the fields...", {
         position: "top-center",
@@ -89,18 +87,9 @@ const Country = ({ con, isOpen, onClose, countryData, isFormEditEnabled, setIsFo
             draggable: true,
             progress: undefined,
           });
-          // TODO: Refetch the country Data
-          // setFormData({
-          //   ...formData,
-          //   countryName: "", code: "", pCode: "", image: null, status: true
-          // });
-          // if (fileInputRef.current) {
-          //   fileInputRef.current.value = "";
-          // }
         })
         .catch(error => {
           toast.error("Error updating country...");
-          console.log(error)
         });
     } else {
       // Create new country
@@ -122,7 +111,6 @@ const Country = ({ con, isOpen, onClose, countryData, isFormEditEnabled, setIsFo
             progress: undefined,
           });
           setFormData({
-            ...formData,
             countryName: "", code: "", pCode: "", image: null, status: true
           });
           if (fileInputRef.current) {
@@ -134,44 +122,15 @@ const Country = ({ con, isOpen, onClose, countryData, isFormEditEnabled, setIsFo
   };
 
   useEffect(() => {
-
     if (countryData && countryData.id) {
       setFormData(countryData);
     } else {
       setFormData({
-        countryName: "", code: "", pCode: "", ipAddress: "", status: true,
+        countryName: "", code: "", pCode: "", status: true,
         image: null,
       });
     }
   }, [countryData]);
-
-  // const [val, setval] = useState(con)
-
-  // if (val < 5 && isOpen) {
-  // axios.get(`${api.baseUrl}/ipAddress`)
-  //   .then((response) => {
-  //     setFormData({
-  //       ...formData, "ipAddress": response.data
-  //     })
-  //     console.log('country ip', response.data)
-  //   })
-  //   .catch((error) => {
-  //     console.error('Error fetching data:', error);
-  //   });
-  // }
-  // useEffect(() => {
-  // axios.get(`${api.baseUrl}/ipAddress`)
-  //   .then((response) => {
-  //     setFormData({
-  //       ...formData, "ipAddress": response.data
-  //     })
-  //     console.log('country ip', response.data)
-  //   })
-  //   .catch((error) => {
-  //     console.error('Error fetching data:', error);
-  //   });
-  // }, []);
-
 
   return (
     <div

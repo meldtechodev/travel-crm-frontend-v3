@@ -58,8 +58,8 @@ const State = ({ isOpen, onClose, stateData, isFormEditEnabled, setIsFormEditEna
   };
 
   const [formData, setFormData] = useState({
-    stateName: "", code: "", ipAddress: "", status: true,
-    image: null, created_by: "", modified_by: ""
+    stateName: "", code: "", status: true,
+    image: null
   });
 
   const handleSubmit = async (e) => {
@@ -114,8 +114,6 @@ const State = ({ isOpen, onClose, stateData, isFormEditEnabled, setIsFormEditEna
             draggable: true,
             progress: undefined,
           });
-          // Reset the form
-          // handleReset();
         })
         .catch(error => {
           toast.error("Error updating state...");
@@ -123,7 +121,6 @@ const State = ({ isOpen, onClose, stateData, isFormEditEnabled, setIsFormEditEna
         });
 
     } else {
-      // Create state API call
       await axios.post(`${api.baseUrl}/state/create`, formDataToSend, {
         headers: {
           // 'Authorization': `Bearer ${token}`,

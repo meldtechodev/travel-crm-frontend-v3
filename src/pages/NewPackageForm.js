@@ -6,9 +6,7 @@ import CreatableSelect from "react-select/creatable";
 import api from "../apiConfig/config";
 import axios from "axios";
 import PackageItinerary from "./PackageItinerary";
-import { data } from "autoprefixer";
 import { toast } from "react-toastify";
-import e from "cors";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
 import { isArray } from "chart.js/helpers";
 import { UserContext } from "../contexts/userContext";
@@ -36,8 +34,6 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
   const [selectedStartCity, setSelectedStartCity] = useState();
   const [selectedEndCity, setSelectedEndCity] = useState();
   const [selectedSupplier, SetSelectedSupplier] = useState(null);
-  const [addItineraryDay, setAddItineraryDay] = useState(1);
-  const [packageImage, setPackageImage] = useState(null);
   const [selectedHotelCity, setSelectedHotelCity] = useState(null);
   const [destination, setDestinations] = useState([]);
   const [packageCategories, setPackageCategories] = useState([]);
@@ -56,7 +52,6 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
   const [selectedDestinationDeparture, setSelectedDestinationDeparture] =
     useState([]);
   const [pkImage, setPkImage] = useState(null);
-  const [itinarayEditorData, setItinarayEditorData] = useState("");
 
   const [selectedPackageTheme, setSelectedPackageTheme] = useState([]);
 
@@ -64,14 +59,6 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showItiForm, setShowItiForm] = useState(false);
   const [showIti, setShowIti] = useState([]);
-
-  const [state, setState] = useState([
-    {
-      startDate: new Date(),
-      endDate: new Date(),
-      key: "selection",
-    },
-  ]);
 
   const { user, ipAddress } = useContext(UserContext)
 
@@ -124,7 +111,6 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
       [index]: !prevOpenItems[index], // Toggle the clicked item
     }));
   };
-  const [allItinerary, setAllItineray] = useState([]);
   const [displayIti, setDisplayIti] = useState([]);
   const [listTransport, setListTransport] = useState([]);
   const [policyList, setPolicyList] = useState([]);
@@ -139,7 +125,6 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
           value: item.id,
           label: item.daytitle,
         }));
-        setAllItineray(response.data);
         setDisplayIti(formatIti);
 
         const formatTransport = response[1].data.content.map((item) => ({
@@ -162,14 +147,11 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
 
   const [allCountry, setAllCountry] = useState([])
   const [allState, setAllState] = useState([])
-  const [allList, setAllList] = useState([])
   const [domesticList, setDomesticList] = useState([])
   const [internationalList, setInternationalList] = useState([])
 
 
   useEffect(() => {
-
-
     axios.get(`${api.baseUrl}/destination/getallDestination`)
       .then(response => {
         const formatDestination = response.data.map((item) => ({
@@ -227,7 +209,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
   useEffect(() => {
 
     Promise.all([
-      axios.get(`${api.baseUrl}/destination/getall`), //index 0
+      axios.get(`${api.baseUrl}/destination/getallDestination`), //index 0
       axios.get(`${api.baseUrl}/vendor/getAll`), //index  1
       axios.get(`${api.baseUrl}/packageTheme/getAll`), //index 2
       axios.get(`${api.baseUrl}/inclusion/getall`), //index 3
@@ -241,7 +223,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
       axios.get(`${api.baseUrl}/country/getall`), //index 11
       axios.get(`${api.baseUrl}/state/getall`), //index 12
     ]).then((response) => {
-      const formattedOptions = response[0].data.content.map((item) => ({
+      const formattedOptions = response[0].data.map((item) => ({
         value: item.id, // or any unique identifier
         label: item.destinationName, // or any display label you want
       }));
@@ -355,10 +337,6 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
       index === list ? { ...prev, hotel: updatedHotels } : prev
     );
     setFormItinaryData(updateVal);
-    // console.log(updatedHotels[i])
-    // console.log(result)
-    // console.log(updatedHotels)
-    // console.log(formItinaryData)
   };
 
   const handleRoomTypeChange = (selectedOption, index, i) => {
@@ -402,26 +380,6 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
     setPolicyList(desc);
   };
 
-  const CustomOptions = (props) => {
-    return (
-      <components.Option {...props}>
-        {props.data.value === "add-form" ? (
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              setIsModalOpen(true); // Open modal on button click
-            }}
-            className="text-blue-500 hover:text-blue-700 focus:outline-none"
-          >
-            {props.data.label}
-          </button>
-        ) : (
-          props.children
-        )}
-      </components.Option>
-    );
-  };
-  // Custom Option Component
   const CustomOption = (props) => {
     return (
       <components.Option {...props}>
@@ -501,7 +459,6 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
     setFormItinaryData(updateVal);
   };
 
-  const [hotelId, setHotelId] = useState([]);
 
   const handleHotelSelect = (selectedOption, inde, hotelVal) => {
     const updatedHotels = [...formItinaryData[inde].hotel];
@@ -640,7 +597,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
       }
       setSelectedHotelCity(null);
       setNights(0);
-      iti.map((i) => {
+      iti.forEach((i) => {
         showIti.push(i);
       });
     } else {
@@ -773,7 +730,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
         },
         packid: packageData.id,
       };
-      console.log(payload)
+      // console.log(payload)
 
       await axios
         .post(`${api.baseUrl}/packageitinerary/create`, payload, {
@@ -783,7 +740,6 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
           },
         })
         .then((response) => {
-          // console.log(response.data)
           setPackageItinerayData(response.data);
         })
         .catch((error) => console.error(error));
@@ -794,7 +750,6 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
         let upd = formItinaryData.map((item, l) =>
           i === l ? { ...item, hotel: updateVal } : item
         );
-        // console.log(upd);
 
         // let mel =
         setFormItinaryData(upd);
@@ -816,7 +771,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
           },
           mealspackageIds: [formItinaryData[i].hotel[j].mealType.value],
         };
-        console.log(payloadItineararyDetails);
+        // console.log(payloadItineararyDetails);
 
         await axios.post(`${api.baseUrl}/packageitinerarydetails/create`, payloadItineararyDetails,
           {
@@ -827,14 +782,12 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
           }
         )
           .then((response) => {
-            console.log(response.data)
             setPackageItinerayDetails(response.data);
-            alert("created...");
           })
           .catch((error) => console.error(error));
       }
     }
-    // setPage(3)
+    setPage(3)
   };
 
   const handlePackageType = () => {
@@ -953,13 +906,6 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
 
     }
   };
-  const handleFileChange = (e) => {
-    setFormData({
-      ...formData,
-      image: e.target.files[0],
-    });
-  };
-  const handleSupplierChange = () => { };
 
   const handleStartCityChange = (selectedStartCity) => {
     setSelectedStartCity(selectedStartCity);
@@ -1002,14 +948,6 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
   const handleChange = (selectedOptions) => {
     setSelectedDestinations(selectedOptions);
     // console.log(selectedOptions);
-  };
-
-  const handleItineraryChange = (selectedOption, index) => {
-    setSelectedItineraries({ ...selectedItineraries, selectedOption });
-    // selectedItineraries.push(selectedOptions)
-    // console.log(typeof selectedItineraries);
-    // console.log(selectedItineraries);
-    // console.log(i)
   };
 
   const handleInclusionChange = (selectedOptions) => {
@@ -1077,9 +1015,6 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
   };
-
-  const [inputStartSearch, setInputStartSearch] = useState("")
-  const [inputEndSearch, setInputEndSearch] = useState("")
   const [inputSearch, setInputSearch] = useState({ coveredDid: "", startDid: "", endDid: "", supplier: "", packageTheme: "" })
 
   return (

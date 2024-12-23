@@ -139,7 +139,7 @@ const Destination = ({ isOpen, onClose, destinationData, isFormEditEnabled, setI
     formDataToSend.append("state.id", stateId);
     formDataToSend.append("keyofattractions", tagsString);
     formDataToSend.append("image", newImage);
-    formDataToSend.append('created_by', user.created_by);
+    formDataToSend.append('created_by', user.name);
     formDataToSend.append('modified_by', user.name);
     formDataToSend.append('isdelete', false);
 
@@ -160,7 +160,7 @@ const Destination = ({ isOpen, onClose, destinationData, isFormEditEnabled, setI
       // Edit Mode: Update request
       await axios.put(`${api.baseUrl}/destination/updatebyid/${destinationData.id}`, formDataToSend, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          // 'Authorization': `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
           'Access-Control-Allow-Origin': '*',
         },
@@ -185,7 +185,7 @@ const Destination = ({ isOpen, onClose, destinationData, isFormEditEnabled, setI
       // Create Mode: Create request
       await axios.post(`${api.baseUrl}/destination/create`, formDataToSend, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          // 'Authorization': `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
           'Access-Control-Allow-Origin': '*',
         },
