@@ -341,16 +341,18 @@ const Itinerary = ({ isOpen, onClose }) => {
         alert("Error creating itinerary, please try again.");
       }
     })
-    // setFormData([{
-    //   daytitle: "",
-    //   program: "",
-    //   breakfast: false,
-    //   lunch: false,
-    //   dinner: false,
-    //   activities: [null],
-    //   sightseeing: [null],
-    //   hotelOptionsIds: [null, null, null, null],
-    // }])
+    setFormData([{
+      daytitle: "",
+      program: "",
+      breakfast: false,
+      lunch: false,
+      dinner: false,
+      hotelOptionsIds: [null, null, null, null],
+      roomtypes: [null, null, null, null],
+      mealspackage: [null, null, null, null],
+      activities: [null],
+      sightseeing: [null]
+    }])
     // setEditorData("")
 
   };
@@ -363,9 +365,11 @@ const Itinerary = ({ isOpen, onClose }) => {
       breakfast: false,
       lunch: false,
       dinner: false,
-      activities: [null],
-      sightseeing: [null],
       hotelOptionsIds: [null, null, null, null],
+      roomtypes: [null, null, null, null],
+      mealspackage: [null, null, null, null],
+      activities: [null],
+      sightseeing: [null]
     }]);
     setEditorData('')
     setSelectedDestination(null);
