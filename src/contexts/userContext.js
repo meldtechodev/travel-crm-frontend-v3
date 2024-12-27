@@ -87,60 +87,6 @@ export const UserProvider = ({ children }) => {
                 let mod = res.data.filter(item => item.designations.id === u.designation.id)
                 let filtmod = mod.map(item => item.modules)
                 setModule(filtmod)
-
-                // axios.get(`${api.baseUrl}/designationPermission/getall`)
-                //   .then(response => {
-                //     // console.log(response.data)
-                //     const perm = response.data.filter(item => item.designations.id === u.designation.id);
-                //     const p = perm.map(item => item.permissions)
-                //     let arr = new Set(p.map(item => item.modules.parentId))
-                //     let moduleList = [...arr]
-                //     console.log(p)
-
-                //     let subModuleSet = new Set(p.map(items => items.modules.id))
-
-
-                //     let subModuleArr = [...subModuleSet]
-                //     // console.log(subModuleArr)
-
-                //     module.forEach(items => {
-                //       // console.log(items)
-                //       if (items.parentId !== 0) {
-                //         for (let i = 0; i < subModuleArr.length; i++) {
-                //           if (subModuleArr[i] === items.id) {
-                //             console.log(items)
-                //             let check = childModule.filter(it => it.id === items.id)
-                //             if (check.length === 0) {
-                //               console.log(items)
-                //               childModule.push(items)
-                //             }
-                //           }
-                //         }
-                //       }
-                //       // console.log(items)
-                //     })
-                //     // console.log(childModule)
-                //     // console.log(childModule)
-
-
-
-                //     module.forEach(items => {
-                //       if (items.parentId === 0 && (items.moduleName !== 'Quickstart' || items.moduleName !== 'Dashboard')) {
-                //         for (let i = 0; i < moduleList.length; i++) {
-                //           if (moduleList[i] === items.id) {
-                //             let check = parentModule.filter(it => it.id === items.id)
-                //             if (check.length === 0) {
-                //               parentModule.push(items)
-                //             }
-                //           }
-                //         }
-                //       }
-                //     })
-                //     console.log(p)
-
-
-                //   })
-
               })
               .catch(error => console.error(error));
 
@@ -152,27 +98,14 @@ export const UserProvider = ({ children }) => {
         setIsLoading(false)
       })
 
-
-    axios.get(`${api.baseUrl}/country/getallcountry`)
-      .then(response => {
-        const format = response.data.map(item => ({
-          ...item,
-          label: item.countryName,
-          value: item.id
-        }))
-        setCountryDetails(format);
-      })
-      .catch((error) => {
-        console.error('Error fetching Room Type Name data :', error);
-      });
-
     axios.get(`${api.baseUrl}/ipAddress`)
       .then(response => setIpAddress(response.data))
       .catch((error) => {
         console.error('Error fetching Room Type Name data :', error);
       });
+  }, []);
 
-
+  useEffect(() => {
     axios.get(`${api.baseUrl}/state/getAllState`)
       .then(response => {
         const format = response.data.map(item => ({
@@ -185,8 +118,24 @@ export const UserProvider = ({ children }) => {
       .catch((error) => {
         console.error('Error fetching Room Type Name data :', error);
       });
+  }, [])
 
+  useEffect(() => {
+    axios.get(`${api.baseUrl}/country/getallcountry`)
+      .then(response => {
+        const format = response.data.map(item => ({
+          ...item,
+          label: item.countryName,
+          value: item.id
+        }))
+        setCountryDetails(format);
+      })
+      .catch((error) => {
+        console.error('Error fetching Room Type Name data :', error);
+      });
+  }, [])
 
+  useEffect(() => {
     axios.get(`${api.baseUrl}/destination/getallDestination`)
       .then(response => {
         const format = response.data.map(item => ({
@@ -199,7 +148,7 @@ export const UserProvider = ({ children }) => {
       .catch((error) => {
         console.error('Error fetching Room Type Name data :', error);
       });
-  }, []);
+  }, [])
 
   const handleLogout = () => {
     localStorage.clear();

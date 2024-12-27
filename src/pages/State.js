@@ -6,7 +6,6 @@ import { toast } from "react-toastify";
 import { UserContext } from "../contexts/userContext";
 
 const State = ({ isOpen, onClose, stateData, isFormEditEnabled, setIsFormEditEnabled }) => {
-  // const [countryDetails, setCountryDetails] = useState([])
   const [selectedOption, setSelectedOption] = useState(null);
   const [countryId, setCountryId] = useState(null)
 
@@ -34,7 +33,8 @@ const State = ({ isOpen, onClose, stateData, isFormEditEnabled, setIsFormEditEna
 
   const handleReset = () => {
     setFormData({
-      stateName: "", code: "", image: null
+      stateName: "", code: "", status: true,
+      image: null
     });
     if (fileInputRef.current) {
       fileInputRef.current.value = "";  // Clear the file input
@@ -114,6 +114,8 @@ const State = ({ isOpen, onClose, stateData, isFormEditEnabled, setIsFormEditEna
             draggable: true,
             progress: undefined,
           });
+          handleReset()
+          onClose();
         })
         .catch(error => {
           toast.error("Error updating state...");
@@ -138,8 +140,8 @@ const State = ({ isOpen, onClose, stateData, isFormEditEnabled, setIsFormEditEna
             draggable: true,
             progress: undefined,
           });
-          // Reset the form
           handleReset();
+          onClose()
         })
         .catch(error => console.error('Error creating state:', error));
     }
@@ -176,6 +178,7 @@ const State = ({ isOpen, onClose, stateData, isFormEditEnabled, setIsFormEditEna
           </h3>
         </div>
         <div className=" mb-4">
+          {/* {country.map((item, i) => <>{item} + {i}</>)} */}
 
           <label htmlFor="status" className="block text-sm font-medium">
             Country

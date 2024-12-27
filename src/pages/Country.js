@@ -3,13 +3,11 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import api from "../apiConfig/config";
 import { toast } from "react-toastify";
 import { UserContext } from "../contexts/userContext";
-import useDecryptedToken from "../hooks/useDecryptedToken";
 
 const Country = ({ con, isOpen, onClose, countryData, isFormEditEnabled, setIsFormEditEnabled }) => {
   const fileInputRef = useRef(null);
 
   const { user, ipAddress } = useContext(UserContext);
-  const token = useDecryptedToken();
 
   const [formData, setFormData] = useState({
     countryName: "", code: "", pCode: "", status: true,
@@ -87,6 +85,13 @@ const Country = ({ con, isOpen, onClose, countryData, isFormEditEnabled, setIsFo
             draggable: true,
             progress: undefined,
           });
+          setFormData({
+            countryName: "", code: "", pCode: "", image: null, status: true
+          });
+          if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+          }
+          onClose()
         })
         .catch(error => {
           toast.error("Error updating country...");
@@ -116,6 +121,7 @@ const Country = ({ con, isOpen, onClose, countryData, isFormEditEnabled, setIsFo
           if (fileInputRef.current) {
             fileInputRef.current.value = "";
           }
+          onClose()
         })
         .catch(error => console.log(error));
     }

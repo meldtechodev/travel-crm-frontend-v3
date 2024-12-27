@@ -26,7 +26,7 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
   const [contactEmail, setContactEmail] = useState("");
   const [hotelAddress, setHotelAddress] = useState("");
   const [hotelPincode, setHotelPincode] = useState("");
-  const [status, setStatus] = useState(null);
+  const [status, setStatus] = useState({ value: true, label: "Active" });
   const [roomMaster, setRoomMaster] = useState([]);
   const [bedSize, setBedSize] = useState("");
   const [maxPerson, setMaxPerson] = useState("");
@@ -36,9 +36,6 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
   const [thirdPartyPrice, setThirdPartyPrice] = useState("");
   const [addRoomPage, setAddRoomPage] = useState(1)
 
-  // const [countryDetails, setCountryDetails] = useState([])
-  // const [stateDetails, setStateDetails] = useState([])
-  // const [destinationDetails, setDestinationDetails] = useState([])
   const [stateData, setStateData] = useState([])
   const [destinationOption, setDestinationOption] = useState([])
   const [roomsSelected, setRoomsSelected] = useState([])
@@ -152,6 +149,7 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
 
     const newData = destinationDetails.filter(data => stateSelected.value === data.state.id);
     const formattedOptions = newData.map(item => ({
+      ...item,
       value: item.id, // or any unique identifier
       label: item.destinationName // or any display label you want
     }));
@@ -209,9 +207,6 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
         console.error('Error fetching Room Type Name data :', error);
       });
 
-  }, []);
-
-  useEffect(() => {
     axios.get(`${api.baseUrl}/rooms/getAll`)
       .then(response => {
         const formattedOptions = response.data.content.map(item => ({
@@ -229,7 +224,7 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
       .catch((error) => {
         console.error('Error fetching Room Type Name data :', error);
       });
-  }, []);
+  }, [isOpen]);
 
   const handleChange = (i, selectedOption) => {
     const updatedSelections = [...allSelectedRoomType];
@@ -313,7 +308,7 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
           }
         })
           .then((response) => {
-            console.log(response.data)
+            // console.log(response.data)
             roomTypeId.push(response.data.id)
           })
           .catch(error => console.error(error));
@@ -422,12 +417,23 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
           progress: undefined,
         });
         setHotelData(response.data)
+        setCurrentPage((prev) => prev + 1);
+        const data = formDataRoomMaster.filter(item => item.status === true)
+        setRoomsSelected(data)
       })
-      .catch(error => console.error(error));
+      .catch(error => {
+        console.error(error);
+        toast.error('Error', {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      });
 
-    setCurrentPage((prev) => prev + 1);
-    const data = formDataRoomMaster.filter(item => item.status === true)
-    setRoomsSelected(data)
   }
 
   const handleSubmit = async (e) => {
@@ -479,12 +485,23 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
         }
       })
         .then(async (response) => {
+
         })
         .catch(error => console.log(error));
       val += 1;
     }
-    alert("done")
+    toast.success('Hotel Room Price saved successfully.', {
+      position: "top-center",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
     onClose();
+    setCurrentPage(0)
+
   };
 
   const pages = [
@@ -804,7 +821,9 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
         </div>
       ))}
       <div className="flex justify-center w-full">
-        <button className="bg-green-700 text-white px-4 py-2" onClick={handleAdd}>Add</button>
+        {roomsSelected.length > totalRoomDetails.length &&
+          <button className="bg-green-700 text-white px-4 py-2" onClick={handleAdd}>Add</button>
+        }
       </div>
 
     </div>,

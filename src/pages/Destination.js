@@ -176,6 +176,7 @@ const Destination = ({ isOpen, onClose, destinationData, isFormEditEnabled, setI
             progress: undefined,
           });
           handleReset();
+          onClose();
         })
         .catch(error => {
           toast.error('Error updating destination.');
@@ -201,6 +202,7 @@ const Destination = ({ isOpen, onClose, destinationData, isFormEditEnabled, setI
             progress: undefined,
           });
           handleReset();
+          onClose()
         })
         .catch(error => console.error(error));
     }

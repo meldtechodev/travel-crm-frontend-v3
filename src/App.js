@@ -66,7 +66,7 @@ const App = () => {
   }
 
 
-  if (isLoading && !isAuthenticated) {
+  if (isLoading && isAuthenticated) {
     return (
       <div className="flex w-full h-screen items-center justify-center">
         <img src="/assets/images/Loaders/loader-updated.gif" alt="Loading..." />
@@ -76,7 +76,7 @@ const App = () => {
 
   return (
     <Routes>
-      {isAuthenticated && allUsers.length !== 0 ?
+      {isAuthenticated ?
         <>
           <Route path="/" element={<Navigate to="/home" replace />} />
           <Route path="/home/*" element={
@@ -89,6 +89,7 @@ const App = () => {
           <Route exact path="/signup" element={<AdminConfiguration />} />
           <Route exact path="/success" element={<SuccessPage />} />
         </>}
+
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route exact path="/login" element={<Login />} />
     </Routes>

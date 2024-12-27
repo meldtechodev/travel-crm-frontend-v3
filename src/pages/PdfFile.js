@@ -13,7 +13,7 @@ const PdfFile = ({ data, isModalOpen, onClose }) => {
 
   const { user } = useContext(UserContext)
 
-  // console.log(data)
+  console.log(data)
 
   const generatePDF = async () => {
     const element = pdfRef.current; // The HTML content to convert into a PDF
@@ -122,7 +122,7 @@ const PdfFile = ({ data, isModalOpen, onClose }) => {
             </p>
           </div>
         </div>
-        <div class="highlightHeading">
+        {/* <div class="highlightHeading">
           <h3>Highlights</h3>
           <div class="highlights">
             <div class="highlight-item">
@@ -164,8 +164,8 @@ const PdfFile = ({ data, isModalOpen, onClose }) => {
               <p>Selected Meals Included</p>
             </div>
           </div>
-        </div>
-        <div class="viewYourQuotes">
+        </div> */}
+        <div class="viewYourQuotes mt-5">
           <div class="viewYourQuotesLeft">
             <h4>
               <img src="/assets/images/pdf/luggage.png" width="100%" alt="luggage-img" />
@@ -247,7 +247,9 @@ const PdfFile = ({ data, isModalOpen, onClose }) => {
                   Day Title: {item.daytitle} Meals: {item.meals ? item.meals : 'Not Included'}, Sightseeing: {item.sightseeingIds}
                   <hr />
                   <br />
-                  {item.program}
+                  <div
+                    dangerouslySetInnerHTML={{ __html: item.program }}
+                  />
                 </td>
               </tr>
             )}
@@ -471,7 +473,10 @@ const PdfFile = ({ data, isModalOpen, onClose }) => {
                   </p>
                   <p>{item.sight}
                   </p>
-                  <p>{item.program}
+                  <p>
+                    <div
+                      dangerouslySetInnerHTML={{ __html: item.program }}
+                    />
 
                   </p>
                 </div>
@@ -647,7 +652,7 @@ const PdfFile = ({ data, isModalOpen, onClose }) => {
             </div>
           </div>
         </div>
-        <div class="transfer-section">
+        {/* <div class="transfer-section">
           <h3>Airport Transfer From Dubai Intl Airport (T1/T2/T3) to Dubai City Hotels - One Way or Vice Versa</h3>
           <div class="transfer-details">
             <img src="/assets/images/pdf/car.jpg" width="100%" alt="Private Transfer" />
@@ -659,7 +664,7 @@ const PdfFile = ({ data, isModalOpen, onClose }) => {
             </div>
             <div class="rating">5/5</div>
           </div>
-        </div>
+        </div> */}
         <div class="creditTCS">
           <h3> Get 100% Credit of TCS Amount</h3>
           <div class="creditTCSInner">

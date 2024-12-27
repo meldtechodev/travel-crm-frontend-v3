@@ -54,9 +54,11 @@ const MasterList = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const token = useDecryptedToken();
-  const { user } = useContext(UserContext);
 
   // Reusable ToggleSwitch Component
+
+  const { user, ipAddress, countryDetails } = useContext(UserContext);
+
   const ToggleSwitch = ({ isOn, handleToggle }) => {
     return (
       <div className="flex justify-center items-center w-full h-full">

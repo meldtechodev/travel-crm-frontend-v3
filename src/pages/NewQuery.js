@@ -160,7 +160,7 @@ const NewQuery = ({ isOpen, onClose }) => {
         setAllPolicyList(response.data)
       })
       .catch((error) => console.error(error));
-  }, [])
+  }, [isOpen])
 
   const [viewPrice, setViewPrice] = useState({
     markup: 0,
@@ -176,6 +176,8 @@ const NewQuery = ({ isOpen, onClose }) => {
   const [selectedPackage, setSelectedPackage] = useState(null)
   const [viewSightSeeing, setViewSightSeeing] = useState([])
   const [viewActivity, setViewActivity] = useState([])
+
+
   const handlePackageChange = (selected) => {
     // console.log(selected)
     setIti([])
@@ -187,13 +189,10 @@ const NewQuery = ({ isOpen, onClose }) => {
 
     setSelectedPackage(selected)
 
-
-
     let itiList = itinerarys.filter(item => item.packid === selected.value)
     let pkd = pkgItiDet.filter(item => item.packitid.packid === selected.value)
 
     setViewPkgDet(pkd)
-    // console.log(viewPolicy)
 
     let check = []
     for (let i = 0; i < pkd.length; i++) {
@@ -216,20 +215,22 @@ const NewQuery = ({ isOpen, onClose }) => {
 
     let vH = catHote.filter(item => item.roomtypes !== null)
 
-    // console.log(vH)
-
     let viewdat = vH.map(item => ({
       category: item.category,
       hotel: item.roomtypes?.hotel,
       roomtypes: item.roomtypes
     }))
     // let viewcat = vH.map(item => item.category)
-    // var newH = new Set(viewcat)
-    // let catList = [...newH]
-    // console.log(viewdat)
-    // let data = catList.map(item => item === )
-    setViewHotel(viewdat)
-    // console.log(data)
+    var newH = new Set(viewdat.map(item => item.category))
+    let catList = [...newH]
+
+    let data = []
+    for (let i = 0; i < catList.length; i++) {
+      data.push(viewdat.filter(item => item.category === catList[i])[0])
+    }
+
+    setViewHotel(data)
+    console.log(data)
 
     // console.log(iti)
     setIti(itiList.map(item => ({
@@ -271,9 +272,7 @@ const NewQuery = ({ isOpen, onClose }) => {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, []);
 
-  useEffect(() => {
     axios.get(`${api.baseUrl}/packages/getAllPkg`)
       .then((response) => {
         const formated = response.data.map((item) => ({
@@ -284,7 +283,7 @@ const NewQuery = ({ isOpen, onClose }) => {
         setPackages(formated)
       })
       .catch((error) => console.error(error))
-  }, [])
+  }, [isOpen])
 
 
   const [itinerarys, setItinerays] = useState([])
@@ -294,7 +293,7 @@ const NewQuery = ({ isOpen, onClose }) => {
         setItinerays(response.data)
       })
       .catch((error) => console.error(error))
-  }, [])
+  }, [isOpen])
 
   const [pkgItiDet, setPkgItiDet] = useState([])
   const [viewPkgDet, setViewPkgDet] = useState([])
@@ -334,7 +333,7 @@ const NewQuery = ({ isOpen, onClose }) => {
       })
       .catch(error => console.error(error)
       );
-  }, [])
+  }, [isOpen])
 
   useEffect(() => {
     axios.get(`${api.baseUrl}/customer/getall`)
@@ -358,9 +357,7 @@ const NewQuery = ({ isOpen, onClose }) => {
         setCustomer(formated)
       })
       .catch((error) => console.error(error));
-
-
-  }, [])
+  }, [isOpen])
 
 
   const [packagePrice, setPackagePrice] = useState([])
@@ -372,7 +369,7 @@ const NewQuery = ({ isOpen, onClose }) => {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, []);
+  }, [isOpen]);
 
   const formatDate = (dateString, addDays) => {
 

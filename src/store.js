@@ -1,11 +1,8 @@
-// import { createStore, applyMiddleware } from 'redux';
-// import { composeWithDevTools } from 'redux-devtools-extension';
-// // import { thunk } from 'redux-thunk';
-// import countryReducer from './reducers/countryReducer';
+import { configureStore } from '@reduxjs/toolkit';
+import rootReducer from './reducers';
 
-// const store = createStore(
-//   countryReducer,
-//   // composeWithDevTools(applyMiddleware(thunk))
-// );
+const store = configureStore({
+  reducer: rootReducer,
+});
 
-// export default store;
+export default store;

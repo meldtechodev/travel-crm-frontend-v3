@@ -12,8 +12,8 @@ const AdminConfiguration = () => {
     name: '',
     email: '',
     password: '',
-    createdBy: 'alex',
-    modifiedBy: 'alex',
+    createdBy: 'Anshul',
+    modifiedBy: 'Anshul',
     ipaddress: '',
     status: 1,
     isdelete: 0,
@@ -48,7 +48,7 @@ const AdminConfiguration = () => {
     // console.log(formDataSend)
 
     await axios
-      .post(`${api.baseUrl}/signup`, formDataSend)
+      .post(`${api.baseUrl}/signupsuperadmin`, formDataSend)
       .then((res) => {
         navigate('/success');
       })

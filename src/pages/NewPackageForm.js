@@ -26,7 +26,6 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
   const [packageData, setPackageData] = useState();
   const [packageItinerayData, setPackageItinerayData] = useState({});
   const [packageItinerayDetails, setPackageItinerayDetails] = useState({});
-  const [selectedItineraries, setSelectedItineraries] = useState([]);
   const [inclusions, setInclusions] = useState([]);
   const [selectedInclusions, setSelectedInclusions] = useState([]);
   const [exclusions, setExclusions] = useState([]);
@@ -56,15 +55,14 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
   const [selectedPackageTheme, setSelectedPackageTheme] = useState([]);
 
   const [addCityAndNight, setAddCityAndNight] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [showItiForm, setShowItiForm] = useState(false);
   const [showIti, setShowIti] = useState([]);
 
   const { user, ipAddress } = useContext(UserContext)
 
   const handleNightChange = (e) => {
-    // setEditIti(false)
-    if (packageData.nights > e.target.value + formItinaryData - 1) {
+    // if (packageData.nights > e.target.value + formItinaryData - 1) {
+    if (formData.nights > e.target.value + formItinaryData - 1) {
       setNights(e.target.value)
       setCheckNights(checkNights + e.target.value)
       setIsOverNight(false)
@@ -112,16 +110,18 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
     }));
   };
   const [displayIti, setDisplayIti] = useState([]);
+  const [displayItiDesti, setDisplayItiDesti] = useState([]);
   const [listTransport, setListTransport] = useState([]);
   const [policyList, setPolicyList] = useState([]);
 
   useEffect(() => {
     Promise.all([
-      axios.get(`${api.baseUrl}/itinerarys/getAll`),
+      axios.get(`${api.baseUrl}/itinerarys/getallItineary`),
       axios.get(`${api.baseUrl}/transport/getAll`),
     ])
       .then((response) => {
-        const formatIti = response[0].data.content.map((item) => ({
+        const formatIti = response[0].data.map((item) => ({
+          ...item,
           value: item.id,
           label: item.daytitle,
         }));
@@ -134,12 +134,12 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
         setListTransport(formatTransport);
       })
       .catch((error) => console.error(error));
-  }, []);
+  }, [isOpen]);
 
   const [editIti, setEditIti] = useState(false)
   const handleEdit = (data) => {
     setEditIti(true)
-    console.log(data)
+    // console.log(data)
   }
   const handleDelete = (data) => {
 
@@ -204,10 +204,9 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
     //   })
     //   .catch(error => console.error("Vendor search error," + error))
 
-  }, [])
+  }, [isOpen])
 
   useEffect(() => {
-
     Promise.all([
       axios.get(`${api.baseUrl}/destination/getallDestination`), //index 0
       axios.get(`${api.baseUrl}/vendor/getAll`), //index  1
@@ -217,8 +216,8 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
       axios.get(`${api.baseUrl}/hotel/getAll`), //index 5
       axios.get(`${api.baseUrl}/roomtypes/getAll`), //index 6
       axios.get(`${api.baseUrl}/mealspackage/getAll`), //index 7
-      axios.get(`${api.baseUrl}/activities/getall`), //index 8
-      axios.get(`${api.baseUrl}/sightseeing/getAll`), //index 9
+      axios.get(`${api.baseUrl}/activities/getAllActivities`), //index 8
+      axios.get(`${api.baseUrl}/sightseeing/getAllSightseeing`), //index 9
       axios.get(`${api.baseUrl}/policy/getallpolicy`), //index 10
       axios.get(`${api.baseUrl}/country/getall`), //index 11
       axios.get(`${api.baseUrl}/state/getall`), //index 12
@@ -254,6 +253,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
       setExclusions(formattedExclusions);
 
       const formattedHotel = response[5].data.map((item) => ({
+        ...item,
         value: item.id,
         label: item.hname,
       }));
@@ -274,13 +274,15 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
       }));
       setMealTypeData(formattedMealType);
 
-      const formattedActivity = response[8].data.content.map((item) => ({
+      const formattedActivity = response[8].data.map((item) => ({
+        ...item,
         value: item.id,
         label: item.title,
       }));
       setActivityData(formattedActivity);
 
-      const formattedSiteSeeing = response[9].data.content.map((item) => ({
+      const formattedSiteSeeing = response[9].data.map((item) => ({
+        ...item,
         value: item.id,
         label: item.title,
       }));
@@ -298,7 +300,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
       // const format
     })
       .catch(error => console.error(error));
-  }, []);
+  }, [isOpen]);
 
   const [itinerariesList, setItinerayList] = useState([
     { value: 1, label: "Ranchi" },
@@ -423,10 +425,45 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
     setFormItinaryData([]);
   };
   const handleItinearayChange = (selectedOption, i) => {
-    const updateVal = formItinaryData.map((item, inde) =>
-      inde === i ? { ...item, daytitle: selectedOption } : item
-    );
-    setFormItinaryData(updateVal);
+    // console.log(i)
+    // let h = selectedOption.hotelOptionIds
+    // let hView = []
+    // for (let i = 0; i < h.length; i++) {
+    //   hView = hotelData.filter(item => item.id === h[i])
+    // }
+
+    if (selectedOption?.__isNew__) {
+      const updateVal = formItinaryData.map((item, inde) =>
+        inde === i ? {
+          ...item,
+          daytitle: selectedOption,
+        } : item);
+      setFormItinaryData(updateVal);
+    } else {
+      let act = []
+      for (let i = 0; i < selectedOption?.activitiesIds?.length; i++) {
+        act = [...act, ...activityData.filter(item => item.id === selectedOption.activitiesIds[i])]
+      }
+
+      let sight = []
+      for (let i = 0; i < selectedOption?.sightseeingIds?.length; i++) {
+        sight = [...sight, ...siteSeeingData.filter(item => item.id === selectedOption.sightseeingIds[i])]
+      }
+      const updateVal = formItinaryData.map((item, inde) =>
+        inde === i ? {
+          ...item,
+          daytitle: { ...selectedOption, __isNew__: false },
+          program: selectedOption.program,
+          breakfast: selectedOption.meals.includes("Breakfast"),
+          lunch: selectedOption.meals.includes("Lunch"),
+          dinner: selectedOption.meals.includes("Dinner"),
+          activities: act,
+          siteSeeing: sight
+        } : item
+      );
+      // console.log(updateVal)
+      setFormItinaryData(updateVal);
+    }
   };
 
   const handleSingleItiMealChange = (event, i) => {
@@ -485,10 +522,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
   }
 
   const handleAddItineraryDay = () => {
-    // if (formItinaryData.length - 1 + nights > packageData.nights) {
-    //   setIsOverNight(true)
-    //   return
-    // }
+    let d = displayIti.map(item => item?.destination?.id === selectedHotelCity.value)
 
     if (Number(nights) > 0 && selectedHotelCity !== null) {
       let l = addCityAndNight.length;
@@ -509,6 +543,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
           (item) => item.destination.destinationName === selectedHotelCity.label
         );
         const hotelFormat = hotel.map((item) => ({
+          ...item,
           value: item.id,
           label: item.hname,
         }));
@@ -524,6 +559,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
           formItinaryData.push({
             daynumber: 0,
             cityname: selectedHotelCity.label,
+            displayItiDesti: d,
             daytitle: null,
             program: "",
             breakfast: false,
@@ -567,6 +603,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
           formItinaryData.push({
             daynumber: 0,
             cityname: selectedHotelCity.label,
+            displayItiDesti: d,
             daytitle: null,
             program: "",
             breakfast: false,
@@ -639,10 +676,10 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
   const handlePackagePriceSubmit = async (e) => {
     e.preventDefault();
     let pricePackge = {
-      markup: 0,
-      basiccost: 0,
-      gst: 0,
-      totalcost: 0,
+      markup: packagePrice.markup,
+      basiccost: packagePrice.basic_cost,
+      gst: packagePrice.gst,
+      totalcost: packagePrice.total,
       createdby: user.name,
       modifiedby: user.name,
       ipaddress: ipAddress,
@@ -659,7 +696,49 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
         },
       })
       .then((response) => {
-        setPackageItinerayData(response.data);
+        toast.success("Package Price Saved...", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        setPage(1)
+        setEditorData("")
+        setSelectedInclusions(null)
+        setSelectedExclusions(null)
+        setSelectedPackageTheme([])
+        setPackageCategories([])
+        setSelectedPackageTheme([])
+        setSelectedEndCity(null)
+        setSelectedStartCity(null)
+        setFormData({
+          pkName: "",
+          fromCityId: null,
+          toCityId: null,
+          destinationCoveredId: "",
+          description: "",
+          pkCategory: "",
+          pkSpecifications: "",
+          days: 0,
+          nights: 0,
+          is_fixed_departure: true,
+          fixed_departure_destinations: "",
+          packageType: "",
+          created_by: "",
+          modified_by: "",
+          ipaddress: "",
+          status: 1,
+          isdelete: 0,
+          inclusionid: "",
+          exclusionid: "",
+          SupplierId: null,
+          pkthem: "",
+          image: null
+        })
+        onClose()
       })
       .catch((error) => console.error(error));
   };
@@ -787,6 +866,15 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
           .catch((error) => console.error(error));
       }
     }
+    toast.success("Package Itinera Saved...", {
+      position: "top-center",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
     setPage(3)
   };
 
@@ -826,7 +914,6 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
       formData.pkName === "" ||
       selectedStartCity === null ||
       selectedEndCity === null ||
-      // destinationCoveredStr === "" ||
       selectedPackagesStr === "" ||
       packageSpecification === "" ||
       formData.days === 0 ||
@@ -874,10 +961,9 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
     formDataPackageMaster.append("pkthem", selectedPackageThemeStr);
     formDataPackageMaster.append("image", pkImage);
 
-    for (var pair of formDataPackageMaster.entries()) {
-      console.log(pair[0] + ' = ' + pair[1]);
-    }
-    // console.log(packageData)
+    // for (var pair of formDataPackageMaster.entries()) {
+    //   console.log(pair[0] + ' = ' + pair[1]);
+    // }
 
     if (!packageData) {
       await axios.post(`${api.baseUrl}/packages/create`, formDataPackageMaster, {
@@ -904,6 +990,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
         .catch((error) => console.error(error));
     } else {
 
+      // package update code
     }
   };
 
@@ -997,18 +1084,19 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
         },
       })
         .then((response) => {
-          toast.success("Policy Created...", {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
+
         })
         .catch((error) => console.error(error));
     }
+    toast.success("Policies Created...", {
+      position: "top-center",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
     setPage(4);
   };
 
@@ -1634,18 +1722,21 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                 <button
                   className={`bg-red-600 py-1 rounded-sm px-2 mb-1 text-white 
      border-[1px] 
-    ${Number(nights) + formItinaryData.length - 1 > packageData.nights ? 'bg-gray-400 text-gray-700 cursor-not-allowed hover:bg-gray-400 hover:text-gray-700' : 'hover:bg-white hover:text-red-600 hover:border-red-600'}`}
+    ${Number(formData.nights) + formItinaryData.length < nights ? 'bg-gray-400 text-gray-700 cursor-not-allowed hover:bg-gray-400 hover:text-gray-700' : 'hover:bg-white hover:text-red-600 hover:border-red-600'}`}
+                  // ${Number(nights) + formItinaryData.length - 1 > packageData.nights ? 'bg-gray-400 text-gray-700 cursor-not-allowed hover:bg-gray-400 hover:text-gray-700' : 'hover:bg-white hover:text-red-600 hover:border-red-600'}`}
                   onClick={handleAddItineraryDay}
-                  disabled={Number(nights) + formItinaryData.length - 1 > packageData.nights}
+                  // disabled={Number(nights) + formItinaryData.length - 1 > packageData.nights}
+                  disabled={Number(formData.nights) + formItinaryData.length < nights}
                 >
                   Add
                 </button>
 
               </div>
             </div>
-            {Number(nights) + formItinaryData.length - 1 > packageData.nights &&
+            {/* {Number(nights) + formItinaryData.length - 1 > packageData.nights && */}
+            {Number(formData.nights) + formItinaryData.length < nights &&
               <div className="flex justify-center">
-                <p className="text-red-600">You can't add more than {packageData.nights} nights</p>
+                <p className="text-red-600">You can't add more than {formData.nights} nights</p>
               </div>
             }
             <div className="mb-6 gap-2">
@@ -1740,7 +1831,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                                     "blockQuote",
                                   ],
                                 }}
-                                data={singleItinerary.description}
+                                data={singleItinerary.program}
                                 onChange={(event, editor) => {
                                   const data = editor.getData();
                                   handleItinearayProgramData(data, index);

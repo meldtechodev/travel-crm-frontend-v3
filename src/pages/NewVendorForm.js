@@ -69,12 +69,10 @@ const NewVendorForm = ({ isOpen, onClose, selectedVendorData }) => {
       "modifiedby": user.name
     }
 
-    console.log('asdadasdasdasdadsaad', selectedVendorData)
-
     if (selectedVendorData) {
       await axios.put(`${api.baseUrl}/vendor/updateby/${selectedVendorData.id}`, payload, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          // 'Authorization': `Bearer ${token}`,
           'Access-Control-Allow-Origin': '*'
         }
       })

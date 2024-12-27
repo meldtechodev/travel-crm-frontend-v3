@@ -51,17 +51,18 @@ const Itinerary = ({ isOpen, onClose }) => {
   const [mealTypeOptions, setMealTypeOptions] = useState([])
 
   useEffect(() => {
-    axios.get(`${api.baseUrl}/hotel/getAll`)
+    axios.get(`${api.baseUrl}/hotel/getallHotel`)
       .then((response) => {
-        const formattedData = response.data.map(item => ({
+        const formattedData = response.data.data.map(item => ({
           ...item,
-          value: item.id,
+          value: item.hotel_id,
           label: item.hname,
           status: item.status ? 'Active' : 'Inactive'
         }));
+        // console.log(response.data.data)v
         setHotelList(formattedData)
       }).catch(error =>
-        console.error('Error fetching country data:', error)
+        console.error('Error fetching hotel data:', error)
       )
 
     axios.get(`${api.baseUrl}/roomtypes/getall`)
@@ -71,9 +72,10 @@ const Itinerary = ({ isOpen, onClose }) => {
           value: item.id,
           label: item.bedSize
         }));
+        // console.log(response.data)
         setRoomTypeList(formattedData)
       }).catch(error =>
-        console.error('Error fetching country data:', error)
+        console.error('Error fetching room type data:', error)
       )
 
     axios.get(`${api.baseUrl}/sightseeing/getAll`)
@@ -114,7 +116,7 @@ const Itinerary = ({ isOpen, onClose }) => {
       }).catch(error =>
         console.error('Error fetching country data:', error)
       )
-  }, []);
+  }, [isOpen]);
 
   const CustomOption = (props) => {
     return (
@@ -144,7 +146,7 @@ const Itinerary = ({ isOpen, onClose }) => {
   const handleDestinationChange = (selectedOption) => {
     setViewHotelList([])
     setSelectedDestination(selectedOption);
-    let hotel = hotelList.filter(item => item.destination.id === selectedOption.id)
+    let hotel = hotelList.filter(item => item.destinationId === selectedOption.value)
     setViewHotelList(hotel)
   };
 
@@ -152,12 +154,14 @@ const Itinerary = ({ isOpen, onClose }) => {
     setViewRoomTypeList([])
     let updateData = [...formData]
     let hotelUpdate = [...updateData[mainIndex].hotelOptionsIds]
+    console.log(selected)
 
     hotelUpdate[hIndex] = selected;
     let updateRoomtype = roomTypeList.filter(item => item.hotel?.id === selected.value)
     setViewRoomTypeList(updateRoomtype)
     const update = formData.map((prev, i) => mainIndex === i ? { ...prev, hotelOptionsIds: hotelUpdate } : prev)
     setFormData(update)
+    console.log(formData)
   }
   const handleRoomTypeChange = (select, rIndex, mainIndex) => {
     let updateData = [...formData]
@@ -219,7 +223,7 @@ const Itinerary = ({ isOpen, onClose }) => {
     e.preventDefault();
 
     for (let i = 0; formData.length > i; i++) {
-      let activit = formData[i].activities.filter(it => it.__isNew__)
+      let activit = formData[i].activities.filter(it => it !== null && it?.__isNew__)
       // let a = [...activit.map(item => item.label)]
       let a = []
 
@@ -240,15 +244,14 @@ const Itinerary = ({ isOpen, onClose }) => {
         }).then(response => {
           a.push(response.data.id)
           setActivityList(...activityList, { ...response.data, label: response.data.title, value: response.data.id })
-          console.log(response.data)
         })
           .catch(error => console.error("error creating activities in Itinary ", error))
       });
 
-      activit = formData[i].activities.filter(ite => !ite.__isNew__)
-      activit = activit.map(ite => ite.id)
+      activit = formData[i].activities.filter(ite => ite !== null && !ite.__isNew__)
+      activit = activit.map(ite => ite?.id)
 
-      let sight = formData[i].sightseeing.filter(it => it.__isNew__)
+      let sight = formData[i].sightseeing.filter(it => it !== null && it.__isNew__)
       // let s = [...sight.map(item => item.label)]
       let s = []
       sight.length > 0 && sight.forEach((sight) => {
@@ -269,14 +272,13 @@ const Itinerary = ({ isOpen, onClose }) => {
           .then(response => {
             s.push(response.data.id)
             setSiteSeeingList(...siteSeeingList, { ...response.data, label: response.data.title, value: response.data.id })
-            console.log(response.data)
           })
           .catch(error => console.error("error creating activities in Itinary ", error))
       })
       // formData[i].activities = [...activit, ...a]
       // formData[i].sightseeing = [...sight, ...s]
-      sight = formData[i].sightseeing.filter(ite => !ite.__isNew__)
-      sight = sight.map(ite => ite.id)
+      sight = formData[i].sightseeing.filter(ite => ite !== null && !ite.__isNew__)
+      sight = sight.map(ite => ite?.id)
 
       formData[i].activities = [...activit, ...a]
       formData[i].sightseeing = [...sight, ...s]
@@ -284,11 +286,10 @@ const Itinerary = ({ isOpen, onClose }) => {
       // let update = formData.map((item, ind) => ind === i ? { ...item, activities: [...activit, ...a], sightseeing: [...sight, ...s] } : item)
       // setFormData(update)
     }
-    console.log(formData)
 
     formData.forEach((item, i) => {
       const hotel = item.hotelOptionsIds.filter(data => data !== null)
-      const hotelList = hotel.map(item => item.id)
+      const hotelList = hotel.map(item => item.value)
 
 
       let room = item.roomtypes.filter(item => item !== null)
@@ -328,7 +329,7 @@ const Itinerary = ({ isOpen, onClose }) => {
         ipaddress: ipAddress,
         status: 1
       };
-      console.log(dataToSend)
+
       try {
         axios.post(`${api.baseUrl}/itinerarys/create`, dataToSend, {
           headers: {
@@ -456,6 +457,7 @@ const Itinerary = ({ isOpen, onClose }) => {
                     name="daytitle"
                     value={item.daytitle}
                     onChange={(e) => handleInputChange(e, index)}
+                    placeholder="Title"
                   />
                 </div>
 

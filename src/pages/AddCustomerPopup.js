@@ -43,7 +43,6 @@ const AddCustomerPopup = ({ isOpen, onClose }) => {
       leadSource: Yup.string().required("Required"),
     }),
     onSubmit: async (values) => {
-      console.log(values);
       setCurrentCreatedUser(values);
       if (
         !values.salutation ||
@@ -73,7 +72,6 @@ const AddCustomerPopup = ({ isOpen, onClose }) => {
         }
       })
         .then(response => {
-          console.log(response);
           toast.success("Customer saved successfully.", {
             position: "top-center",
             autoClose: 5000,

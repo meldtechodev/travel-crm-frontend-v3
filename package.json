@@ -5,6 +5,7 @@
   "dependencies": {
     "@ckeditor/ckeditor5-build-classic": "^43.3.1",
     "@ckeditor/ckeditor5-react": "^9.4.0",
+    "@reduxjs/toolkit": "^2.5.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -25,6 +26,7 @@
     "react-select": "^5.8.3",
     "react-toastify": "^10.0.6",
     "react-use": "^17.5.1",
+    "redux": "^5.0.1",
     "tailwind-scrollbar-hide": "^1.1.7",
     "web-vitals": "^2.1.4",
     "yup": "^1.4.0"
