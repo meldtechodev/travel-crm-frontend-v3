@@ -109,14 +109,16 @@ const CustomerProfile = () => {
   const [packageitineraryDetails, setPackageitineraryDetails] =
     React.useState(null);
 
-  const uniqueFoodPreferences = [...new Set(query && query.map(query => query.foodPreferences))];
+  const uniqueFoodPreferences = Array.isArray(query)
+    ? [...new Set(query.map(item => item.foodPreferences))]
+    : [];
 
   const params = useParams();
 
   const userId = params.userId;
 
-  // console.log(params);
-  // console.log(userId);
+  console.log(params);
+  console.log(userId);
 
   useEffect(() => {
     axios.get(`${api.baseUrl}/customer/getbyid/${userId}`).then((res) => {
@@ -124,19 +126,6 @@ const CustomerProfile = () => {
     });
   }, [userId]);
 
-  // <tr className="bg-gray-200">
-  //   <th className="p-2 border">Query Date</th>
-  //   <th className="p-2 border">Query ID</th>
-  //   <th className="p-2 border">Travel Date</th>
-  //   <th className="p-2 border">Type</th>
-  //   <th className="p-2 border">Destination</th>
-  //   <th className="p-2 border">Pax</th>
-  //   <th className="p-2 border">Last Update</th>
-  //   <th className="p-2 border">Proposals</th>
-  //   <th className="p-2 border">Stage</th>
-  //   <th className="p-2 border">Owner</th>
-  //   <th className="p-2 border">Action</th>
-  // </tr>
   const columns = [
     {
       header: 'Query Date',
@@ -162,7 +151,10 @@ const CustomerProfile = () => {
     },
     {
       header: 'Pax',
-      accessor: 'pax',
+      // accessor: 'totalTravellers',
+      render: ({ row }) => (
+        row && row.adults && row.kids + row.infants && row.adults + row.kids + row.infants
+      )
     },
     {
       header: 'Last Update',
@@ -178,7 +170,9 @@ const CustomerProfile = () => {
     },
     {
       header: 'Owner',
-      accessor: 'owner',
+      render: ({ row }) => (
+        row && row.userid && row.userid.name && row.userid.name + ' ' + row.userid.lname
+      )
     },
     {
       header: 'Action',
@@ -225,9 +219,6 @@ const CustomerProfile = () => {
         .catch(err => console.error("Failed to fetch queries", err));
     }
   }, [userData]);
-  // console.log(query[0].destination && query[0].destination.destinationName && query[0].destination.destinationName);
-
-  // TODO: Make Make use of packageDetails to show data
 
   return (
     <div className="p-4 w-full mb-14">
@@ -281,7 +272,7 @@ const CustomerProfile = () => {
       </div>
 
       {/* Tab Navigation */}
-      <div className="bg-white p-4 rounded shadow mt-4">
+      {query && <div className="bg-white p-4 rounded shadow mt-4">
         <div className="flex overflow-x-auto space-x-4 mb-4">
           {["profile", "queries", "bookings"].map((item) => (
             <button
@@ -299,10 +290,10 @@ const CustomerProfile = () => {
             </button>
           ))}
         </div>
-      </div>
+      </div>}
 
       {/* Content Section Based on Tab */}
-      {tab === "profile" && (
+      {Array.isArray(query) && query.length > 0 ? tab === "profile" && (
         <>
           <div>
             {/* Payments Section */}
@@ -331,29 +322,30 @@ const CustomerProfile = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {query ? query.map((dest, index) => (
-
-                        <tr className="border-b">
-                          <td className="p-2 text-center">
-                            {dest &&
-                              dest.destination &&
-                              dest.destination.destinationName &&
-                              dest.destination.destinationName}
-                          </td>
-                          <td className="p-2 text-center">
-                            <button className="text-red-500">
-                              <FaTrash />
-                            </button>
-                          </td>
-                        </tr>
-                      )
-                      ) :
+                      {Array.isArray(query) && query.length > 0 ? (
+                        query.map((dest, index) => (
+                          <tr className="border-b" key={index}>
+                            <td className="p-2 text-center">
+                              {dest &&
+                                dest.destination &&
+                                dest.destination.destinationName &&
+                                dest.destination.destinationName}
+                            </td>
+                            <td className="p-2 text-center">
+                              <button className="text-red-500">
+                                <FaTrash />
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
                         <tr>
                           <td className="p-2 text-center" colSpan="2">
                             No record found
                           </td>
                         </tr>
-                      }
+                      )}
+
                     </tbody>
                   </table>
                 </div>
@@ -372,12 +364,6 @@ const CustomerProfile = () => {
                     <tr className="border-b">
                       <td className="p-2">Hotel:</td>
                       <td className="p-2">
-                        {/* {packageitineraryDetails &&
-                          packageitineraryDetails.roomtypes &&
-                          packageitineraryDetails.room_types.hotel &&
-                          packageitineraryDetails.room_types.hotel
-                            .star_ratings &&
-                          packageitineraryDetails.room_types.hotel.star_ratings} */}
                       </td>
                     </tr>
                     <tr className="border-b">
@@ -442,49 +428,18 @@ const CustomerProfile = () => {
             </div>
           </div>
         </>
+      ) : tab === "profile" && (
+        <div className="bg-white p-4 rounded shadow mt-4">
+          <p>No record found</p>
+        </div>
       )}
 
-      {tab === "queries" && (
+      {query && tab === "queries" && (
         <div className="bg-white p-4 rounded shadow mt-4">
           {/* Recent Queries */}
           <p className="font-bold mb-4">Recent Queries:</p>
           <div className="overflow-y-auto max-h-88">
-            {/* <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-gray-200">
-                  <th className="p-2 border">Query Date</th>
-                  <th className="p-2 border">Query ID</th>
-                  <th className="p-2 border">Travel Date</th>
-                  <th className="p-2 border">Type</th>
-                  <th className="p-2 border">Destination</th>
-                  <th className="p-2 border">Pax</th>
-                  <th className="p-2 border">Last Update</th>
-                  <th className="p-2 border">Proposals</th>
-                  <th className="p-2 border">Stage</th>
-                  <th className="p-2 border">Owner</th>
-                  <th className="p-2 border">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {queries.map((query, index) => (
-                  <tr key={index} className="border-b hover:bg-gray-100">
-                    <td className="p-2 border">{query.queryDate}</td>
-                    <td className="p-2 border">{query.queryID}</td>
-                    <td className="p-2 border">{query.travelDate}</td>
-                    <td className="p-2 border">{query.type}</td>
-                    <td className="p-2 border">{query.destination}</td>
-                    <td className="p-2 border">{query.pax}</td>
-                    <td className="p-2 border">{query.lastUpdate}</td>
-                    <td className="p-2 border">{query.proposals}</td>
-                    <td className="p-2 border">{query.stage}</td>
-                    <td className="p-2 border">{query.owner}</td>
-                    <td className="p-2 border text-center">
-                      <AiOutlineEye className="text-xl cursor-pointer" />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table> */}
+
             <TableComponent
               columns={columns}
               data={query}
@@ -493,7 +448,7 @@ const CustomerProfile = () => {
         </div>
       )}
 
-      {tab === "bookings" && (
+      {query && tab === "bookings" && (
         <div className="bg-white p-4 rounded shadow mt-4">
           <p className="font-bold mb-4">Recent Queries:</p>
           <div className="overflow-y-auto max-h-88">

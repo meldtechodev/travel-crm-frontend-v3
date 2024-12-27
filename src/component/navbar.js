@@ -133,7 +133,7 @@ const Navbar = () => {
                         onClick={() => {
                           setAddData([]);
                           setAddData(["Hotel"]);
-                          setDropdownOpen(false); // Close dropdown
+                          setDropdownOpen(false);
                         }}
                       >
                         New Hotels

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Line, Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -11,6 +11,9 @@ import {
   ArcElement,
 } from "chart.js";
 import BodyHeader from "./BodyHeader";
+import axios from "axios";
+import api from "../apiConfig/config";
+import { UserContext } from "../contexts/userContext";
 // import Table from '../pages/TableComponent';
 
 // Register necessary Chart.js components
@@ -26,6 +29,10 @@ ChartJS.register(
 
 const Dashboard = () => {
   // Sample data for the charts
+
+  const [dashboardData, setDashboardData] = useState(null);
+  const { user } = useContext(UserContext);
+
   const topDestinationsData = {
     labels: [
       "Bali",
@@ -161,6 +168,29 @@ const Dashboard = () => {
     },
   ];
 
+  // dashboard/active/count
+
+  //   {
+  //     "totalQueryBook": 0,
+  //     "activeQueryBook": 0,
+  //     "totalUser": 1,
+  //     "activeUser": 1,
+  //     "totalCustomer": 0,
+  //     "activeCustomer": 0,
+  //     "totalBookings": 0,
+  //     "activeBookings": 0
+  // }
+
+  useEffect(() => {
+    axios.get(`${api.baseUrl}/dashbord/${user.userId}`).then((response) => {
+      setDashboardData(response.data);
+    }).catch((e) => {
+      console.log(e);
+    });
+  }, [])
+
+  console.log(dashboardData);
+
   return (
     <div className="w-full mt-0">
       <BodyHeader />
@@ -221,20 +251,20 @@ const Dashboard = () => {
           {/* Metrics Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
             <div className="bg-pink-100 border-l-4 border-pink-500 p-4 rounded-md">
-              <p className="text-gray-600 font-bold">Total Bookings</p>
-              <p className="text-lg">65 / 93</p>
+              <p className="text-gray-600 font-bold">Total Queries</p>
+              <p className="text-lg">{dashboardData && dashboardData.activeBookings.toString()} {"/"} {dashboardData && dashboardData.totalBookings.toString()}</p>
             </div>
             <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded-md">
-              <p className="text-gray-600 font-bold">Total Sales</p>
-              <p className="text-lg">65 / 93</p>
+              <p className="text-gray-600 font-bold">Total Bookings</p>
+              <p className="text-lg">{dashboardData && dashboardData.activeCustomers.toString()} {"/"} {dashboardData && dashboardData.totalCustomers.toString()}</p>
             </div>
             <div className="bg-pink-100 border-l-4 border-pink-500 p-4 rounded-md">
               <p className="text-gray-600 font-bold">Total Leads</p>
-              <p className="text-lg">65 / 93</p>
+              <p className="text-lg">{dashboardData && dashboardData.activeQueryBooks.toString()} {"/"} {dashboardData && dashboardData.totalQueryBooks.toString()}</p>
             </div>
             <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded-md">
-              <p className="text-gray-600 font-bold">Total Users</p>
-              <p className="text-lg">65 / 93</p>
+              <p className="text-gray-600 font-bold">Total Customers</p>
+              <p className="text-lg">{dashboardData && dashboardData.activeUsers.toString()} {"/"} {dashboardData && dashboardData.totalUsers.toString()}</p>
             </div>
           </div>
           {/* Graph Entries */}
@@ -316,312 +346,6 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-
-          {/* Tour Master Sheet Table */}
-          {/* <div className="table-container mt-8 overflow-x-auto">
-            <h3
-              className="text-white font-bold text-2xl mb-4 text-center py-2"
-              style={{ backgroundColor: "#6c757d" }}
-            >
-              Tour Master Sheet
-            </h3>
-            <table className="min-w-full border-collapse border border-gray-300">
-              <thead>
-                <tr>
-                  <th
-                    className="border border-gray-300 px-2 py-2"
-                    style={{
-                      background:
-                        "linear-gradient(90deg, #0a0e73 0%, #737373 100%)",
-                    }}
-                  >
-                    QUERY
-                  </th>
-                  <th
-                    className="border border-gray-300 px-2 py-2"
-                    style={{
-                      background:
-                        "linear-gradient(90deg, #0a0e73 0%, #737373 100%)",
-                    }}
-                  >
-                    DATE
-                  </th>
-                  <th
-                    className="border border-gray-300 px-2 py-2"
-                    style={{
-                      background:
-                        "linear-gradient(90deg, #0a0e73 0%, #737373 100%)",
-                    }}
-                  >
-                    FLIGHT
-                  </th>
-                  <th
-                    className="border border-gray-300 px-2 py-2"
-                    style={{
-                      background:
-                        "linear-gradient(90deg, #0a0e73 0%, #737373 100%)",
-                    }}
-                  >
-                    PICK UP TIME
-                  </th>
-                  <th
-                    className="border border-gray-300 px-2 py-2"
-                    style={{
-                      background:
-                        "linear-gradient(90deg, #0a0e73 0%, #737373 100%)",
-                    }}
-                  >
-                    RETURN TIME
-                  </th>
-                  <th
-                    className="border border-gray-300 px-2 py-2"
-                    style={{
-                      background:
-                        "linear-gradient(90deg, #0a0e73 0%, #737373 100%)",
-                    }}
-                  >
-                    TOUR
-                  </th>
-                  <th
-                    className="border border-gray-300 px-2 py-2"
-                    style={{
-                      background:
-                        "linear-gradient(90deg, #0a0e73 0%, #737373 100%)",
-                    }}
-                  >
-                    GUEST
-                  </th>
-                  <th
-                    className="border border-gray-300 px-2 py-2"
-                    style={{
-                      background:
-                        "linear-gradient(90deg, #0a0e73 0%, #737373 100%)",
-                    }}
-                  >
-                    PAX
-                  </th>
-                  <th
-                    className="border border-gray-300 px-2 py-2"
-                    style={{
-                      background:
-                        "linear-gradient(90deg, #0a0e73 0%, #737373 100%)",
-                    }}
-                  >
-                    HOTEL
-                  </th>
-                  <th
-                    className="border border-gray-300 px-2 py-2"
-                    style={{
-                      background:
-                        "linear-gradient(90deg, #0a0e73 0%, #737373 100%)",
-                    }}
-                  >
-                    TYPE
-                  </th>
-                  <th
-                    className="border border-gray-300 px-2 py-2"
-                    style={{
-                      background:
-                        "linear-gradient(90deg, #0a0e73 0%, #737373 100%)",
-                    }}
-                  >
-                    DRIVER
-                  </th>
-                  <th
-                    className="border border-gray-300 px-2 py-2"
-                    style={{
-                      background:
-                        "linear-gradient(90deg, #0a0e73 0%, #737373 100%)",
-                    }}
-                  >
-                    GUIDE
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="border border-gray-300 px-4 py-2">#MTS000039</td>
-                  <td className="border border-gray-300 px-4 py-2">14-07-2024</td>
-                  <td className="border border-gray-300 px-4 py-2">IG-9231</td>
-                  <td className="border border-gray-300 px-4 py-2">14:00Hrs.</td>
-                  <td className="border border-gray-300 px-4 py-2">14:00Hrs.</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Dubai Airport to Hotel Radisson Blue
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">Alex</td>
-                  <td className="border border-gray-300 px-4 py-2">A-2</td>
-                  <td className="border border-gray-300 px-4 py-2">PVT</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Radisson Blue
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">Aazim</td>
-                  <td className="border border-gray-300 px-4 py-2">NA</td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 px-4 py-2">#MTS000039</td>
-                  <td className="border border-gray-300 px-4 py-2">14-07-2024</td>
-                  <td className="border border-gray-300 px-4 py-2">IG-9231</td>
-                  <td className="border border-gray-300 px-4 py-2">14:00Hrs.</td>
-                  <td className="border border-gray-300 px-4 py-2">14:00Hrs.</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Dubai Airport to Hotel Radisson Blue
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">Rahul</td>
-                  <td className="border border-gray-300 px-4 py-2">A-2</td>
-                  <td className="border border-gray-300 px-4 py-2">PVT</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Radisson Blue
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">Aazim</td>
-                  <td className="border border-gray-300 px-4 py-2">NA</td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 px-4 py-2">#MTS000039</td>
-                  <td className="border border-gray-300 px-4 py-2">14-07-2024</td>
-                  <td className="border border-gray-300 px-4 py-2">IG-9231</td>
-                  <td className="border border-gray-300 px-4 py-2">14:00Hrs.</td>
-                  <td className="border border-gray-300 px-4 py-2">14:00Hrs.</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Dubai Airport to Hotel Radisson Blue
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">Aditi</td>
-                  <td className="border border-gray-300 px-4 py-2">A-2</td>
-                  <td className="border border-gray-300 px-4 py-2">PVT</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Radisson Blue
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">Aazim</td>
-                  <td className="border border-gray-300 px-4 py-2">NA</td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 px-4 py-2">#MTS000039</td>
-                  <td className="border border-gray-300 px-4 py-2">14-07-2024</td>
-                  <td className="border border-gray-300 px-4 py-2">IG-9231</td>
-                  <td className="border border-gray-300 px-4 py-2">14:00Hrs.</td>
-                  <td className="border border-gray-300 px-4 py-2">14:00Hrs.</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Dubai Airport to Hotel Radisson Blue
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">Aditi</td>
-                  <td className="border border-gray-300 px-4 py-2">A-2</td>
-                  <td className="border border-gray-300 px-4 py-2">PVT</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Radisson Blue
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">Aazim</td>
-                  <td className="border border-gray-300 px-4 py-2">NA</td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 px-4 py-2">#MTS000039</td>
-                  <td className="border border-gray-300 px-4 py-2">14-07-2024</td>
-                  <td className="border border-gray-300 px-4 py-2">IG-9231</td>
-                  <td className="border border-gray-300 px-4 py-2">14:00Hrs.</td>
-                  <td className="border border-gray-300 px-4 py-2">14:00Hrs.</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Dubai Airport to Hotel Radisson Blue
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">Aditi</td>
-                  <td className="border border-gray-300 px-4 py-2">A-2</td>
-                  <td className="border border-gray-300 px-4 py-2">PVT</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Radisson Blue
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">Aazim</td>
-                  <td className="border border-gray-300 px-4 py-2">NA</td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 px-4 py-2">#MTS000039</td>
-                  <td className="border border-gray-300 px-4 py-2">14-07-2024</td>
-                  <td className="border border-gray-300 px-4 py-2">IG-9231</td>
-                  <td className="border border-gray-300 px-4 py-2">14:00Hrs.</td>
-                  <td className="border border-gray-300 px-4 py-2">14:00Hrs.</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Dubai Airport to Hotel Radisson Blue
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">Aditi</td>
-                  <td className="border border-gray-300 px-4 py-2">A-2</td>
-                  <td className="border border-gray-300 px-4 py-2">PVT</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Radisson Blue
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">Aazim</td>
-                  <td className="border border-gray-300 px-4 py-2">NA</td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 px-4 py-2">#MTS000039</td>
-                  <td className="border border-gray-300 px-4 py-2">14-07-2024</td>
-                  <td className="border border-gray-300 px-4 py-2">IG-9231</td>
-                  <td className="border border-gray-300 px-4 py-2">14:00Hrs.</td>
-                  <td className="border border-gray-300 px-4 py-2">14:00Hrs.</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Dubai Airport to Hotel Radisson Blue
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">Aditi</td>
-                  <td className="border border-gray-300 px-4 py-2">A-2</td>
-                  <td className="border border-gray-300 px-4 py-2">PVT</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Radisson Blue
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">Aazim</td>
-                  <td className="border border-gray-300 px-4 py-2">NA</td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 px-4 py-2">#MTS000039</td>
-                  <td className="border border-gray-300 px-4 py-2">14-07-2024</td>
-                  <td className="border border-gray-300 px-4 py-2">IG-9231</td>
-                  <td className="border border-gray-300 px-4 py-2">14:00Hrs.</td>
-                  <td className="border border-gray-300 px-4 py-2">14:00Hrs.</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Dubai Airport to Hotel Radisson Blue
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">Rahul</td>
-                  <td className="border border-gray-300 px-4 py-2">A-2</td>
-                  <td className="border border-gray-300 px-4 py-2">PVT</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Radisson Blue
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">Aazim</td>
-                  <td className="border border-gray-300 px-4 py-2">NA</td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 px-4 py-2">#MTS000039</td>
-                  <td className="border border-gray-300 px-4 py-2">14-07-2024</td>
-                  <td className="border border-gray-300 px-4 py-2">IG-9231</td>
-                  <td className="border border-gray-300 px-4 py-2">14:00Hrs.</td>
-                  <td className="border border-gray-300 px-4 py-2">14:00Hrs.</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Dubai Airport to Hotel Radisson Blue
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">Rahul</td>
-                  <td className="border border-gray-300 px-4 py-2">A-2</td>
-                  <td className="border border-gray-300 px-4 py-2">PVT</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Radisson Blue
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">Aazim</td>
-                  <td className="border border-gray-300 px-4 py-2">NA</td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 px-4 py-2">#MTS000039</td>
-                  <td className="border border-gray-300 px-4 py-2">14-07-2024</td>
-                  <td className="border border-gray-300 px-4 py-2">IG-9231</td>
-                  <td className="border border-gray-300 px-4 py-2">14:00Hrs.</td>
-                  <td className="border border-gray-300 px-4 py-2">14:00Hrs.</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Dubai Airport to Hotel Radisson Blue
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">Rahul</td>
-                  <td className="border border-gray-300 px-4 py-2">A-2</td>
-                  <td className="border border-gray-300 px-4 py-2">PVT</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Radisson Blue
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">Aazim</td>
-                  <td className="border border-gray-300 px-4 py-2">NA</td>
-                </tr>
-              </tbody>
-            </table>
-          </div> */}
           <div className="table-container mt-8 mb-20 overflow-x-auto">
             <h3
               className="text-white font-bold text-2xl mb-4 text-center py-2"

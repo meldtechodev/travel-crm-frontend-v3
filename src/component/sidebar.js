@@ -119,7 +119,7 @@ const Sidebar = () => {
   // }, [])
 
   const handleModuleList = (moduleName) => {
-    navigate(`/home/${moduleName.toLowerCase()}`)
+    navigate(`/home/${moduleName.toLowerCase().replace(/\s+/g, "")}`)
   }
 
   const handlePageAndForm = (word) => {

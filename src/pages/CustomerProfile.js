@@ -156,10 +156,10 @@ const CustomerProfile = () => {
           </div>
         </div>
         <div className="flex flex-col md:flex-row justify-between items-center mb-4">
-          <button className="bg-green-500 text-white px-4 py-2 rounded">+ Add Remarks</button>
+          {/* <button className="bg-green-500 text-white px-4 py-2 rounded">+ Add Remarks</button> */}
           <div className="flex space-x-2">
-            <button className="bg-blue-500 text-white px-4 py-2 rounded">+ Facebook</button>
-            <button className="bg-yellow-500 text-white px-4 py-2 rounded">+ To Do</button>
+            {/* <button className="bg-blue-500 text-white px-4 py-2 rounded">+ Facebook</button>
+            <button className="bg-yellow-500 text-white px-4 py-2 rounded">+ To Do</button> */}
             <button className="bg-red-500 text-white px-4 py-2 rounded" >+ New Query</button>
           </div>
         </div>
@@ -199,7 +199,7 @@ const CustomerProfile = () => {
                   <td className="p-2 border text-center">{item.daynumber}</td>
                   <td className="p-2 border text-center">{item.cityname}</td>
                   <td className="p-2 border text-center">{item.daytitle}</td>
-                  <td className="p-2 border">{item.program.length > 5 ? item.program.slice(0, 20) + "..." : item.program}</td>
+                  <td className="p-2 border" dangerouslySetInnerHTML={item.program && item.program.length > 5 ? { __html: item.program.slice(0, 20) + "..." } : item.program}></td>
                   <td className="p-2 border text-center">{item.meals}</td>
                   <td className="p-2 border text-center">{item.transport.transportmode}</td>
                   {/* <td className="p-2 border">{item.}</td> */}
