@@ -115,8 +115,8 @@ const CustomerProfile = () => {
 
   const userId = params.userId;
 
-  console.log(params);
-  console.log(userId);
+  // console.log(params);
+  // console.log(userId);
 
   useEffect(() => {
     axios.get(`${api.baseUrl}/customer/getbyid/${userId}`).then((res) => {
@@ -156,7 +156,7 @@ const CustomerProfile = () => {
     },
     {
       header: 'Destination',
-      render: ({row}) => (
+      render: ({ row }) => (
         row && row.destination && row.destination.destinationName && row.destination.destinationName
       )
     },
@@ -406,11 +406,11 @@ const CustomerProfile = () => {
                 <p className="font-bold">Recent Queries:</p>
               </div>
               <div className="overflow-y-auto max-h-96">
-              <TableComponent
-              columns={columns}
-              data={query}
-            />
-                
+                <TableComponent
+                  columns={columns}
+                  data={query}
+                />
+
               </div>
             </div>
 

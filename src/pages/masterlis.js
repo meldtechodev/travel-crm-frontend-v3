@@ -34,7 +34,6 @@ const MasterList = () => {
   const [policyData, setPolicyData] = useState([]);
   const [transportData, setTransportData] = useState([]);
   const [itineraryData, setItineraryData] = useState([]);
-  const [departmentData, setDepartmentData] = useState([]);
   const [addData, setAddData] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);

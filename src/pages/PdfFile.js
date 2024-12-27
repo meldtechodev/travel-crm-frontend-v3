@@ -106,7 +106,7 @@ const PdfFile = ({ data, isModalOpen, onClose }) => {
           </div>
           <div class="quotation">
             <p>
-              Curated by
+              Created by
               <br />
               <span class="curated-by">{`${user.name} ${user.mname} ${user.lname}`} </span>
             </p>
@@ -669,12 +669,12 @@ const PdfFile = ({ data, isModalOpen, onClose }) => {
           <h3> Get 100% Credit of TCS Amount</h3>
           <div class="creditTCSInner">
             <div class="creditTCSInnerPart">
-              <h5>TCS is collected via MMT</h5>
+              <h5>TCS is collected via MTTC</h5>
               <p>
                 TCS credit would reflect in your
                 Form 26AS on quarterly basis.
                 You may also request TCS
-                certificate from MMT.
+                certificate from MTTC.
               </p>
             </div>
             <div class="creditTCSInnerPart">
@@ -761,7 +761,7 @@ const PdfFile = ({ data, isModalOpen, onClose }) => {
             </div>
             <div class="faqQues">
               <h6> Is Okay to Board included in the fees?</h6>
-              <p>We are not charging any fee for OTB, it’s an complimentary service provided by MMT.</p>
+              <p>We are not charging any fee for OTB, it’s an complimentary service provided by MTTC.</p>
             </div>
           </div>
           <div class="faqQuesMain">
@@ -769,7 +769,7 @@ const PdfFile = ({ data, isModalOpen, onClose }) => {
               <p>6.</p>
             </div>
             <div class="faqQues">
-              <h6> When will MakeMyTrip process OTB?</h6>
+              <h6> When will Meld Techo Travel CRM process OTB?</h6>
               <p>
                 If Okay to Board is required, we will send the request to airline once your visa is approved.
                 Please note that airlines usually approves Okay To Board 24 hours before departure.
@@ -856,16 +856,16 @@ const PdfFile = ({ data, isModalOpen, onClose }) => {
               Personal expenses such as laundry, telephone calls, room service, alcoholic beverages, mini bar etc., are not included.
             </li>
             <li>
-              In case your package needs to be cancelled due to any natural calamity, weather conditions etc. MakeMyTrip shall
+              In case your package needs to be cancelled due to any natural calamity, weather conditions etc. Meld Techo Travel CRM shall
               strive to give you the maximum possible refund subject to the agreement made with our trade partners/vendors.
             </li>
             <li>
-              If payment is not made as per the schedule provided in the first booking confirmation e-mail, MakeMyTrip reserves
+              If payment is not made as per the schedule provided in the first booking confirmation e-mail, Meld Techo Travel CRM reserves
               the right to cancel the booking after attempting to get in touch with you. Refunds would be as per the package
               cancellation policy.
             </li>
             <li>
-              The passenger names in the booking form should be exactly as per passports. MakeMyTrip will not bear any liability
+              The passenger names in the booking form should be exactly as per passports. Meld Techo Travel CRM will not bear any liability
               for the name change fee, if incorrect names and ages have been added at the time of booking.
             </li>
             <li>
@@ -892,15 +892,15 @@ const PdfFile = ({ data, isModalOpen, onClose }) => {
             <li> Kindly be on time for your activities, tours and transfers. Most countries are quite strict about following a schedule</li>
             <li>
               The package price does not include special dinner or mandatory charges at time levied by the hotels especially during
-              New Year and Christmas or any special occasions. MakeMyTrip shall try to communicate the same while booking the
-              package. However MakeMyTrip may not have this information readily available all the time.
+              New Year and Christmas or any special occasions. Meld Techo Travel CRM shall try to communicate the same while booking the
+              package. However Meld Techo Travel CRM may not have this information readily available all the time.
             </li>
             <li> For queries regarding cancellations and refunds, please refer to our Cancellation Policy.</li>
             <li> Disputes, if any, shall be subject to the exclusive jurisdiction of the courts in New Delhi.</li>
             <li>
               For any paid activity which is non-operational due to any unforeseen reason, we will process refund & same should
               reach the guest within 30 days of processing the refund. Also, for any activity which is complimentary and not charged
-              to MMT & guest, no refund will be processed.
+              to MTTC & guest, no refund will be processed.
             </li>
             <li>
               Tourism Dirham Tax will be charged directly to the clients upon arrival at the hotel from 31.03.14 onwards which is
@@ -923,7 +923,6 @@ const PdfFile = ({ data, isModalOpen, onClose }) => {
           <div>
             <strong>Pay Online</strong>
             <br />
-            {/* <a href="#">https://app.mmt.com/Xm2V/oqxkzmst</a> */}
           </div>
           <div>
             <strong>Contact Travel Expert</strong>
@@ -1026,21 +1025,38 @@ const PdfFile = ({ data, isModalOpen, onClose }) => {
 
       <hr />
 
-      <div className='mb-6 p-4 rounded-t-none flex justify-between gap-4 bg-slate-200'>
+      <div className='mb-6 p-4 rounded-t-none flex flex-col justify-between gap-4 bg-slate-200'>
 
-        <button
-          onClick={generatePDF}
-          className="w-full bg-red-500 text-white border-transparent  py-2 px-4 rounded-lg hover:bg-white hover:text-red-500
+        <div className='flex gap-4'>
+          <button
+            // onClick={generatePDF}
+            className="w-full bg-green-600 text-white border-transparent  py-2 px-4 rounded-lg hover:bg-white hover:text-green-600
+          hover:border-green-600 border-2"
+          >
+            Send to on WhatsApp
+          </button>
+          <button
+            // onClick={() => isModalOpen(false)}
+            className="w-full text-white py-2 px-4 rounded-lg border-2 border-transparent bg-blue-400 hover:text-blue-400 hover:border-blue-400 hover:bg-white"
+          >
+            Send to on Email
+          </button>
+        </div>
+        <div className='flex gap-4'>
+          <button
+            onClick={generatePDF}
+            className="w-full bg-red-500 text-white border-transparent  py-2 px-4 rounded-lg hover:bg-white hover:text-red-500
           hover:border-red-500 border-2"
-        >
-          Generate PDF
-        </button>
-        <button
-          onClick={() => isModalOpen(false)}
-          className="w-full text-white py-2 px-4 rounded-lg border-2 border-transparent bg-gray-600 hover:text-gray-600 hover:border-gray-600 hover:bg-white"
-        >
-          Close
-        </button>
+          >
+            Generate PDF
+          </button>
+          <button
+            onClick={() => isModalOpen(false)}
+            className="w-full text-white py-2 px-4 rounded-lg border-2 border-transparent bg-gray-600 hover:text-gray-600 hover:border-gray-600 hover:bg-white"
+          >
+            Close
+          </button>
+        </div>
       </div>
     </>
 

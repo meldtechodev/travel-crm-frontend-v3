@@ -91,7 +91,9 @@ const Bookings = () => {
 
   useEffect(() => {
     axios.get(`${api.baseUrl}/query/getall`)
-      .then(respose => setQuery(respose.data))
+      .then(respose => {
+        setQuery(respose.data);
+      })
       .catch(error => console.error(error))
   }, [])
 
@@ -108,19 +110,30 @@ const Bookings = () => {
     { header: 'Query Date', accessor: 'query_Date' },
     {
       header: 'Name/Mobile',
-      render: (row) => (
-        <>
-          <div>{row.fname}</div>
-          <div>{row.contactNo}</div>
-          <div>{row.emailId}</div>
-        </>
-      ),
+      render: (row) => {
+        return (
+          <>
+            <div>{row.row.saluation} {row.row.fname} {row.row.mname} {row.row.lname}</div>
+            <div>{row.row.contactNo}</div>
+            <div>{row.row.emailId}</div>
+          </>
+        )
+      }
     },
     { header: 'Type', accessor: 'queryType' },
     // { header: 'Description', accessor: 'description' },
     { header: 'Travel Date', accessor: 'travelDate' },
     { header: 'No. of Pax', accessor: 'totalTravellers' },
-    { header: 'Destinations', accessor: 'destinations' },
+    {
+      header: 'Destinations',
+      render: (row) => {
+        return (
+          <>
+            <div>{row.row.destination.destinationName}</div>
+          </>
+        )
+      }
+    },
     { header: 'Proposal', accessor: 'proposalId' },
     {
       header: 'Lead Stage',
@@ -143,7 +156,16 @@ const Bookings = () => {
       ),
     },
     { header: 'Last Updated', accessor: 'lastUpdated_Date' },
-    { header: 'Owner', accessor: 'owner' },
+    {
+      header: 'Owner',
+      render: (row) => {
+        return (
+          <>
+            <div>{row.row.userid.name} {row.row.userid.mname} {row.row.userid.lname}</div>
+          </>
+        )
+      }
+    },
     {
       header: 'Action',
       render: () => (
