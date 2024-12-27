@@ -24,7 +24,8 @@ const Itinerary = ({ isOpen, onClose }) => {
       roomtypes: [null, null, null, null],
       mealspackage: [null, null, null, null],
       activities: [null],
-      sightseeing: [null]
+      sightseeing: [null],
+      image: null
     }
   ]);
 
@@ -182,6 +183,11 @@ const Itinerary = ({ isOpen, onClose }) => {
     let update = formData.filter((item, i) => i !== id)
     setFormData(update)
   }
+
+  const handleImage = (e, i) => {
+    let update = formData.map((item, index) => index === i ? { ...item, image: e.target.files[0] } : item)
+    setFormData(update)
+  }
   // Add a new day form
   const addNewDay = () => {
     if (formData.length === 0) {
@@ -196,7 +202,8 @@ const Itinerary = ({ isOpen, onClose }) => {
           roomtypes: [null, null, null, null],
           mealspackage: [null, null, null, null],
           activities: [null],
-          sightseeing: [null]
+          sightseeing: [null],
+          image: null
         }])
 
     } else {
@@ -212,7 +219,8 @@ const Itinerary = ({ isOpen, onClose }) => {
         roomtypes: [null, null, null, null],
         mealspackage: [null, null, null, null],
         activities: [null],
-        sightseeing: [null]
+        sightseeing: [null],
+        image: null
       }
       ]);
     }
@@ -352,7 +360,8 @@ const Itinerary = ({ isOpen, onClose }) => {
       roomtypes: [null, null, null, null],
       mealspackage: [null, null, null, null],
       activities: [null],
-      sightseeing: [null]
+      sightseeing: [null],
+      image: null
     }])
     // setEditorData("")
 
@@ -492,10 +501,9 @@ const Itinerary = ({ isOpen, onClose }) => {
                   />
                 </div>
 
-                <div className="mb-4">
-                  <div className="flex gap-2 mb-4">
+                <div className="mb-4 flex justify-between items-center gap-5">
+                  <div className="flex gap-8 mb-4 items-center">
                     <div className="w-1/4 flex items-center">
-
                       <h3 className="block text-sm font-medium mb-2">Meals</h3>
                     </div>
                     <div className="w-1/4 flex items-center">
@@ -534,6 +542,19 @@ const Itinerary = ({ isOpen, onClose }) => {
                         Dinner
                       </label>
                     </div>
+                  </div>
+                  <div className="flex gap-4 items-center mb-4">
+                    <label htmlFor="image" className="block text-sm font-medium">
+                      Image
+                    </label>
+                    <input
+                      type="file"
+                      className="w-full text-gray-700 mt-1 p-[4.5px] bg-white rounded border border-gray-200"
+                      name="image"
+                      value={item.image}
+                      onChange={(e) => handleImage(e, index)}
+                    // value={pkImage}
+                    />
                   </div>
                 </div>
 

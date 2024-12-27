@@ -54,11 +54,9 @@ const MasterList = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const token = useDecryptedToken();
+  const { user } = useContext(UserContext);
 
   // Reusable ToggleSwitch Component
-
-  const { user, ipAddress, countryDetails } = useContext(UserContext);
-
   const ToggleSwitch = ({ isOn, handleToggle }) => {
     return (
       <div className="flex justify-center items-center w-full h-full">
@@ -124,6 +122,27 @@ const MasterList = () => {
       ),
       Action: (
         <div className="flex gap-2 justify-center">
+          <FaEdit
+            className="text-purple-600 cursor-pointer"
+            onClick={() => {
+              setIsFormEditEnabled(true);
+              handleEdit(item);
+            }}
+          />
+          <FaTrashAlt
+            className="text-red-600 cursor-pointer"
+            onClick={() => handleDelete(item)}
+          />
+        </div>
+      ),
+      hotlAction: (
+        <div className="flex gap-2 justify-center">
+          <FaEye
+            className="text-purple-600 cursor-pointer"
+            onClick={() => {
+              navigate(`/home/hotel-view/${item.id}`);
+            }}
+          />
           <FaEdit
             className="text-purple-600 cursor-pointer"
             onClick={() => {
@@ -321,7 +340,7 @@ const MasterList = () => {
         { header: 'City', accessor: 'destinationName' },
         { header: 'Address', accessor: 'haddress' },
         { header: 'Status', accessor: 'status' },
-        { header: 'Action', accessor: 'Action' },
+        { header: 'Action', accessor: 'hotlAction' },
       ],
       data: addIconsToData(hotelData, handleStatusToggle),
     },
