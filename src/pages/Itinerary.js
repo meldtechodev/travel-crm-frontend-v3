@@ -185,6 +185,7 @@ const Itinerary = ({ isOpen, onClose }) => {
   }
 
   const handleImage = (e, i) => {
+    console.log(e.target.files[0])
     let update = formData.map((item, index) => index === i ? { ...item, image: e.target.files[0] } : item)
     setFormData(update)
   }
@@ -338,10 +339,27 @@ const Itinerary = ({ isOpen, onClose }) => {
         status: 1
       };
 
+      const formDataToSend = new FormData();
+      formDataToSend.append("daytitle", item.daytitle);
+      formDataToSend.append("program", item.program);
+      formDataToSend.append("meals", meald);
+      formDataToSend.append("activitiesIds", item.activities);
+      formDataToSend.append("sightseeingIds", item.sightseeing);
+      formDataToSend.append("hotelOptionIds", hotelList);
+      formDataToSend.append("destination.id", selectedDestination.value);
+      formDataToSend.append("roomtypes.id", room[0].id);
+      formDataToSend.append("mealspackage.id", mealspack[0].id);
+      formDataToSend.append("createdby", user.name);
+      formDataToSend.append("modifiedby", user.name);
+      formDataToSend.append("isdelete", 0);
+      formDataToSend.append("ipaddress", ipAddress);
+      formDataToSend.append("status", 1);
+      formDataToSend.append("image", item.image);
+
       try {
-        axios.post(`${api.baseUrl}/itinerarys/create`, dataToSend, {
+        axios.post(`${api.baseUrl}/itinerarys/create`, formDataToSend, {
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'multipart/form-data',
             "Access-Control-Allow-Origin": "*",
           },
         });
@@ -551,7 +569,7 @@ const Itinerary = ({ isOpen, onClose }) => {
                       type="file"
                       className="w-full text-gray-700 mt-1 p-[4.5px] bg-white rounded border border-gray-200"
                       name="image"
-                      value={item.image}
+                      // value={item.image}
                       onChange={(e) => handleImage(e, index)}
                     // value={pkImage}
                     />

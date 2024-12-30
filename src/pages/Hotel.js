@@ -459,26 +459,26 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
       if (val === 5) {
         val = 0
       }
-      // const payload = {
-      //   "off_season_price": priceMaster[i].off_season_price,
-      //   "extra_bed_price": priceMaster[i].extra_bed_price,
-      //   "direct_booking_price": priceMaster[i].direct_booking_price,
-      //   "third_party_price": priceMaster[i].third_party_price,
-      //   "status": 1,
-      //   "created_by": user.username,
-      //   "modified_by": user.username,
-      //   "isdelete": 0,
-      //   "ipaddress": ipAddress,
-      //   "roomtypes": priceMaster[i].roomtypes,
-      //   "hotel": {
-      //     "id": hotelData.id
-      //   },
-      //   "season": {
-      //     "id": seasons[val].id
-      //   }
-      // }
+      const payload = {
+        "off_season_price": priceMaster[i].off_season_price,
+        "extra_bed_price": priceMaster[i].extra_bed_price,
+        "direct_booking_price": priceMaster[i].direct_booking_price,
+        "third_party_price": priceMaster[i].third_party_price,
+        "status": 1,
+        "created_by": user.username,
+        "modified_by": user.username,
+        "isdelete": 0,
+        "ipaddress": ipAddress,
+        "roomtypes": priceMaster[i].roomtypes,
+        "hotel": {
+          "id": hotelData.id
+        },
+        "season": {
+          "id": seasons[val].id
+        }
+      }
       // console.log(priceMaster[i])
-      await axios.post(`${api.baseUrl}/hotelprice/create`, priceMaster[i], {
+      await axios.post(`${api.baseUrl}/hotelprice/create`, payload, {
         headers: {
           // 'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',

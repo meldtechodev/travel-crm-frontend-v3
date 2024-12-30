@@ -35,6 +35,8 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
   const [selectedSupplier, SetSelectedSupplier] = useState(null);
   const [selectedHotelCity, setSelectedHotelCity] = useState(null);
   const [destination, setDestinations] = useState([]);
+  const [viewHotelCityDesti, setViewHotelCityDesti] = useState([]);
+
   const [packageCategories, setPackageCategories] = useState([]);
   const [supplier, setSupplier] = useState([]);
   const [hotelData, setHotelData] = useState([]);
@@ -156,6 +158,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
       .then(response => {
         const formatDestination = response.data.map((item) => ({
           ...item,
+          type: "city",
           label: item.destinationName + ", (" + item.state.stateName + ") " + item.country.countryName,
           value: 0
         }))
@@ -165,6 +168,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
           .then(res => {
             const formatState = res.data.map((item) => ({
               ...item,
+              type: "state",
               label: item.stateName + ", " + item.country.countryName,
               value: 0
             }))
@@ -178,6 +182,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
               .then(r => {
                 const formatCountry = r.data.map((item) => ({
                   ...item,
+                  type: "country",
                   label: item.countryName.toUpperCase(),
                   value: 0
                 }))
@@ -223,6 +228,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
       axios.get(`${api.baseUrl}/state/getall`), //index 12
     ]).then((response) => {
       const formattedOptions = response[0].data.map((item) => ({
+        ...item,
         value: item.id, // or any unique identifier
         label: item.destinationName, // or any display label you want
       }));
@@ -840,7 +846,6 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
           modifiedby: user.name,
           category: formItinaryData[i].hotel[j].category,
           packitid: {
-            // id: 501,
             id: packageItinerayData.id
           },
           activitiesIds: itiActivity,
@@ -935,9 +940,22 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
     }
 
     formDataPackageMaster.append("pkName", formData.pkName);
-
     formDataPackageMaster.append("fromCityId", selectedStartCity.id);
-    formDataPackageMaster.append("toCityId", selectedEndCity.id);
+
+    if (selectedPackageType === "international") {
+      if (selectedEndCity.type === 'state') {
+        formDataPackageMaster.append("s_id", selectedEndCity.id);
+      } else {
+        formDataPackageMaster.append("c_id", selectedEndCity.id);
+      }
+    } else {
+      if (selectedEndCity.type === 'state') {
+        formDataPackageMaster.append("s_id", selectedEndCity.id);
+      } else {
+        formDataPackageMaster.append("toCityId", selectedEndCity.id);
+      }
+    }
+
     formDataPackageMaster.append("destinationCoveredId", destinationCoveredStr);
     formDataPackageMaster.append("description", editorData);
     formDataPackageMaster.append("pkCategory", selectedPackagesStr);
@@ -975,7 +993,13 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
       })
         .then((response) => {
           setPackageData(response.data)
-          // console.log(response.data)
+          if (selectedPackageType === "international") {
+            if (packageData.s_id !== null) {
+
+            } else if (packageData.s_id !== null) {
+
+            }
+          }
           toast.success("Package Created Successfully!", {
             position: "top-center",
             autoClose: 5000,
@@ -1041,7 +1065,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
     setSelectedInclusions(selectedOptions);
     // console.log(selectedInclusions);
     for (let i = 0; i < selectedInclusions.length; i++) {
-      if (selectedInclusions[i].__isNew__) {
+      if (selectedInclusions[i]?.__isNew__) {
         console.log(selectedInclusions[i]);
       }
     }
@@ -1051,7 +1075,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
     setSelectedExclusions(selectedOptions);
     // console.log(selectedExclusions);
     for (let i = 0; i < selectedExclusions.length; i++) {
-      if (selectedExclusions[i].__isNew__) {
+      if (selectedExclusions[i]?.__isNew__) {
         console.log(selectedExclusions[i]);
       }
     }

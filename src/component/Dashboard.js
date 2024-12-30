@@ -189,7 +189,7 @@ const Dashboard = () => {
     });
   }, [])
 
-  console.log(dashboardData);
+  // console.log(dashboardData);
 
   return (
     <div className="w-full mt-0">

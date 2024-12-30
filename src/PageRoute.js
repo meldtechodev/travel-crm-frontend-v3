@@ -31,7 +31,6 @@ import CustomersList from './pages/CustomersList'
 
 const PageRoute = () => {
 
-
   // const [user, setUser] = useState({});
 
   // const RoomTypeOptions = [
@@ -40,6 +39,7 @@ const PageRoute = () => {
   //   { value: "luxury", label: "Luxury" },
   //   { value: "standard", label: "Standard" },
   // ];
+
   // const MealTypeOptions = [
   //   { value: 1, label: "Thai" },
   //   { value: 2, label: "Indian" },
