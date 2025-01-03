@@ -13,8 +13,6 @@ const CompanyProfilePage = () => {
 
   const { user } = useContext(UserContext);
 
-  console.log(user)
-
   const [addData, setAddData] = useState([]);
   // const [userData, setUserData] = useState(null);
   const [designationData, setDesignationData] = useState(null);
@@ -126,7 +124,7 @@ const CompanyProfilePage = () => {
             </button>
             <button
               className="border bg-red-500  text-white  text-sm py-2 px-4 rounded mb-2"
-              onClick={() => navigate("/home/view-departments")}
+              onClick={() => navigate("/home/myteams")}
             >
               View Roles
             </button>

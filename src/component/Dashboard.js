@@ -182,11 +182,12 @@ const Dashboard = () => {
   // }
 
   useEffect(() => {
-    axios.get(`${api.baseUrl}/dashbord/${user.userId}`).then((response) => {
-      setDashboardData(response.data);
-    }).catch((e) => {
-      console.log(e);
-    });
+    axios.get(`${api.baseUrl}/dashboard?userId=${user.userId}`)
+      .then((response) => {
+        setDashboardData(response.data);
+      }).catch((e) => {
+        console.log(e);
+      });
   }, [])
 
   // console.log(dashboardData);
@@ -252,19 +253,19 @@ const Dashboard = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
             <div className="bg-pink-100 border-l-4 border-pink-500 p-4 rounded-md">
               <p className="text-gray-600 font-bold">Total Queries</p>
-              <p className="text-lg">{dashboardData && dashboardData.activeBookings.toString()} {"/"} {dashboardData && dashboardData.totalBookings.toString()}</p>
+              <p className="text-lg">{dashboardData && dashboardData.activeQuery.toString()} {"/"} {dashboardData && dashboardData.totalQuery.toString()}</p>
             </div>
             <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded-md">
               <p className="text-gray-600 font-bold">Total Bookings</p>
-              <p className="text-lg">{dashboardData && dashboardData.activeCustomers.toString()} {"/"} {dashboardData && dashboardData.totalCustomers.toString()}</p>
+              <p className="text-lg">{dashboardData && dashboardData.activeBookings.toString()} {"/"} {dashboardData && dashboardData.totalBookings.toString()}</p>
             </div>
             <div className="bg-pink-100 border-l-4 border-pink-500 p-4 rounded-md">
               <p className="text-gray-600 font-bold">Total Leads</p>
-              <p className="text-lg">{dashboardData && dashboardData.activeQueryBooks.toString()} {"/"} {dashboardData && dashboardData.totalQueryBooks.toString()}</p>
+              <p className="text-lg">{dashboardData && dashboardData.totalLeads.toString()} {"/"} {dashboardData && dashboardData.totalLeads.toString()}</p>
             </div>
             <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded-md">
               <p className="text-gray-600 font-bold">Total Customers</p>
-              <p className="text-lg">{dashboardData && dashboardData.activeUsers.toString()} {"/"} {dashboardData && dashboardData.totalUsers.toString()}</p>
+              <p className="text-lg">{dashboardData && dashboardData.activeCustomers.toString()} {"/"} {dashboardData && dashboardData.totalCustomers.toString()}</p>
             </div>
           </div>
           {/* Graph Entries */}

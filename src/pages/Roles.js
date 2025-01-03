@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import Select from "react-select";
 import api from "../apiConfig/config";
 import axios from "axios";
+import { UserContext } from "../contexts/userContext";
+import { toast } from "react-toastify";
 // import Select from "react-select/base";
 
 const Roles = ({ isOpen, onClose }) => {
@@ -15,6 +17,7 @@ const Roles = ({ isOpen, onClose }) => {
   const [modulePermission, setModulePermission] = useState([])
 
 
+  const { user, ipAddress } = useContext(UserContext)
 
   const navigate = useNavigate()
 
@@ -168,12 +171,43 @@ const Roles = ({ isOpen, onClose }) => {
   };
 
   // Functions to navigate between pages
-  const handleNext = () => {
+  const handleNext = async (e) => {
+    e.preventDefault();
+
     if (!isFormFilled) {
       alert("Please fill out the Role Name and Description fields before proceeding.");
       return; // Prevent proceeding to the next page
     }
-    setCurrentPage(2);
+    let payload = {
+      "roleName": roleName,
+      "createdby": user.name,
+      "modifiedby": user.name,
+      "ipaddress": ipAddress,
+      "status": 1,
+      "isdelete": 0
+    }
+
+    await axios.post(`${api.baseUrl}/role/create`, payload, {
+      headers: {
+        // 'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      }
+    })
+      .then(async (response) => {
+        toast.success("Role Created Successfully.", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        setRoleName('')
+        onClose()
+      })
+      .catch(error => console.error(error));
+
   };
   const handlePrev = () => {
     setCurrentPage(1);

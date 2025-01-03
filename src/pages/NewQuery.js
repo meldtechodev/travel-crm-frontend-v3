@@ -410,7 +410,7 @@ const NewQuery = ({ isOpen, onClose }) => {
       queryType: formData.queryType.value || " ",
       queryCreatedFrom: formData.leadSource.value,
       emailStatus: 0,
-      leadStatus: 0,
+      leadStatus: 1,
       ipAddress: ipAddress,
       packid: selectedPackage.value,
       destination: {
@@ -865,10 +865,13 @@ const NewQuery = ({ isOpen, onClose }) => {
           <div className="mb-4">
             <label className="block text-sm font-medium">Include Policies</label>
             <div className="flex flex-col">
-              {viewPolicy.map(item =>
+              {/* {viewPolicy.map(item =>
                 <label className="flex items-center mt-2">
-                  {/* <input type="checkbox" className="mr-2" /> */}
                   {item.policytitle}: {item.policydescription}
+                </label>
+              )} */}
+              {viewPolicy.map(item =>
+                <label className="flex items-center mt-2" dangerouslySetInnerHTML={{ __html: `${item.policytitle}: ${item.policydescription}` }}>
                 </label>
               )}
               {/* <label className="flex items-center">

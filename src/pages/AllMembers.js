@@ -20,7 +20,7 @@ const AllMembers = () => {
   const [addData, setAddData] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false); // State for controlling the dropdown open/close
   const [status, setStatus] = useState(true); // State for the toggle switch
-  const [activeTab, setActiveTab] = useState("list"); // State to manage active tab
+  const [activeTab, setActiveTab] = useState("roles"); // State to manage active tab
   const dropdownRef = useRef(null);
   const [currentTable, setCurrentTable] = useState("list"); // State to track the selected table
   const [selectedMemberColumns, setSelectedMemberColumns] = useState({
@@ -140,7 +140,6 @@ const AllMembers = () => {
   useEffect(() => {
     axios.get(`${api.baseUrl}/usergetall`)
       .then(response => {
-        console.log(response.data)
         setMembersData(response.data)
       })
       .catch(error => console.error(error)

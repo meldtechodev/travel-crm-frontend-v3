@@ -186,20 +186,19 @@ const Bookings = () => {
   }
 
   return (
-    <div className="p-4 w-full bg-gray-50 h-full">
+    <div className="p-4 w-full bg-gray-50 mb-10">
       <div className="flex flex-col gap-3 md:flex-row justify-between items-center mb-4">
         <div className="flex space-x-2">
-          <select className="border border-gray-300 rounded px-2 py-1">
-            <option>Select Users</option>
-          </select>
-          <button className="bg-gray-200 text-black px-4 py-2 rounded">Assign</button>
+          <h3 className='text-2xl font-bold'>Query Dashboard</h3>
         </div>
-        <div className="flex items-center space-x-2">
+        {/* <div className="flex items-center space-x-2">
           <button className="bg-orange-500 text-white px-4 py-2 rounded">B2C Customer</button>
           <button className="bg-orange-500 text-white px-4 py-2 rounded">B2B Customer</button>
-        </div>
+        </div> */}
       </div>
-      <div className="flex justify-between items-center mb-4">
+      <hr />
+      <br />
+      {/* <div className="flex justify-between items-center mb-4">
         <div className="flex flex-wrap gap-3">
           <button className="bg-gray-200 text-black px-4 py-2 rounded">Archive</button>
           <button className="bg-red-500 text-white px-4 py-2 rounded">Hot</button>
@@ -225,7 +224,7 @@ const Bookings = () => {
           </select>
           <button className="bg-orange-500 text-white px-4 py-2 rounded">Email</button>
         </div>
-      </div>
+      </div> */}
 
       <div className="w-full overflow-auto">
 

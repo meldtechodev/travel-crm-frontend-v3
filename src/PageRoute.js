@@ -28,6 +28,7 @@ import api from './apiConfig/config'
 import AllMembers from './pages/AllMembers'
 import HotelView from './pages/HotelView'
 import CustomersList from './pages/CustomersList'
+import ViewCompany from './pages/ViewCompany'
 
 const PageRoute = () => {
 
@@ -135,8 +136,8 @@ const PageRoute = () => {
             <Route path="/packageDashboard" element={<PackageDashboard isListView={true} />} />
             <Route path={'/package-list/:id'} element={<CustomerProfile />} />
             <Route path="/masters" element={<MasterList />} />
-            {/* <Route path="/master-list/hotel" element={<HotelMaster />} />
-            <Route path="/master-list/hotel" element={<HotelMaster />} /> */}
+            <Route path="/company" element={<ViewCompany />} />
+            {/* <Route path="/master-list/hotel" element={<HotelMaster />} /> */}
             {/* <Route path='/master-list/hotel/:id' element={<HotelMasterAddRoom />} /> */}
             {/* <Route path="/package-view" element={<CustomerProfile />} /> */}
             <Route path="/queryDashboard" element={<Bookings />} />

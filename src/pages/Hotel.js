@@ -258,14 +258,19 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
     setTotalRoomDetails(update)
   }
 
+  const [formNotFilled, setFormNotFilled] = useState(false)
+
   const handleRoomTypeMaster = async (e) => {
     e.preventDefault();
+
+    setFormNotFilled(false)
 
     for (let i = 0; totalRoomDetails.length > i; i++) {
       for (let j = 0; totalRoomDetails[i].bed_size.length > j; j++) {
 
         if (totalRoomDetails[i].bed_size[j] === '' || totalRoomDetails[i].max_person === 0 || totalRoomDetails[i].status === null || totalRoomDetails[i].image === null || starRating === null || contactPersonName === '' || contactEmail === '' || hotelAddress === '' || contactPersonNumber === '' || hotelPincode === '' || status === null || hImage === null
         ) {
+          setFormNotFilled(true)
           toast.error("Please fill all the fields...", {
             position: "top-center",
             autoClose: 5000,
@@ -280,75 +285,77 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
       }
     }
 
-    for (let i = 0; totalRoomDetails.length > i; i++) {
-      for (let j = 0; totalRoomDetails[i].bed_size.length > j; j++) {
+    if (!formNotFilled) {
+      for (let i = 0; totalRoomDetails.length > i; i++) {
+        for (let j = 0; totalRoomDetails[i].bed_size.length > j; j++) {
 
-        const formDataHotelRoomType = new FormData()
+          const formDataHotelRoomType = new FormData()
 
-        formDataHotelRoomType.append('bedSize', totalRoomDetails[i].bed_size[j])
-        formDataHotelRoomType.append('max_person', totalRoomDetails[i].max_person)
-        formDataHotelRoomType.append('created_by', user.name)
-        formDataHotelRoomType.append('modified_by', user.name)
-        formDataHotelRoomType.append('ipaddress', ipAddress)
-        formDataHotelRoomType.append('status', totalRoomDetails[i].status.value)
-        formDataHotelRoomType.append('isdelete', false)
-        formDataHotelRoomType.append('hotel.id', hotelData.id) //hotelData.id
-        formDataHotelRoomType.append('rooms.id', allSelectedRoomType[i].value)
-        formDataHotelRoomType.append('image', totalRoomDetails[i].image)
+          formDataHotelRoomType.append('bedSize', totalRoomDetails[i].bed_size[j])
+          formDataHotelRoomType.append('max_person', totalRoomDetails[i].max_person)
+          formDataHotelRoomType.append('created_by', user.name)
+          formDataHotelRoomType.append('modified_by', user.name)
+          formDataHotelRoomType.append('ipaddress', ipAddress)
+          formDataHotelRoomType.append('status', totalRoomDetails[i].status.value)
+          formDataHotelRoomType.append('isdelete', false)
+          formDataHotelRoomType.append('hotel.id', hotelData.id) //hotelData.id
+          formDataHotelRoomType.append('rooms.id', allSelectedRoomType[i].value)
+          formDataHotelRoomType.append('image', totalRoomDetails[i].image)
 
-        // for (var pair of formDataHotelRoomType.entries()) {
-        //   console.log(pair[0] + ', ' + pair[1]);
-        // }
+          // for (var pair of formDataHotelRoomType.entries()) {
+          //   console.log(pair[0] + ', ' + pair[1]);
+          // }
 
-        await axios.post(`${api.baseUrl}/roomtypes/create`, formDataHotelRoomType, {
-          headers: {
-            // 'Authorization': `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',
-            'Access-Control-Allow-Origin': '*'
-          }
-        })
-          .then((response) => {
-            // console.log(response.data)
-            roomTypeId.push(response.data.id)
+          await axios.post(`${api.baseUrl}/roomtypes/create`, formDataHotelRoomType, {
+            headers: {
+              // 'Authorization': `Bearer ${token}`,
+              'Content-Type': 'multipart/form-data',
+              'Access-Control-Allow-Origin': '*'
+            }
           })
-          .catch(error => console.error(error));
+            .then((response) => {
+              // console.log(response.data)
+              roomTypeId.push(response.data.id)
+            })
+            .catch(error => console.error(error));
+        }
       }
-    }
-    toast.success('Room type saved successfully.', {
-      position: "top-center",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
+      toast.success('Room type saved successfully.', {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
 
-    for (let i = 0; i < roomTypeId.length; i++) {
-      for (let j = 0; j < seasons.length; j++) {
-        priceMaster.push({
-          off_season_price: 0,
-          extra_bed_price: 0,
-          direct_booking_price: 0,
-          third_party_price: 0,
-          status: true,
-          created_by: user.name,
-          modified_by: user.name,
-          isdelete: 0,
-          ipaddress: ipAddress,
-          roomtypes: {
-            id: roomTypeId[i]
-          },
-          hotel: {
-            id: hotelData.id
-          },
-          season: {
-            id: seasons[j].id
-          }
-        })
+      for (let i = 0; i < roomTypeId.length; i++) {
+        for (let j = 0; j < seasons.length; j++) {
+          priceMaster.push({
+            off_season_price: 0,
+            extra_bed_price: 0,
+            direct_booking_price: 0,
+            third_party_price: 0,
+            status: true,
+            created_by: user.name,
+            modified_by: user.name,
+            isdelete: 0,
+            ipaddress: ipAddress,
+            roomtypes: {
+              id: roomTypeId[i]
+            },
+            hotel: {
+              id: hotelData.id
+            },
+            season: {
+              id: seasons[j].id
+            }
+          })
+        }
       }
+      setCurrentPage((prev) => prev + 1);
     }
-    setCurrentPage((prev) => prev + 1);
   }
 
 
