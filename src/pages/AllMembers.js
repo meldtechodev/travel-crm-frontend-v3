@@ -26,13 +26,13 @@ const AllMembers = () => {
   const [selectedMemberColumns, setSelectedMemberColumns] = useState({
     name: true,
     email: false,
-    phone: true,
+    mobnumber: true,
     roles: false,
     status: true,
   });
 
   const [selectedRolesColumns, setSelectedRolesColumns] = useState({
-    name: true,
+    roleName: true,
     description: false,
     numOfUsers: true,
     status: true,
@@ -74,10 +74,19 @@ const AllMembers = () => {
         </div>
       ),
     },
-    { header: "Name", accessor: "name" },
-    { header: "Middle", accessor: "name" },
+    {
+      header: "Name",
+      render: (row) => {
+        return (
+          <>
+            <div>{row.name} {row.mname} {row.lname}</div>
+          </>
+        )
+      },
+    },
+
     { header: "Email", accessor: "email" },
-    { header: "Phone", accessor: "phone" },
+    { header: "Phone", accessor: "mobnumber" },
     { header: "Roles", accessor: "roles" },
     {
       header: "Status",
@@ -125,6 +134,8 @@ const AllMembers = () => {
     (col) => selectedMemberColumns[col.accessor] || col.accessor === undefined
   );
 
+  const [roleData, setRoleData] = useState([])
+
   const [membersData, setMembersData] = useState([])
   // [
   //   {
@@ -143,7 +154,17 @@ const AllMembers = () => {
         setMembersData(response.data)
       })
       .catch(error => console.error(error)
-      )
+      );
+
+
+    axios.get(`${api.baseUrl}/role/getall`)
+      .then(response => {
+        setRoleData(response.data.content)
+      })
+      .catch(error => console.error(error)
+      );
+
+
   }, [])
 
   const handleEdit = (row) => {
@@ -154,7 +175,7 @@ const AllMembers = () => {
     alert(`Delete clicked for ${row.name}`);
   };
   const roleColumns = [
-    { header: "Name", accessor: "name" },
+    { header: "Role Name", accessor: "roleName" },
     { header: "Description", accessor: "description" },
     { header: "No of Users", accessor: "numOfUsers" },
     {
@@ -201,20 +222,20 @@ const AllMembers = () => {
     (col) => selectedRolesColumns[col.accessor] || col.accessor === undefined
   );
 
-  const roleData = [
-    {
-      name: "Admin",
-      description: "Administrator with full access",
-      numOfUsers: 5,
-      status: "Active",
-    },
-    {
-      name: "Member",
-      description: "Member with limited access",
-      numOfUsers: 10,
-      status: "Inactive",
-    },
-  ];
+  // const roleData = [
+  //   {
+  //     name: "Admin",
+  //     description: "Administrator with full access",
+  //     numOfUsers: 5,
+  //     status: "Active",
+  //   },
+  //   {
+  //     name: "Member",
+  //     description: "Member with limited access",
+  //     numOfUsers: 10,
+  //     status: "Inactive",
+  //   },
+  // ];
 
   return (
     <div className=" p-4 bg-gray-100 min-h-screen">

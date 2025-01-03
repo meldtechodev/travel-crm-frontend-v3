@@ -266,9 +266,25 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
     setFormNotFilled(false)
 
     for (let i = 0; totalRoomDetails.length > i; i++) {
+
+      if (totalRoomDetails[i].bed_size.length === 0) {
+        setFormNotFilled(true)
+        toast.error("Please fill all the fields...", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        return
+      }
+
+
       for (let j = 0; totalRoomDetails[i].bed_size.length > j; j++) {
 
-        if (totalRoomDetails[i].bed_size[j] === '' || totalRoomDetails[i].max_person === 0 || totalRoomDetails[i].status === null || totalRoomDetails[i].image === null || starRating === null || contactPersonName === '' || contactEmail === '' || hotelAddress === '' || contactPersonNumber === '' || hotelPincode === '' || status === null || hImage === null
+        if (totalRoomDetails[i].bed_size[j] === '' || totalRoomDetails[i].max_person === '' || totalRoomDetails[i].status === null || totalRoomDetails[i].image === null || starRating === null || contactPersonName === '' || contactEmail === '' || hotelAddress === '' || contactPersonNumber === '' || hotelPincode === '' || status === null || hImage === null
         ) {
           setFormNotFilled(true)
           toast.error("Please fill all the fields...", {
@@ -446,20 +462,20 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    for (let i = 0; i < priceMaster.length; i++) {
-      if (priceMaster[i].off_season_price === 0 || priceMaster[i].extra_bed_price === 0 || priceMaster[i].direct_booking_price === 0 || priceMaster[i].third_party_price === 0) {
-        toast.error("Please fill all the fields...", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-        return
-      }
-    }
+    // for (let i = 0; i < priceMaster.length; i++) {
+    //   if (priceMaster[i].off_season_price === 0 || priceMaster[i].extra_bed_price === 0 || priceMaster[i].direct_booking_price === 0 || priceMaster[i].third_party_price === 0) {
+    //     toast.error("Please fill all the fields...", {
+    //       position: "top-center",
+    //       autoClose: 5000,
+    //       hideProgressBar: false,
+    //       closeOnClick: true,
+    //       pauseOnHover: true,
+    //       draggable: true,
+    //       progress: undefined,
+    //     });
+    //     return
+    //   }
+    // }
 
     let val = 0;
     for (let i = 0; i < priceMaster.length; i++) {
@@ -506,9 +522,23 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
       draggable: true,
       progress: undefined,
     });
+
+
+
     onClose();
     setCurrentPage(0)
-
+    setSelectedOption(null)
+    setStateSelected(null)
+    setSelectedDestinations(null)
+    setHotelName("")
+    setStarRating(null)
+    setEditorData("")
+    setContactPersonName("")
+    setContactEmail("")
+    setContactPersonNumber("")
+    setHotelAddress("")
+    setHotelPincode("")
+    setStatus({ value: true, label: "Active" })
   };
 
   const pages = [
@@ -795,6 +825,7 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
                   className="flex-grow p-2 text-sm outline-none border-none focus:ring-0 w-full h-full "
                 />
               </div>
+              <p className="text-gray-500">Press Enter after every bed size.</p>
             </div>
           </div>
           <div className="flex gap-2 mb-4">
