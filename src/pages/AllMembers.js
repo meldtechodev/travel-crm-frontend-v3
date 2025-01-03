@@ -175,9 +175,17 @@ const AllMembers = () => {
     alert(`Delete clicked for ${row.name}`);
   };
   const roleColumns = [
+    {
+      header: "Select",
+      render: () => (
+        <div className="flex justify-center items-center">
+          <input type="checkbox" className="form-checkbox" />
+        </div>
+      ),
+    },
     { header: "Role Name", accessor: "roleName" },
     { header: "Description", accessor: "description" },
-    { header: "No of Users", accessor: "numOfUsers" },
+    // { header: "No of Users", accessor: "numOfUsers" },
     {
       header: "Status",
       render: () => (

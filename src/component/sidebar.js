@@ -124,7 +124,7 @@ const Sidebar = () => {
 
   const handlePageAndForm = (word) => {
     setAddData('');
-    if (word.toLowerCase().includes('Dashboard'.toLowerCase())) {
+    if (word.toLowerCase().includes('Dashboard'.toLowerCase()) || word.toLowerCase().includes('Boards'.toLowerCase())) {
 
       let wd = word.trim().split(/\s+/);
 

@@ -30,63 +30,29 @@ ChartJS.register(
 const Dashboard = () => {
   // Sample data for the charts
 
-  const [dashboardData, setDashboardData] = useState(null);
+  const [dashboardData, setDashboardData] = useState({
+    activeBookings: 0,
+    totalBookings: 0,
+    activeQuery: 0,
+    totalQuery: 0,
+    LinkedIn: 0,
+    Facebook: 0,
+    Website: 0,
+    totalLeads: 0,
+    activeCustomers: 0,
+    totalCustomers: 0,
+  });
+  const [graphsData, setGraphsData] = useState({
+    topFivePackages: {},
+    topTenDestinations: {},
+    leadSources: {},
+  });
+
+
   const { user } = useContext(UserContext);
 
-  const topDestinationsData = {
-    labels: [
-      "Bali",
-      "Maldives",
-      "Paris",
-      "New York",
-      "Tokyo",
-      "London",
-      "Sydney",
-      "Rome",
-      "Barcelona",
-      "Dubai",
-    ],
-    datasets: [
-      {
-        label: "Top 10 Destinations",
-        data: [50, 40, 30, 20, 10, 25, 35, 15, 20, 5],
-        backgroundColor: [
-          "#5F67F8",
-          "#F8DF5F",
-          "#FA9851",
-          "#FF6384",
-          "#36A2EB",
-          "#FFCE56",
-          "#FF9F40",
-          "#4BC0C0",
-          "#9966FF",
-          "#FF6384",
-        ],
-      },
-    ],
-  };
-
-  const topPackagesData = {
-    labels: ["Package 1", "Package 2", "Package 3", "Package 4", "Package 5"],
-    datasets: [
-      {
-        label: "Top 5 Packages",
-        data: [80, 70, 60, 90, 85],
-        borderColor: "#F8DF5F",
-        backgroundColor: [
-          "#5F67F8",
-          "#FA9851",
-          "#36A2EB",
-          "#FFCE56",
-          "#FF9F40",
-        ],
-        fill: true,
-      },
-    ],
-  };
-
   const topPackagesOptions = {
-    indexAxis: "y", // Horizontal bar chart
+    indexAxis: "y",
     responsive: true,
     plugins: {
       legend: {
@@ -108,23 +74,6 @@ const Dashboard = () => {
         borderColor: "#FA9851",
         backgroundColor: "rgba(250, 152, 81, 0.3)",
         fill: true,
-      },
-    ],
-  };
-
-  const leadsSourceData = {
-    labels: ["Facebook", "Email", "Referral", "Instagram", "Telephone"],
-    datasets: [
-      {
-        label: "Leads Source",
-        data: [30, 70, 45, 80, 50],
-        backgroundColor: [
-          "#FF6384",
-          "#36A2EB",
-          "#FFCE56",
-          "#FF9F40",
-          "#4BC0C0",
-        ],
       },
     ],
   };
@@ -154,43 +103,55 @@ const Dashboard = () => {
     { header: "DRIVER GUIDE", accessor: "driverGuide" },
   ];
 
-  const data = [
-    {
-      query: "#MTS000039",
-      date: "14-07-2024",
-      flightPickUpTime: "IG-9231",
-      returnTime: "14:00Hrs.",
-      tour: "Dubai Airport to Hotel Radisson Blue",
-      guest: "Alex",
-      pax: "A-2",
-      hotelType: "PVT",
-      driverGuide: "Radisson"
-    },
-  ];
-
-  // dashboard/active/count
-
-  //   {
-  //     "totalQueryBook": 0,
-  //     "activeQueryBook": 0,
-  //     "totalUser": 1,
-  //     "activeUser": 1,
-  //     "totalCustomer": 0,
-  //     "activeCustomer": 0,
-  //     "totalBookings": 0,
-  //     "activeBookings": 0
-  // }
-
   useEffect(() => {
-    axios.get(`${api.baseUrl}/dashboard?userId=${user.userId}`)
-      .then((response) => {
-        setDashboardData(response.data);
-      }).catch((e) => {
-        console.log(e);
-      });
+    Promise.all([
+      axios.get(`${api.baseUrl}/dashboard?userId=${user.userId}`),
+      axios.get(`${api.baseUrl}/dashboard/stats?userId=${user.userId}`),
+    ]).then((res) => {
+      console.log(res);
+      setDashboardData(res[0].data);
+      setGraphsData(res[1].data);
+    })
   }, [])
 
-  // console.log(dashboardData);
+  // Extract labels and data for each chart
+  function extractChartData(obj) {
+    if (!obj || typeof obj !== "object") {
+      console.error("Invalid object passed to extractChartData:", obj);
+      return { labels: [], values: [] };
+    }
+    const labels = Object.keys(obj);
+    const values = Object.values(obj);
+    return { labels, values };
+  }
+
+  const defaultChartData = { labels: [], datasets: [] };
+
+
+  const topFivePackagesData = graphsData?.topFivePackages ? extractChartData(graphsData.topFivePackages) : defaultChartData;
+  const topTenDestinationsData = graphsData?.topTenDestinations ? extractChartData(graphsData.topTenDestinations) : defaultChartData;
+  const leadSourcesData = graphsData?.leadSources ? extractChartData(graphsData.leadSources) : defaultChartData;
+
+
+  const generateChartData = (data) => {
+    console.log("Input Data for generateChartData:", data);
+    return {
+      labels: data.labels,
+      datasets: [
+        {
+          label: "Data",
+          data: data.values,
+          backgroundColor: [
+            "#5F67F8", "#F8DF5F", "#FA9851", "#FF6384", "#36A2EB",
+            "#FFCE56", "#FF9F40", "#4BC0C0", "#9966FF",
+          ],
+          borderColor: "#000000",
+          borderWidth: 1,
+        },
+      ],
+    };
+  };
+
 
   return (
     <div className="w-full mt-0">
@@ -251,21 +212,42 @@ const Dashboard = () => {
           </div>
           {/* Metrics Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-pink-100 border-l-4 border-pink-500 p-4 rounded-md">
-              <p className="text-gray-600 font-bold">Total Queries</p>
-              <p className="text-lg">{dashboardData && dashboardData.activeQuery.toString()} {"/"} {dashboardData && dashboardData.totalQuery.toString()}</p>
-            </div>
-            <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded-md">
+            <div
+              className="bg-pink-100 border-l-4 border-pink-500 p-4 rounded-md"
+              title={`Active: ${dashboardData?.activeBookings || 0}, Total: ${dashboardData?.totalBookings || 0}`}
+            >
               <p className="text-gray-600 font-bold">Total Bookings</p>
-              <p className="text-lg">{dashboardData && dashboardData.activeBookings.toString()} {"/"} {dashboardData && dashboardData.totalBookings.toString()}</p>
+              <p className="text-lg">
+                {dashboardData?.activeBookings || 0} / {dashboardData?.totalBookings || 0}
+              </p>
             </div>
-            <div className="bg-pink-100 border-l-4 border-pink-500 p-4 rounded-md">
+            <div
+              className="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded-md"
+              title={`Active: ${dashboardData?.activeQuery || 0}, Total: ${dashboardData?.totalQuery || 0}`}
+            >
+              <p className="text-gray-600 font-bold">Total Queries</p>
+              <p className="text-lg">
+                {dashboardData?.activeQuery || 0} / {dashboardData?.totalQuery || 0}
+              </p>
+            </div>
+            <div
+              className="bg-pink-100 border-l-4 border-pink-500 p-4 rounded-md"
+              title={`LinkedIn: ${dashboardData?.LinkedIn || 0}, Facebook: ${dashboardData?.Facebook || 0}, Website: ${dashboardData?.Website || 0}`}
+            >
               <p className="text-gray-600 font-bold">Total Leads</p>
-              <p className="text-lg">{dashboardData && dashboardData.totalLeads.toString()} {"/"} {dashboardData && dashboardData.totalLeads.toString()}</p>
+              <p className="text-lg">
+                {(dashboardData?.LinkedIn || 0) + (dashboardData?.Facebook || 0) + (dashboardData?.Website || 0)} /{" "}
+                {dashboardData?.totalLeads || 0}
+              </p>
             </div>
-            <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded-md">
+            <div
+              className="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded-md"
+              title={`Active Users: ${dashboardData?.activeCustomers || 0}, Total Users: ${dashboardData?.totalCustomers || 0}`}
+            >
               <p className="text-gray-600 font-bold">Total Customers</p>
-              <p className="text-lg">{dashboardData && dashboardData.activeCustomers.toString()} {"/"} {dashboardData && dashboardData.totalCustomers.toString()}</p>
+              <p className="text-lg">
+                {dashboardData?.activeCustomers || 0} / {dashboardData?.totalCustomers || 0}
+              </p>
             </div>
           </div>
           {/* Graph Entries */}
@@ -274,12 +256,20 @@ const Dashboard = () => {
               <h3 className="font-bold text-xl text-center">
                 Top 10 Destinations
               </h3>
-              <Bar data={topDestinationsData} />
+              <Bar data={
+                topTenDestinationsData.labels.length > 0
+                  ? generateChartData(topTenDestinationsData)
+                  : defaultChartData
+              } />
             </div>
 
             <div className="grid-cols-4 bg-white p-4 rounded-lg shadow-md w-full">
               <h3 className="font-bold text-xl text-center">Top 5 Packages</h3>
-              <Bar data={topPackagesData} options={topPackagesOptions} />
+              <Bar data={
+                topFivePackagesData.labels.length > 0
+                  ? generateChartData(topFivePackagesData)
+                  : defaultChartData
+              } options={topPackagesOptions} />
             </div>
 
             <div className="grid-cols-4 bg-white p-4 rounded-lg shadow-md w-full">
@@ -290,7 +280,11 @@ const Dashboard = () => {
           <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 gap-8 w-full mt-8">
             <div className="bg-white p-4 rounded-lg shadow-md">
               <h3 className="font-bold text-xl text-center">Leads Source</h3>
-              <Bar data={leadsSourceData} />
+              <Bar data={
+                leadSourcesData.labels.length > 0
+                  ? generateChartData(leadSourcesData)
+                  : defaultChartData
+              } />
             </div>
 
             <div className="bg-white p-4 rounded-lg shadow-md" >
@@ -354,12 +348,6 @@ const Dashboard = () => {
             >
               Tour Master Sheet
             </h3>
-            {/* <div className='w-full overflow-auto'>
-              <Table
-                columns={columns}
-                data={data}
-              />
-            </div> */}
           </div>
         </div>
       </div>
@@ -368,3 +356,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+

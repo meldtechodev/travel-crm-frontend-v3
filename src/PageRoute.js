@@ -147,6 +147,8 @@ const PageRoute = () => {
             {/* <Route path="/profile-page" element={<ProfilePage />} /> */}
             <Route path="/app-settings" element={<SettingsPage />} />
             <Route path={`/company-profile`} element={<CompanyProfilePage />} />
+            <Route path={`/customerBoards`} element={<Navigate to="/home/customer" replace />} />
+            <Route path={`/userBoards`} element={<Navigate to="/home/myteams" replace />} />
             <Route
               path="/hotel-view/:hotelId"
               element={<HotelView />}
