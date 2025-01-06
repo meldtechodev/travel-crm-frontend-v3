@@ -102,7 +102,7 @@ const Sidebar = () => {
             let newDesig = []
             for (let i = 0; filId.length > i; i++) {
               desigMod.push(filtmod.filter(item => item.id === filId[i])[0])
-              newDesig.push(filtmod.filter(item => item.id === filId[i])[0])
+              newDesig.push(...filtmod.filter(item => item.id === filId[i] && item.parentId !== 0))
             }
             let addmod = response.data.filter(item => item.parentId === 0)
             let add = []
