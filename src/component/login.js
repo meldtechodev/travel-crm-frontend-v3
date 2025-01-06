@@ -139,22 +139,18 @@ function Login() {
     }
   };
 
-  const [allUsers, setAllUsers] = useState([])
-
   useEffect(() => {
-
     axios.get(`${api.baseUrl}/usergetall`)
       .then(response => {
-        setAllUsers(response.data)
+        if (response.data.length === 0) {
+          navigate('/signup')
+        }
       })
       .catch(error => console.error(error));
 
-    if (allUsers.length === 0) {
-      navigate('/signup')
-    }
     localStorage.clear();
     sessionStorage.clear();
-    navigate('/login')
+    // navigate('/login')
   }, []);
 
   return (

@@ -160,7 +160,7 @@ const NewQuery = ({ isOpen, onClose }) => {
         setAllPolicyList(response.data)
       })
       .catch((error) => console.error(error));
-  }, [isOpen])
+  }, [])
 
   const [viewPrice, setViewPrice] = useState({
     markup: 0,
@@ -283,7 +283,7 @@ const NewQuery = ({ isOpen, onClose }) => {
         setPackages(formated)
       })
       .catch((error) => console.error(error))
-  }, [isOpen])
+  }, [])
 
 
   const [itinerarys, setItinerays] = useState([])
@@ -293,7 +293,7 @@ const NewQuery = ({ isOpen, onClose }) => {
         setItinerays(response.data)
       })
       .catch((error) => console.error(error))
-  }, [isOpen])
+  }, [])
 
   const [pkgItiDet, setPkgItiDet] = useState([])
   const [viewPkgDet, setViewPkgDet] = useState([])
@@ -347,17 +347,17 @@ const NewQuery = ({ isOpen, onClose }) => {
       })
       .catch((error) => console.error(error));
 
-    axios.get(`${api.baseUrl}/customer/getall`)
-      .then((response) => {
-        const formated = response.data.content.map((item) => ({
-          ...item,
-          value: item.id,
-          label: item.salutation + " " + item.fName + " " + item.lName,
-        }))
-        setCustomer(formated)
-      })
-      .catch((error) => console.error(error));
-  }, [isOpen])
+    // axios.get(`${api.baseUrl}/customer/getall`)
+    //   .then((response) => {
+    //     const formated = response.data.content.map((item) => ({
+    //       ...item,
+    //       value: item.id,
+    //       label: item.salutation + " " + item.fName + " " + item.lName,
+    //     }))
+    //     setCustomer(formated)
+    //   })
+    //   .catch((error) => console.error(error));
+  }, [])
 
 
   const [packagePrice, setPackagePrice] = useState([])
@@ -369,7 +369,7 @@ const NewQuery = ({ isOpen, onClose }) => {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, [isOpen]);
+  }, []);
 
   const formatDate = (dateString, addDays) => {
 

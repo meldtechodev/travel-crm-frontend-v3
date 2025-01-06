@@ -152,7 +152,6 @@ export const UserProvider = ({ children }) => {
         setIsLoading(false)
       })
 
-
     axios.get(`${api.baseUrl}/country/getallcountry`)
       .then(response => {
         const format = response.data.map(item => ({
@@ -163,13 +162,13 @@ export const UserProvider = ({ children }) => {
         setCountryDetails(format);
       })
       .catch((error) => {
-        console.error('Error fetching Room Type Name data :', error);
+        console.error('Error fetching Country Data :', error);
       });
 
     axios.get(`${api.baseUrl}/ipAddress`)
       .then(response => setIpAddress(response.data))
       .catch((error) => {
-        console.error('Error fetching Room Type Name data :', error);
+        console.error('Error fetching IP Address :', error);
       });
 
 
@@ -183,7 +182,7 @@ export const UserProvider = ({ children }) => {
         setStateDetails(format);
       })
       .catch((error) => {
-        console.error('Error fetching Room Type Name data :', error);
+        console.error('Error fetching State data :', error);
       });
 
 
@@ -197,7 +196,7 @@ export const UserProvider = ({ children }) => {
         setDestinationDetails(format);
       })
       .catch((error) => {
-        console.error('Error fetching Room Type Name data :', error);
+        console.error('Error fetching Destination data :', error);
       });
   }, []);
 

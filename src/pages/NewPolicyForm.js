@@ -10,18 +10,17 @@ import { UserContext } from "../contexts/userContext";
 import useDecryptedToken from "../hooks/useDecryptedToken";
 
 const NewPolicyForm = ({ isOpen, onClose, selectedPolicyData }) => {
-  const [ip, setIp] = React.useState("");
 
-  const { user } = useContext(UserContext);
+  const { user, ipAddress } = useContext(UserContext);
   const token = useDecryptedToken();
 
   // Fetch IP address on component mount
-  useEffect(() => {
-    axios.get(`${api.baseUrl}/ipAddress`)
-      .then((r) => {
-        setIp(r.data);
-      });
-  }, []);
+  // useEffect(() => {
+  //   axios.get(`${api.baseUrl}/ipAddress`)
+  //     .then((r) => {
+  //       setIp(r.data);
+  //     });
+  // }, []);
 
 
   const formik = useFormik({
@@ -40,7 +39,7 @@ const NewPolicyForm = ({ isOpen, onClose, selectedPolicyData }) => {
         if (selectedPolicyData) {
           await axios.post(`${api.baseUrl}/policy/updatedby/${selectedPolicyData && selectedPolicyData.id}`, {
             ...values,
-            ipaddress: ip,
+            ipaddress: ipAddress,
             createdBy: selectedPolicyData.createdBy,
             modifiedby: user.name,
             isdelete: false,
@@ -66,7 +65,7 @@ const NewPolicyForm = ({ isOpen, onClose, selectedPolicyData }) => {
         else {
           await axios.post(`${api.baseUrl}/policy/create`, {
             ...values,
-            ipaddress: ip,
+            ipaddress: ipAddress,
             createdBy: user.name,
             modifiedby: user.name,
             isdelete: false,

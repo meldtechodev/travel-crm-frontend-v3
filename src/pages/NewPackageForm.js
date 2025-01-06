@@ -15,7 +15,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
   // console.log(editablePackageData);
   const [nights, setNights] = useState(0);
   const [checkNights, setCheckNights] = useState(0);
-  const [editNights, setEditNights] = useState(0);
+  // const [editNights, setEditNights] = useState(0);
   const [isOverNight, setIsOverNight] = useState(false);
   const [days, setDays] = useState(0);
   const [page, setPage] = useState(1);
@@ -35,7 +35,6 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
   const [selectedSupplier, SetSelectedSupplier] = useState(null);
   const [selectedHotelCity, setSelectedHotelCity] = useState(null);
   const [destination, setDestinations] = useState([]);
-  const [viewHotelCityDesti, setViewHotelCityDesti] = useState([]);
 
   const [packageCategories, setPackageCategories] = useState([]);
   const [supplier, setSupplier] = useState([]);
@@ -125,7 +124,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
         const formatIti = response[0].data.map((item) => ({
           ...item,
           value: item.id,
-          label: item.daytitle,
+          label: item.daytitle
         }));
         setDisplayIti(formatIti);
 
@@ -136,21 +135,20 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
         setListTransport(formatTransport);
       })
       .catch((error) => console.error(error));
-  }, [isOpen]);
+  }, []);
 
   const [editIti, setEditIti] = useState(false)
-  const handleEdit = (data) => {
-    setEditIti(true)
-    // console.log(data)
-  }
-  const handleDelete = (data) => {
+  // const handleEdit = (data) => {
+  //   setEditIti(true)
+  // }
 
-  }
 
-  const [allCountry, setAllCountry] = useState([])
-  const [allState, setAllState] = useState([])
+  // const [allCountry, setAllCountry] = useState([])
+  // const [allState, setAllState] = useState([])
   const [domesticList, setDomesticList] = useState([])
   const [internationalList, setInternationalList] = useState([])
+
+  const [allDestinationList, setAllDestinationList] = useState([])
 
 
   useEffect(() => {
@@ -162,6 +160,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
           label: item.destinationName + ", (" + item.state.stateName + ") " + item.country.countryName,
           value: 0
         }))
+        setAllDestinationList(formatDestination)
         // console.log(formatDestination)
 
         axios.get(`${api.baseUrl}/state/getAllState`)
@@ -209,7 +208,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
     //   })
     //   .catch(error => console.error("Vendor search error," + error))
 
-  }, [isOpen])
+  }, [])
 
   useEffect(() => {
     Promise.all([
@@ -224,8 +223,8 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
       axios.get(`${api.baseUrl}/activities/getAllActivities`), //index 8
       axios.get(`${api.baseUrl}/sightseeing/getAllSightseeing`), //index 9
       axios.get(`${api.baseUrl}/policy/getallpolicy`), //index 10
-      axios.get(`${api.baseUrl}/country/getall`), //index 11
-      axios.get(`${api.baseUrl}/state/getall`), //index 12
+      // axios.get(`${api.baseUrl}/country/getall`), //index 11
+      // axios.get(`${api.baseUrl}/state/getall`), //index 12
     ]).then((response) => {
       const formattedOptions = response[0].data.map((item) => ({
         ...item,
@@ -264,7 +263,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
         label: item.hname,
       }));
       setHotelData(formattedHotel);
-      setHotelCompleteData(response[5].data);
+      setHotelCompleteData(formattedHotel);
 
       const formattedRoomType = response[6].data.content.map((item) => ({
         ...item,
@@ -295,14 +294,16 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
       setSiteSeeingData(formattedSiteSeeing);
 
       const formattedPolicy = response[10].data.content.map((item) => ({
-        value: item.id,
-        label: item.policyName,
-        description: item.policyDescription,
+        ...item,
+        // value: item.id,
+        // label: item.policyName,
+        // description: item.policyDescription,
+        optionData: false
       }));
-      setPolicyList(response[10].data.content);
+      setPolicyList(formattedPolicy);
 
-      setAllCountry(response[11].data)
-      setAllState(response[12].data)
+      // setAllCountry(response[11].data)
+      // setAllState(response[12].data)
       // const format
     })
       .catch(error => console.error(error));
@@ -401,6 +402,10 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
       </components.Option>
     );
   };
+
+  const handleEditItineraryDay = () => {
+
+  }
 
   const handleChangePackageTheme = (selectedOption) => {
     setSelectedPackageTheme(selectedOption);
@@ -512,147 +517,245 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
     );
   };
 
-  const [selectedEditCity, setSelectedEditCity] = useState([])
+  // const [selectedEditCity, setSelectedEditCity] = useState([])
 
-  const handleEditItineraryDay = () => {
 
+
+  // const setEditNightsChange = (e) => {
+  //   setEditNights(e.target.value)
+  //   if (e.target.value > formItinaryData.length) {
+  //     setCheckNights(true)
+  //   } else {
+  //     setCheckNights(false)
+  //   }
+  // }
+
+  const [formItinaryList, setFormItinaryList] = useState({ selectedHotelCity: null, nights: 0 })
+
+  const handleEdit = (index) => {
+    const selectedRow = addCityAndNight[index];
+    setFormItinaryList(selectedRow);
+    setEditIti(true)
+    console.log(addCityAndNight)
+    // setEditIndex(index);
+  };
+
+  const handleDelete = (data) => {
+    const less = formItinaryData.filter(item => item.index > data)
+    const gret = formItinaryData.filter(item => item.index < data)
+    const actual = gret.map(item => ({ ...item, index: item.index - 1 }))
+
+    let newdata = addCityAndNight.filter(item => item.index !== data)
+    setAddCityAndNight(newdata.map(item => item.index < data ? item : ({ ...item, index: item.index - 1 })))
+
+    setFormItinaryData([...less, ...actual])
   }
 
-  const setEditNightsChange = (e) => {
-    setEditNights(e.target.value)
-    if (e.target.value > formItinaryData.length) {
-      setCheckNights(true)
-    } else {
-      setCheckNights(false)
-    }
-  }
+
 
   const handleAddItineraryDay = () => {
-    let d = displayIti.map(item => item?.destination?.id === selectedHotelCity.value)
+    let d = displayIti.filter(item => item?.destination?.id === formItinaryList.selectedHotelCity.id)
+    setDisplayItiDesti(d)
+    console.log(d)
+    let l = addCityAndNight.length;
+    if (!editIti) {
+      if (Number(formItinaryList.nights) > 0 && formItinaryList.selectedHotelCity !== null) {
+        const addIti = {
+          index: l,
+          selectedHotelCity: formItinaryList.selectedHotelCity,
+          hotelCity: formItinaryList.selectedHotelCity.label,
+          nights: formItinaryList.nights,
+          hotelCityId: formItinaryList.selectedHotelCity.id,
+          fromStartDay: l === 0 ? 1 : addCityAndNight[l - 1].to,
+          to:
+            l === 0
+              ? Number(formItinaryList.nights) + 1
+              : addCityAndNight[l - 1].to + Number(formItinaryList.nights),
+        };
 
-    if (Number(nights) > 0 && selectedHotelCity !== null) {
-      let l = addCityAndNight.length;
-      const addIti = {
-        hotelCity: selectedHotelCity.label,
-        nights: nights,
-        hotelCityId: selectedHotelCity.value,
-        fromStartDay: l === 0 ? 1 : addCityAndNight[l - 1].to,
-        to:
-          l === 0
-            ? Number(nights) + 1
-            : addCityAndNight[l - 1].to + Number(nights),
-      };
-
-      if (days === 0) {
-        setDays((prev) => prev + Number(nights) + 1);
-        const hotel = hotelCompleteData.filter(
-          (item) => item.destination.destinationName === selectedHotelCity.label
-        );
-        const hotelFormat = hotel.map((item) => ({
-          ...item,
-          value: item.id,
-          label: item.hname,
-        }));
-        for (let i = 0; i < Number(nights) + 1; i++) {
-          const categorys = packageCategories.map((item) => ({
-            category: item,
-            hotelName: null,
-            hotelData: hotelFormat,
-            roomType: null,
-            roomTypeData: [],
-            mealType: null,
+        if (days === 0) {
+          setDays((prev) => prev + Number(formItinaryList.nights) + 1);
+          const hotel = hotelCompleteData.filter((item) =>
+            item.destination.id === formItinaryList.selectedHotelCity.id);
+          const hotelFormat = hotel.map((item) => ({
+            ...item,
+            value: item.id,
+            label: item.hname,
           }));
-          formItinaryData.push({
-            daynumber: 0,
-            cityname: selectedHotelCity.label,
-            displayItiDesti: d,
-            daytitle: null,
-            program: "",
-            breakfast: false,
-            lunch: false,
-            dinner: false,
-            createdby: "",
-            modifiedby: "",
-            ipaddress: "",
-            status: 1,
-            isdelete: 0,
-            transport: null,
-            packid: {
-              id: null,
-            },
-            siteSeeing: [],
-            hotel: categorys,
-            activities: [],
-          });
-        }
-      } else {
-        setDays((prev) => prev + Number(nights));
-        const hotel = hotelCompleteData.filter(
-          (item) => item.destination.destinationName === selectedHotelCity.label
-        );
-        const hotelFormat = hotel.map((item) => ({
-          value: item.id,
-          label: item.hname,
-        }));
-        // console.log(hotel)
-        // console.log(hotelFormat)
-
-        for (let i = 0; i < Number(nights); i++) {
-          const categorys = packageCategories.map((item) => ({
-            category: item,
-            hotelName: null,
-            hotelData: hotelFormat,
-            roomType: null,
-            roomTypeData: [],
-            mealType: null,
+          for (let i = 0; i < Number(formItinaryList.nights) + 1; i++) {
+            const categorys = packageCategories.map((item) => ({
+              category: item,
+              hotelName: null,
+              hotelData: hotelFormat,
+              roomType: null,
+              roomTypeData: [],
+              mealType: null,
+            }));
+            formItinaryData.push({
+              index: l,
+              daynumber: 0,
+              cityname: formItinaryList.selectedHotelCity.label,
+              displayItiDesti: displayItiDesti,
+              daytitle: null,
+              program: "",
+              breakfast: false,
+              lunch: false,
+              dinner: false,
+              createdby: "",
+              modifiedby: "",
+              ipaddress: "",
+              status: 1,
+              isdelete: 0,
+              transport: null,
+              packid: {
+                id: null,
+              },
+              siteSeeing: [],
+              hotel: categorys,
+              activities: [],
+            });
+          }
+        } else {
+          setDays((prev) => prev + Number(formItinaryList.nights));
+          const hotel = hotelCompleteData.filter((item) =>
+            item.destination.id === formItinaryList.selectedHotelCity.id);
+          const hotelFormat = hotel.map((item) => ({
+            ...item,
+            value: item.id,
+            label: item.hname,
           }));
-          formItinaryData.push({
-            daynumber: 0,
-            cityname: selectedHotelCity.label,
-            displayItiDesti: d,
-            daytitle: null,
-            program: "",
-            breakfast: false,
-            lunch: false,
-            dinner: false,
-            createdby: "",
-            modifiedby: "",
-            ipaddress: "",
-            status: 1,
-            isdelete: 0,
-            transport: null,
-            packid: {
-              id: null,
-            },
-            siteSeeing: [],
-            hotel: categorys,
-            activities: [],
-          });
+
+          for (let i = 0; i < Number(formItinaryList.nights); i++) {
+            const categorys = packageCategories.map((item) => ({
+              category: item,
+              hotelName: null,
+              hotelData: hotelFormat,
+              roomType: null,
+              roomTypeData: [],
+              mealType: null,
+            }));
+            formItinaryData.push({
+              index: l,
+              daynumber: 0,
+              cityname: formItinaryList.selectedHotelCity.label,
+              displayItiDesti: displayItiDesti,
+              daytitle: null,
+              program: "",
+              breakfast: false,
+              lunch: false,
+              dinner: false,
+              createdby: "",
+              modifiedby: "",
+              ipaddress: "",
+              status: 1,
+              isdelete: 0,
+              transport: null,
+              packid: {
+                id: null,
+              },
+              siteSeeing: [],
+              hotel: categorys,
+              activities: [],
+            });
+          }
         }
-      }
-      const iti = itinerariesList.filter(
-        (it) => it.label === selectedHotelCity.label
-      );
-      if (l !== 0) {
-        setAddCityAndNight([...addCityAndNight, addIti]);
+        const iti = itinerariesList.filter(
+          (it) => it.label === formItinaryList.selectedHotelCity.label
+        );
+        if (l !== 0) {
+          setAddCityAndNight([...addCityAndNight, addIti]);
+        } else {
+          addCityAndNight.push(addIti);
+        }
+        setSelectedHotelCity(null);
+        setNights(0);
+        iti.forEach((i) => {
+          showIti.push(i);
+        });
+        setFormItinaryList({ selectedHotelCity: null, nights: 0 })
       } else {
-        addCityAndNight.push(addIti);
+        if (formItinaryList.selectedHotelCity === null && Number(formItinaryList.nights) === 0)
+          alert("Select City and Enter correct days");
+        else if (Number(formItinaryList.nights) === 0) alert("Select Valid Days...");
+        else alert("Select City...");
       }
-      setSelectedHotelCity(null);
-      setNights(0);
-      iti.forEach((i) => {
-        showIti.push(i);
-      });
     } else {
-      if (selectedHotelCity === null && Number(nights) === 0)
-        alert("Select City and Enter correct days");
-      else if (Number(nights) === 0) alert("Select Valid Days...");
-      else alert("Select City...");
+      console.log("edit", l)
+      if (Number(formItinaryList.nights) > 0 && formItinaryList.selectedHotelCity !== null) {
+
+        let lessVal = formItinaryData.filter(item => item.index < l)
+        let greatVal = formItinaryData.filter(item => item.index > l)
+        let diff = formItinaryData.filter(item => item.index === l)
+
+        let addOne = 0;
+        if (formItinaryList.nights > diff.length) {
+          console.log("add")
+
+          const hotel = hotelCompleteData.filter((item) =>
+            item.destination.id === formItinaryList.selectedHotelCity.id);
+          const hotelFormat = hotel.map((item) => ({
+            ...item,
+            value: item.id,
+            label: item.hname,
+          }));
+
+
+          if (l === 0) {
+            addOne = 1;
+          }
+
+          for (let i = 0; i < formItinaryList.nights - diff.length; i++) {
+            const categorys = packageCategories.map((item) => ({
+              category: item,
+              hotelName: null,
+              hotelData: hotelFormat,
+              roomType: null,
+              roomTypeData: [],
+              mealType: null,
+            }));
+            diff.push({
+              index: l,
+              daynumber: 0,
+              cityname: formItinaryList.selectedHotelCity.label,
+              displayItiDesti: displayItiDesti,
+              daytitle: null,
+              program: "",
+              breakfast: false,
+              lunch: false,
+              dinner: false,
+              createdby: "",
+              modifiedby: "",
+              ipaddress: "",
+              status: 1,
+              isdelete: 0,
+              transport: null,
+              packid: {
+                id: null,
+              },
+              siteSeeing: [],
+              hotel: categorys,
+              activities: [],
+            });
+          }
+        } else {
+          if (l === 0) {
+            addOne = 1;
+          }
+          diff = diff.filter((_, i) => i < formItinaryList.nights + addOne)
+        }
+
+        setFormItinaryData([...lessVal, ...diff, ...greatVal])
+
+        setFormItinaryList({ selectedHotelCity: null, nights: 0 })
+        setEditIti(false)
+      } else {
+        if (formItinaryList.selectedHotelCity === null && Number(formItinaryList.nights) === 0)
+          alert("Select City and Enter correct days");
+        else if (Number(formItinaryList.nights) === 0) alert("Select Valid Days...");
+        else alert("Select City...");
+      }
     }
 
-    // if (formItinaryData.length >= packageData.days) {
-    //   setIsOverNight(true)
-    // }
   };
 
   const handleItinearayProgramData = (data, i) => {
@@ -817,6 +920,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
       };
       // console.log(payload)
 
+      let res = {}
       await axios
         .post(`${api.baseUrl}/packageitinerary/create`, payload, {
           headers: {
@@ -826,6 +930,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
         })
         .then((response) => {
           setPackageItinerayData(response.data);
+          res = response.data
         })
         .catch((error) => console.error(error));
 
@@ -846,7 +951,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
           modifiedby: user.name,
           category: formItinaryData[i].hotel[j].category,
           packitid: {
-            id: packageItinerayData.id
+            id: res.id
           },
           activitiesIds: itiActivity,
           sightseeingIds: siteSee,
@@ -888,6 +993,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
     setSelectedEndCity(null)
   }
 
+  const [destinationOptions, setDestinationOptions] = useState([])
   const handlePageChange = async (e) => {
     e.preventDefault();
 
@@ -983,39 +1089,41 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
     //   console.log(pair[0] + ' = ' + pair[1]);
     // }
 
-    if (!packageData) {
-      await axios.post(`${api.baseUrl}/packages/create`, formDataPackageMaster, {
-        headers: {
-          // 'Authorization': `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-          "Access-Control-Allow-Origin": "*",
-        },
-      })
-        .then((response) => {
-          setPackageData(response.data)
-          if (selectedPackageType === "international") {
-            if (packageData.s_id !== null) {
-
-            } else if (packageData.s_id !== null) {
-
-            }
+    // if (!packageData) {
+    await axios.post(`${api.baseUrl}/packages/create`, formDataPackageMaster, {
+      headers: {
+        // 'Authorization': `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+        "Access-Control-Allow-Origin": "*",
+      },
+    })
+      .then((response) => {
+        setPackageData(response.data)
+        setPage(2);
+        toast.success("Package Created Successfully!", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        if (selectedPackageType === "international") {
+          if (selectedEndCity.type === 'country') {
+            setDestinationOptions(allDestinationList.filter(item => item.country.id === selectedEndCity.id))
+          } else {
+            setDestinationOptions(allDestinationList.filter(item => item.state.id === selectedEndCity.id))
           }
-          toast.success("Package Created Successfully!", {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-          setPage(2);
-        })
-        .catch((error) => console.error(error));
-    } else {
-
-      // package update code
-    }
+        } else {
+          if (selectedEndCity.type !== 'state') {
+            setDestinationOptions(allDestinationList.filter(item => item.id === selectedEndCity.id))
+          } else {
+            setDestinationOptions(allDestinationList.filter(item => item.state.id === selectedEndCity.id))
+          }
+        }
+      })
+      .catch((error) => console.error(error));
   };
 
   const handleStartCityChange = (selectedStartCity) => {
@@ -1127,7 +1235,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
   };
-  const [inputSearch, setInputSearch] = useState({ coveredDid: "", startDid: "", endDid: "", supplier: "", packageTheme: "" })
+  const [inputSearch, setInputSearch] = useState({ coveredDid: "", startDid: "", endDid: "", fixed_departure: "", supplier: "", packageTheme: "" })
 
   return (
     <div
@@ -1514,12 +1622,16 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                     className="mt-1 w-full border rounded z-30"
                     value={selectedDestinationDeparture}
                     onChange={handleDestinationDepartureChange}
+                    onInputChange={(value) => setInputSearch((prev) => ({
+                      ...prev, fixed_departure: value
+                    }))}
                     options={destination}
                     isMulti
                     components={{ Option: CustomOption }}
                     closeMenuOnSelect={false}
                     hideSelectedOptions={false}
                     isClearable={true}
+                    menuIsOpen={inputSearch.fixed_departure !== "" && inputSearch.fixed_departure.length >= 2} // Opens menu only when
                   />
                 </div>
               )}
@@ -1647,10 +1759,10 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                       <td className=" border-2 border-black">Day {item.to}</td>
                       <td className=" border-2 border-black">
                         <div className="flex gap-2 justify-center">
-                          <button className="text-blue-500 hover:text-blue-700" onClick={() => handleEdit(item, i)}>
+                          <button className="text-blue-500 hover:text-blue-700" onClick={() => handleEdit(item.index)}>
                             <FaEdit />
                           </button>
-                          <button className="text-red-500 hover:text-red-700" onClick={() => handleDelete(item)}>
+                          <button className="text-red-500 hover:text-red-700" onClick={() => handleDelete(item.index)}>
                             <FaTrashAlt />
                           </button>
                         </div>
@@ -1659,10 +1771,9 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                   ))}
               </table>
             </div>
-            {editIti && <div className="flex mb-4 gap-2 justify-evenly w-full">
+            {/* <div className="flex mb-4 gap-2 justify-evenly w-full">
               <div className="w-1/2">
                 <label
-                  // htmlFor="destinations"
                   className="block text-sm font-medium"
                 >
                   Add Hotel City
@@ -1671,9 +1782,9 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                   className="mt-1 w-full border rounded "
                   value={selectedEditCity}
                   onChange={setSelectedEditCity}
-                  options={destination}
+                  // options={destination}
+                  options={destinationOptions}
                 />
-                {/* <input type="text" className="w-full p-2 " placeholder="Enter Hotel Stay..." /> */}
               </div>
               <div className="w-1/3">
                 <label
@@ -1705,7 +1816,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                 </button>
 
               </div>
-            </div>}
+            </div> */}
 
 
             <div className="flex mb-4 gap-2 justify-evenly w-full">
@@ -1718,9 +1829,12 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                 </label>
                 <Select
                   className="mt-1 w-full border rounded "
-                  value={selectedHotelCity}
-                  onChange={setSelectedHotelCity}
-                  options={destination}
+                  value={formItinaryList.selectedHotelCity}
+                  onChange={(e) => setFormItinaryList((prev) => ({
+                    ...prev,
+                    selectedHotelCity: e
+                  }))}
+                  options={destinationOptions}
                 />
                 {/* <input type="text" className="w-full p-2 " placeholder="Enter Hotel Stay..." /> */}
               </div>
@@ -1734,10 +1848,13 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                 <input
                   type="number"
                   id="packageName"
-                  name="noOFDays"
-                  value={nights}
+                  value={formItinaryList.nights}
                   min={0}
-                  onChange={handleNightChange}
+                  // onChange = {handleNightChange}
+                  onChange={(e) => setFormItinaryList((prev) => ({
+                    ...prev,
+                    nights: Number(e.target.value)
+                  }))}
                   className="mt-1 h-[38px] p-2 w-full border border-1 border-[#e5e7eb] rounded"
                   placeholder="No. of night..."
                 />
@@ -1746,21 +1863,21 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                 <button
                   className={`bg-red-600 py-1 rounded-sm px-2 mb-1 text-white 
      border-[1px] 
-    ${Number(formData.nights) + formItinaryData.length < nights ? 'bg-gray-400 text-gray-700 cursor-not-allowed hover:bg-gray-400 hover:text-gray-700' : 'hover:bg-white hover:text-red-600 hover:border-red-600'}`}
+    ${Number(packageData?.nights) + formItinaryData.length < formItinaryList.nights ? 'bg-gray-400 text-gray-700 cursor-not-allowed hover:bg-gray-400 hover:text-gray-700' : 'hover:bg-white hover:text-red-600 hover:border-red-600'}`}
                   // ${Number(nights) + formItinaryData.length - 1 > packageData.nights ? 'bg-gray-400 text-gray-700 cursor-not-allowed hover:bg-gray-400 hover:text-gray-700' : 'hover:bg-white hover:text-red-600 hover:border-red-600'}`}
                   onClick={handleAddItineraryDay}
                   // disabled={Number(nights) + formItinaryData.length - 1 > packageData.nights}
-                  disabled={Number(formData.nights) + formItinaryData.length < nights}
+                  disabled={Number(packageData?.nights) + formItinaryData.length < formItinaryList.nights}
                 >
-                  Add
+                  {editIti ? 'Edit' : 'Add'}
                 </button>
 
               </div>
             </div>
             {/* {Number(nights) + formItinaryData.length - 1 > packageData.nights && */}
-            {Number(formData.nights) + formItinaryData.length < nights &&
+            {Number(packageData?.nights) + formItinaryData.length < formItinaryList.nights &&
               <div className="flex justify-center">
-                <p className="text-red-600">You can't add more than {formData.nights} nights</p>
+                <p className="text-red-600">You can't add more than {packageData?.nights} nights</p>
               </div>
             }
             <div className="mb-6 gap-2">
@@ -1788,7 +1905,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                       onClick={() => toggleAccordion(index)}
                     >
                       <h3 className="">
-                        Day {index + 1} ({singleItinerary.cityname})
+                        Day {index + 1} - {singleItinerary.cityname}
                       </h3>
                       <button>{openItems[index] ? "-" : "+"} </button>
                     </div>
@@ -1824,11 +1941,12 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                             // onChange={(e) => handleInputChange(e, index)} */}
                               {/* /> */}
                               <CreatableSelect
-                                options={displayIti}
+                                options={Array.isArray(singleItinerary.displayItiDesti) ? singleItinerary.displayItiDesti : []}
                                 onChange={(e) =>
                                   handleItinearayChange(e, index)
                                 }
                                 value={singleItinerary.daytitle}
+                                placeholder="Select or Create Itinerary"
                               />
                             </div>
 
@@ -2118,6 +2236,10 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                     onChange={(e) => handlePolicyChange(e, item)}
                     className="mt-1 h-[38px] p-2 w-full boreder-2 border-gray-500 bg-gray-50 rounded"
                     placeholder="Enter Package Title..."
+                  />
+                  <input
+                    type="checkbox"
+                    value={item.optionData}
                   />
                   <CKEditor
                     className=""

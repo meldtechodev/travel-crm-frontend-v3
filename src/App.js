@@ -59,12 +59,6 @@ const App = () => {
   // const ProtectedRoute = ({ children }) => {
   //   return isAuthenticated ? children : allUsers.length !== 0 ? <Navigate to="/login" /> : <Navigate to="/signup" />;
   // };\\
-  const navigate = useNavigate()
-
-  if (!isAuthenticated && sessionStorage.length === 0) {
-    navigate("/login")
-  }
-
 
   if (isLoading && isAuthenticated) {
     return (
@@ -84,14 +78,14 @@ const App = () => {
             <PageRoute />} />
           <Route path="/*" element={<Navigate to="/home" replace />} />
         </>
-        : allUsers.length === 0 &&
+        :
         <>
-          <Route exact path="/signup" element={<AdminConfiguration />} />
-          <Route exact path="/success" element={<SuccessPage />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route exact path="/login" element={<Login />} />
         </>}
+      <Route exact path="/signup" element={<AdminConfiguration />} />
+      <Route exact path="/success" element={<SuccessPage />} />
 
-      <Route path="/" element={<Navigate to="/login" replace />} />
-      <Route exact path="/login" element={<Login />} />
     </Routes>
   );
 };

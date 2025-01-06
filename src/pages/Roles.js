@@ -1,6 +1,4 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom';
-import Select from "react-select";
 import api from "../apiConfig/config";
 import axios from "axios";
 import { UserContext } from "../contexts/userContext";
@@ -19,7 +17,6 @@ const Roles = ({ isOpen, onClose }) => {
 
   const { user, ipAddress } = useContext(UserContext)
 
-  const navigate = useNavigate()
 
   const isFormFilled = roleName;
 
@@ -67,49 +64,49 @@ const Roles = ({ isOpen, onClose }) => {
     }
   }, [])
 
-  const [token, setTokens] = useState(null)
-  async function decryptToken(encryptedToken, key, iv) {
-    const dec = new TextDecoder();
+  // const [token, setTokens] = useState(null)
+  // async function decryptToken(encryptedToken, key, iv) {
+  //   const dec = new TextDecoder();
 
-    const decrypted = await crypto.subtle.decrypt(
-      {
-        name: "AES-GCM",
-        iv: iv,
-      },
-      key,
-      encryptedToken
-    );
+  //   const decrypted = await crypto.subtle.decrypt(
+  //     {
+  //       name: "AES-GCM",
+  //       iv: iv,
+  //     },
+  //     key,
+  //     encryptedToken
+  //   );
 
-    return dec.decode(new Uint8Array(decrypted));
-  }
+  //   return dec.decode(new Uint8Array(decrypted));
+  // }
 
-  // Function to retrieve and decrypt the token
-  async function getDecryptedToken() {
-    const keyData = JSON.parse(localStorage.getItem('encryptionKey'));
-    const ivBase64 = localStorage.getItem('iv');
-    const encryptedTokenBase64 = localStorage.getItem('encryptedToken');
+  // // Function to retrieve and decrypt the token
+  // async function getDecryptedToken() {
+  //   const keyData = JSON.parse(localStorage.getItem('encryptionKey'));
+  //   const ivBase64 = localStorage.getItem('iv');
+  //   const encryptedTokenBase64 = localStorage.getItem('encryptedToken');
 
 
-    if (!keyData || !ivBase64 || !encryptedTokenBase64) {
-      throw new Error('No token found');
-    }
+  //   if (!keyData || !ivBase64 || !encryptedTokenBase64) {
+  //     throw new Error('No token found');
+  //   }
 
-    // Convert back from base64
-    const key = await crypto.subtle.importKey('jwk', keyData, { name: "AES-GCM" }, true, ['encrypt', 'decrypt']);
-    const iv = new Uint8Array(atob(ivBase64).split('').map(char => char.charCodeAt(0)));
-    const encryptedToken = new Uint8Array(atob(encryptedTokenBase64).split('').map(char => char.charCodeAt(0)));
+  //   // Convert back from base64
+  //   const key = await crypto.subtle.importKey('jwk', keyData, { name: "AES-GCM" }, true, ['encrypt', 'decrypt']);
+  //   const iv = new Uint8Array(atob(ivBase64).split('').map(char => char.charCodeAt(0)));
+  //   const encryptedToken = new Uint8Array(atob(encryptedTokenBase64).split('').map(char => char.charCodeAt(0)));
 
-    return await decryptToken(encryptedToken, key, iv);
-  }
+  //   return await decryptToken(encryptedToken, key, iv);
+  // }
 
-  // Example usage to make an authenticated request
-  useEffect(() => {
-    getDecryptedToken()
-      .then(token => {
-        setTokens(token);
-      })
-      .catch(error => console.error('Error fetching protected resource:', error))
-  }, [])
+  // // Example usage to make an authenticated request
+  // useEffect(() => {
+  //   getDecryptedToken()
+  //     .then(token => {
+  //       setTokens(token);
+  //     })
+  //     .catch(error => console.error('Error fetching protected resource:', error))
+  // }, [])
 
   // State for permissions checkboxes
 

@@ -87,24 +87,48 @@ const Sidebar = () => {
   useEffect(() => {
     getDecryptedToken()
       .then(async (token) => {
-
+      })
+    let modules = []
+    axios.get(`${api.baseUrl}/modules/getall`)
+      .then(response => {
         axios.get(`${api.baseUrl}/designationModules/getall`)
           .then(res => {
             let mod = res.data.filter(item => item.designations.id === user.designation.id)
             let filtmod = mod.map(item => item.modules)
-            setModule(filtmod)
+            let filId = new Set(filtmod.map(item => item.id))
+            filId = [...filId]
+            filId.sort()
+            let desigMod = []
+            let newDesig = []
+            for (let i = 0; filId.length > i; i++) {
+              desigMod.push(filtmod.filter(item => item.id === filId[i])[0])
+              newDesig.push(filtmod.filter(item => item.id === filId[i])[0])
+            }
+            let addmod = response.data.filter(item => item.parentId === 0)
+            let add = []
+            for (let i = 0; i < desigMod.length; i++) {
+              add.push(...addmod.filter(item => desigMod[i].parentId === item.id))
+            }
+            let addSort = new Set(add.map(item => item.id))
+            addSort = [...addSort]
+            addSort.sort()
+            add = []
+            for (let i = 0; i < addSort.length; i++) {
+              add.push(...addmod.filter(item => addSort[i] === item.id))
+            }
+            setModule([...add, ...newDesig])
           })
           .catch(error => console.error('Error fetching protected resource:', error));
-
-
-
-        // const pModule = modulePermission.filter(item => item.modules.parentId === 0)
-        // const cModule = modulePermission.filter(item => item.modules.parentId !== 0)
-        // setParentModule(pModule)
-        // setChildModule(cModule)
-        // console.log(cModule)
-
       })
+      .catch(error => console.error('Error fetching modules:', error));
+
+    // axios.get(`${api.baseUrl}/designationModules/getall`)
+    //   .then(res => {
+    //     let mod = res.data.filter(item => item.designations.id === user.designation.id)
+    //     let filtmod = mod.map(item => item.modules)
+    //     setModule(filtmod)
+    //   })
+    //   .catch(error => console.error('Error fetching protected resource:', error));
   }, [])
 
   const navigate = useNavigate();

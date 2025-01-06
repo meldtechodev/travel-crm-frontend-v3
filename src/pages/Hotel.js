@@ -224,7 +224,7 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
       .catch((error) => {
         console.error('Error fetching Room Type Name data :', error);
       });
-  }, [isOpen]);
+  }, []);
 
   const handleChange = (i, selectedOption) => {
     const updatedSelections = [...allSelectedRoomType];
@@ -383,6 +383,7 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
   const handleHotelMasterSubmit = async (e) => {
     e.preventDefault();
 
+    let roomTypeOption = formDataRoomMaster.filter(item => item.status === true)
     if (selectedOption === null || stateSelected === null || selectedDestination === null || hotelName === '' || starRating === null || contactPersonName === '' || contactEmail === '' || hotelAddress === '' || contactPersonNumber === '' || hotelPincode === '' || status === null || hImage === null
     ) {
       toast.error("Please fill all the fields...", {
@@ -396,6 +397,19 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
       });
       return
     }
+    if (roomTypeOption.length === 0) {
+      toast.error("Select any one Room Type Option...", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return
+    }
+
 
     const formDataHotelMaster = new FormData()
 

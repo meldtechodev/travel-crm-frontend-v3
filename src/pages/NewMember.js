@@ -1,14 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Select from "react-select";
 import api from "../apiConfig/config";
 import axios from "axios";
-
-// const roleOptions = [
-//   { value: "admin", label: "Admin" },
-//   { value: "user", label: "User" },
-// ];
-
-
+import { UserContext } from "../contexts/userContext";
 
 const NewMember = ({ isOpen, onClose }) => {
   const [role, setRole] = useState([]);
@@ -21,6 +15,8 @@ const NewMember = ({ isOpen, onClose }) => {
   const [selectedDesignation, setSelectedDesignation] = useState(null);
   const [errors, setErrors] = useState({});
 
+
+  const { user, destinationDetails, ipAddress } = useContext(UserContext)
 
   const [token, setTokens] = useState(null);
   async function decryptToken(encryptedToken, key, iv) {
@@ -217,6 +213,10 @@ const NewMember = ({ isOpen, onClose }) => {
       companyId: selectedCompany ? selectedCompany.value : null,
       departmentId: selectedDepartment ? selectedDepartment.value : null,
       designationId: selectedDesignation ? selectedDesignation.value : null,
+      createdBy: user.name,
+      modifiedBy: user.name,
+      ipaddress: ipAddress,
+      isdelete: 0,
     };
 
     try {

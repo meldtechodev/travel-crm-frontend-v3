@@ -117,7 +117,7 @@ const Itinerary = ({ isOpen, onClose }) => {
       }).catch(error =>
         console.error('Error fetching country data:', error)
       )
-  }, [isOpen]);
+  }, []);
 
   const CustomOption = (props) => {
     return (

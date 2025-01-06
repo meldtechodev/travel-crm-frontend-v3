@@ -26,9 +26,12 @@ const AdminConfiguration = () => {
   // Fetch IP address and set in form data
   useEffect(() => {
     axios.get(`${api.baseUrl}/usergetall`)
-      .then(response => response.data.length !== 0 && navigate('/login'))
+      .then(response => {
+        if (response.data.length !== 0) {
+          navigate('/login')
+        }
+      })
       .catch(error => console.error(error))
-
   }, []);
 
   const handleChange = (e) => {
