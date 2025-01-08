@@ -107,7 +107,9 @@ const Sidebar = () => {
             let addmod = response.data.filter(item => item.parentId === 0)
             let add = []
             for (let i = 0; i < desigMod.length; i++) {
-              add.push(...addmod.filter(item => desigMod[i].parentId === item.id))
+              add.push(...addmod.filter(item => desigMod[i].parentId === item.id ||
+                (desigMod[i].parentId === 0 && (desigMod[i].moduleName === 'Quickstart' || desigMod[i].moduleName === 'Dashboard'))
+              ))
             }
             let addSort = new Set(add.map(item => item.id))
             addSort = [...addSort]
