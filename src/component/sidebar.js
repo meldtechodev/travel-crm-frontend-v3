@@ -107,10 +107,23 @@ const Sidebar = () => {
             let addmod = response.data.filter(item => item.parentId === 0)
             let add = []
             for (let i = 0; i < desigMod.length; i++) {
-              add.push(...addmod.filter(item => desigMod[i].parentId === item.id ||
-                (desigMod[i].parentId === 0 && (desigMod[i].moduleName === 'Quickstart' || desigMod[i].moduleName === 'Dashboard'))
+              add.push(...addmod.filter(item => desigMod[i].parentId === item.id
+                // ||
+                // (desigMod[i].parentId === 0 && (desigMod[i].moduleName === 'Quickstart' || desigMod[i].moduleName === 'Dashboard'))
               ))
             }
+            let k = desigMod.filter(item => {
+              if (item.parentId === 0) {
+                if (item.moduleName === 'Quickstart' || item.moduleName === 'Dashboard') {
+                  return item
+                }
+              }
+            })
+            add.push(...k, ...add)
+            let newD = new Set(newDesig.map(item => item.id))
+            newD = [...newD]
+            newD.sort()
+
             let addSort = new Set(add.map(item => item.id))
             addSort = [...addSort]
             addSort.sort()
@@ -118,7 +131,11 @@ const Sidebar = () => {
             for (let i = 0; i < addSort.length; i++) {
               add.push(...addmod.filter(item => addSort[i] === item.id))
             }
-            setModule([...add, ...newDesig])
+            let update = []
+            for (let i = 0; i < newD.length; i++) {
+              update.push(newDesig.filter(item => item.id === newD[i])[0])
+            }
+            setModule([...add, ...update])
           })
           .catch(error => console.error('Error fetching protected resource:', error));
       })
