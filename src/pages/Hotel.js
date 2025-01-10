@@ -265,113 +265,113 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
 
     // setFormNotFilled(false)
 
-    // for (let i = 0; totalRoomDetails.length > i; i++) {
+    for (let i = 0; totalRoomDetails.length > i; i++) {
 
-    //   if (totalRoomDetails[i].bed_size.length === 0) {
-    //     setFormNotFilled(true)
-    //     toast.error("Please fill all the fields...", {
-    //       position: "top-center",
-    //       autoClose: 5000,
-    //       hideProgressBar: false,
-    //       closeOnClick: true,
-    //       pauseOnHover: true,
-    //       draggable: true,
-    //       progress: undefined,
-    //     });
-    //     return
-    //   }
+      if (totalRoomDetails[i].bed_size.length === 0) {
+        setFormNotFilled(true)
+        toast.error("Please fill all the fields...", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        return
+      }
 
 
-    //   for (let j = 0; totalRoomDetails[i].bed_size.length > j; j++) {
+      for (let j = 0; totalRoomDetails[i].bed_size.length > j; j++) {
 
-    //     if (totalRoomDetails[i].bed_size[j] === '' || totalRoomDetails[i].max_person === '' || totalRoomDetails[i].status === null || totalRoomDetails[i].image === null || starRating === null || contactPersonName === '' || contactEmail === '' || hotelAddress === '' || contactPersonNumber === '' || hotelPincode === '' || status === null || hImage === null
-    //     ) {
-    //       setFormNotFilled(true)
-    //       toast.error("Please fill all the fields...", {
-    //         position: "top-center",
-    //         autoClose: 5000,
-    //         hideProgressBar: false,
-    //         closeOnClick: true,
-    //         pauseOnHover: true,
-    //         draggable: true,
-    //         progress: undefined,
-    //       });
-    //       return
-    //     }
-    //   }
-    // }
+        if (totalRoomDetails[i].bed_size[j] === '' || totalRoomDetails[i].max_person === '' || totalRoomDetails[i].status === null || totalRoomDetails[i].image === null || starRating === null || contactPersonName === '' || contactEmail === '' || hotelAddress === '' || contactPersonNumber === '' || hotelPincode === '' || status === null || hImage === null
+        ) {
+          setFormNotFilled(true)
+          toast.error("Please fill all the fields...", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          return
+        }
+      }
+    }
 
-    // if (!formNotFilled) {
-    //   for (let i = 0; totalRoomDetails.length > i; i++) {
-    //     for (let j = 0; totalRoomDetails[i].bed_size.length > j; j++) {
+    if (!formNotFilled) {
+      for (let i = 0; totalRoomDetails.length > i; i++) {
+        for (let j = 0; totalRoomDetails[i].bed_size.length > j; j++) {
 
-    //       const formDataHotelRoomType = new FormData()
+          const formDataHotelRoomType = new FormData()
 
-    //       formDataHotelRoomType.append('bedSize', totalRoomDetails[i].bed_size[j])
-    //       formDataHotelRoomType.append('max_person', totalRoomDetails[i].max_person)
-    //       formDataHotelRoomType.append('created_by', user.name)
-    //       formDataHotelRoomType.append('modified_by', user.name)
-    //       formDataHotelRoomType.append('ipaddress', ipAddress)
-    //       formDataHotelRoomType.append('status', totalRoomDetails[i].status.value)
-    //       formDataHotelRoomType.append('isdelete', false)
-    //       formDataHotelRoomType.append('hotel.id', hotelData.id) //hotelData.id
-    //       formDataHotelRoomType.append('rooms.id', allSelectedRoomType[i].value)
-    //       formDataHotelRoomType.append('image', totalRoomDetails[i].image)
+          formDataHotelRoomType.append('bedSize', totalRoomDetails[i].bed_size[j])
+          formDataHotelRoomType.append('max_person', totalRoomDetails[i].max_person)
+          formDataHotelRoomType.append('created_by', user.name)
+          formDataHotelRoomType.append('modified_by', user.name)
+          formDataHotelRoomType.append('ipaddress', ipAddress)
+          formDataHotelRoomType.append('status', totalRoomDetails[i].status.value)
+          formDataHotelRoomType.append('isdelete', false)
+          formDataHotelRoomType.append('hotel.id', hotelData.id) //hotelData.id
+          formDataHotelRoomType.append('rooms.id', allSelectedRoomType[i].value)
+          formDataHotelRoomType.append('image', totalRoomDetails[i].image)
 
-    //       // for (var pair of formDataHotelRoomType.entries()) {
-    //       //   console.log(pair[0] + ', ' + pair[1]);
-    //       // }
+          // for (var pair of formDataHotelRoomType.entries()) {
+          //   console.log(pair[0] + ', ' + pair[1]);
+          // }
 
-    //       await axios.post(`${api.baseUrl}/roomtypes/create`, formDataHotelRoomType, {
-    //         headers: {
-    //           // 'Authorization': `Bearer ${token}`,
-    //           'Content-Type': 'multipart/form-data',
-    //           'Access-Control-Allow-Origin': '*'
-    //         }
-    //       })
-    //         .then((response) => {
-    //           // console.log(response.data)
-    //           roomTypeId.push(response.data.id)
-    //         })
-    //         .catch(error => console.error(error));
-    //     }
-    //   }
-    //   toast.success('Room type saved successfully.', {
-    //     position: "top-center",
-    //     autoClose: 5000,
-    //     hideProgressBar: false,
-    //     closeOnClick: true,
-    //     pauseOnHover: true,
-    //     draggable: true,
-    //     progress: undefined,
-    //   });
+          await axios.post(`${api.baseUrl}/roomtypes/create`, formDataHotelRoomType, {
+            headers: {
+              // 'Authorization': `Bearer ${token}`,
+              'Content-Type': 'multipart/form-data',
+              'Access-Control-Allow-Origin': '*'
+            }
+          })
+            .then((response) => {
+              // console.log(response.data)
+              roomTypeId.push(response.data.id)
+            })
+            .catch(error => console.error(error));
+        }
+      }
+      toast.success('Room type saved successfully.', {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
 
-    //   for (let i = 0; i < roomTypeId.length; i++) {
-    //     for (let j = 0; j < seasons.length; j++) {
-    //       priceMaster.push({
-    //         off_season_price: 0,
-    //         extra_bed_price: 0,
-    //         direct_booking_price: 0,
-    //         third_party_price: 0,
-    //         status: true,
-    //         created_by: user.name,
-    //         modified_by: user.name,
-    //         isdelete: 0,
-    //         ipaddress: ipAddress,
-    //         roomtypes: {
-    //           id: roomTypeId[i]
-    //         },
-    //         hotel: {
-    //           id: hotelData.id
-    //         },
-    //         season: {
-    //           id: seasons[j].id
-    //         }
-    //       })
-    //     }
-    //   }
-    setCurrentPage((prev) => prev + 1);
-    // }
+      for (let i = 0; i < roomTypeId.length; i++) {
+        for (let j = 0; j < seasons.length; j++) {
+          priceMaster.push({
+            off_season_price: 0,
+            extra_bed_price: 0,
+            direct_booking_price: 0,
+            third_party_price: 0,
+            status: true,
+            created_by: user.name,
+            modified_by: user.name,
+            isdelete: 0,
+            ipaddress: ipAddress,
+            roomtypes: {
+              id: roomTypeId[i]
+            },
+            hotel: {
+              id: hotelData.id
+            },
+            season: {
+              id: seasons[j].id
+            }
+          })
+        }
+      }
+      setCurrentPage((prev) => prev + 1);
+    }
   }
 
 
@@ -383,93 +383,93 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
   const handleHotelMasterSubmit = async (e) => {
     e.preventDefault();
 
-    // let roomTypeOption = formDataRoomMaster.filter(item => item.status === true)
-    // if (selectedOption === null || stateSelected === null || selectedDestination === null || hotelName === '' || starRating === null || contactPersonName === '' || contactEmail === '' || hotelAddress === '' || contactPersonNumber === '' || hotelPincode === '' || status === null || hImage === null
-    // ) {
-    //   toast.error("Please fill all the fields...", {
-    //     position: "top-center",
-    //     autoClose: 5000,
-    //     hideProgressBar: false,
-    //     closeOnClick: true,
-    //     pauseOnHover: true,
-    //     draggable: true,
-    //     progress: undefined,
-    //   });
-    //   return
+    let roomTypeOption = formDataRoomMaster.filter(item => item.status === true)
+    if (selectedOption === null || stateSelected === null || selectedDestination === null || hotelName === '' || starRating === null || contactPersonName === '' || contactEmail === '' || hotelAddress === '' || contactPersonNumber === '' || hotelPincode === '' || status === null || hImage === null
+    ) {
+      toast.error("Please fill all the fields...", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return
+    }
+    if (roomTypeOption.length === 0) {
+      toast.error("Select any one Room Type Option...", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return
+    }
+
+
+    const formDataHotelMaster = new FormData()
+
+    formDataHotelMaster.append('country.id', Number(selectedOption.value))
+    formDataHotelMaster.append('state.id', Number(stateSelected.value))
+    formDataHotelMaster.append('destination.id', Number(selectedDestination.value))
+    formDataHotelMaster.append('hname', hotelName)
+    formDataHotelMaster.append('hdescription', editorData)
+    formDataHotelMaster.append('star_ratings', starRating.value)
+    formDataHotelMaster.append('hcontactname', contactPersonName)
+    formDataHotelMaster.append('hcontactnumber', contactPersonNumber)
+    formDataHotelMaster.append('hcontactemail', contactEmail)
+    formDataHotelMaster.append('haddress', hotelAddress)
+    formDataHotelMaster.append('hpincode', hotelPincode)
+    formDataHotelMaster.append('ipaddress', ipAddress)
+    formDataHotelMaster.append('status', Boolean(status.value))
+    formDataHotelMaster.append('isdelete', Boolean(0))
+    formDataHotelMaster.append('created_by', user.name)
+    formDataHotelMaster.append('modified_by', user.name)
+    formDataHotelMaster.append('image', hImage)
+
+    // for (var pair of formDataHotelMaster.entries()) {
+    //   console.log(pair[0] + ', ' + pair[1]);
     // }
-    // if (roomTypeOption.length === 0) {
-    //   toast.error("Select any one Room Type Option...", {
-    //     position: "top-center",
-    //     autoClose: 5000,
-    //     hideProgressBar: false,
-    //     closeOnClick: true,
-    //     pauseOnHover: true,
-    //     draggable: true,
-    //     progress: undefined,
-    //   });
-    //   return
-    // }
 
 
-    // const formDataHotelMaster = new FormData()
-
-    // formDataHotelMaster.append('country.id', Number(selectedOption.value))
-    // formDataHotelMaster.append('state.id', Number(stateSelected.value))
-    // formDataHotelMaster.append('destination.id', Number(selectedDestination.value))
-    // formDataHotelMaster.append('hname', hotelName)
-    // formDataHotelMaster.append('hdescription', editorData)
-    // formDataHotelMaster.append('star_ratings', starRating.value)
-    // formDataHotelMaster.append('hcontactname', contactPersonName)
-    // formDataHotelMaster.append('hcontactnumber', contactPersonNumber)
-    // formDataHotelMaster.append('hcontactemail', contactEmail)
-    // formDataHotelMaster.append('haddress', hotelAddress)
-    // formDataHotelMaster.append('hpincode', hotelPincode)
-    // formDataHotelMaster.append('ipaddress', ipAddress)
-    // formDataHotelMaster.append('status', Boolean(status.value))
-    // formDataHotelMaster.append('isdelete', Boolean(0))
-    // formDataHotelMaster.append('created_by', user.name)
-    // formDataHotelMaster.append('modified_by', user.name)
-    // formDataHotelMaster.append('image', hImage)
-
-    // // for (var pair of formDataHotelMaster.entries()) {
-    // //   console.log(pair[0] + ', ' + pair[1]);
-    // // }
-
-
-    // await axios.post(`${api.baseUrl}/hotel/create`, formDataHotelMaster, {
-    //   headers: {
-    //     // 'Authorization': `Bearer ${token}`,
-    //     'Content-Type': 'multipart/form-data',
-    //     'Access-Control-Allow-Origin': '*'
-    //   }
-    // })
-    //   .then(async (response) => {
-    //     toast.success('Hotel saved Successfully.', {
-    //       position: "top-center",
-    //       autoClose: 5000,
-    //       hideProgressBar: false,
-    //       closeOnClick: true,
-    //       pauseOnHover: true,
-    //       draggable: true,
-    //       progress: undefined,
-    //     });
-    //     setHotelData(response.data)
-    //     setCurrentPage((prev) => prev + 1);
-    //     const data = formDataRoomMaster.filter(item => item.status === true)
-    //     setRoomsSelected(data)
-    //   })
-    //   .catch(error => {
-    //     console.error(error);
-    //     toast.error('Error', {
-    //       position: "top-center",
-    //       autoClose: 5000,
-    //       hideProgressBar: false,
-    //       closeOnClick: true,
-    //       pauseOnHover: true,
-    //       draggable: true,
-    //       progress: undefined,
-    //     });
-    //   });
+    await axios.post(`${api.baseUrl}/hotel/create`, formDataHotelMaster, {
+      headers: {
+        // 'Authorization': `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data',
+        'Access-Control-Allow-Origin': '*'
+      }
+    })
+      .then(async (response) => {
+        toast.success('Hotel saved Successfully.', {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        setHotelData(response.data)
+        setCurrentPage((prev) => prev + 1);
+        const data = formDataRoomMaster.filter(item => item.status === true)
+        setRoomsSelected(data)
+      })
+      .catch(error => {
+        console.error(error);
+        toast.error('Error', {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      });
 
     setCurrentPage((prev) => prev + 1);
   }
