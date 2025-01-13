@@ -454,9 +454,9 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
           progress: undefined,
         });
         setHotelData(response.data)
-        setCurrentPage((prev) => prev + 1);
         const data = formDataRoomMaster.filter(item => item.status === true)
         setRoomsSelected(data)
+        setCurrentPage((prev) => prev + 1);
       })
       .catch(error => {
         console.error(error);
