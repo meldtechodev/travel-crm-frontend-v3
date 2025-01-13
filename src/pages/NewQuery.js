@@ -185,7 +185,7 @@ const NewQuery = ({ isOpen, onClose }) => {
     setViewPrice({ markup: 0, basiccost: 0, gst: 0, totalcost: 0, packid: 0 })
     setFormData(prev => ({ ...prev, days: selected.days, nights: selected.nights }))
 
-    setViewPolicy(allPolicyList.filter(item => item.packitid.id === selected.value))
+    setViewPolicy(allPolicyList.filter(item => item.packitid?.id === selected.value))
 
     setSelectedPackage(selected)
 

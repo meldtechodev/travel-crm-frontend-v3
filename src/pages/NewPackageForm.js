@@ -218,7 +218,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
       axios.get(`${api.baseUrl}/inclusion/getall`), //index 3
       axios.get(`${api.baseUrl}/exclusion/getall`), //index 4
       axios.get(`${api.baseUrl}/hotel/getAll`), //index 5
-      axios.get(`${api.baseUrl}/roomtypes/getAll`), //index 6
+      axios.get(`${api.baseUrl}/roomtypes/getall`), //index 6
       axios.get(`${api.baseUrl}/mealspackage/getAll`), //index 7
       axios.get(`${api.baseUrl}/activities/getAllActivities`), //index 8
       axios.get(`${api.baseUrl}/sightseeing/getAllSightseeing`), //index 9
@@ -265,7 +265,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
       setHotelData(formattedHotel);
       setHotelCompleteData(formattedHotel);
 
-      const formattedRoomType = response[6].data.content.map((item) => ({
+      const formattedRoomType = response[6].data.map((item) => ({
         ...item,
         value: item.id,
         label: item.bedSize,
@@ -330,10 +330,11 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
   };
 
   const handleHotelChange = (selectedOption, index, i) => {
+    console.log(selectedOption)
     const updatedHotels = [...formItinaryData[index].hotel];
     updatedHotels[i].roomType = null;
     const result = roomTypeCompleteData.filter(
-      (item) => item.hotel.id === selectedOption.value
+      (item) => item.hotel?.id === selectedOption.value
     );
     const formatRoomType = result.map((item) => ({
       value: item.id,
