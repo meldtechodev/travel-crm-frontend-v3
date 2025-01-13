@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaCaretDown, FaFilter, FaSort, FaArrowsAltH, FaPlus, FaEdit, FaTrashAlt, FaSearch, FaEye } from "react-icons/fa";
 import axios from "axios";
@@ -7,6 +7,7 @@ import TableComponent from '../component/TableComponent';
 import { IoArrowBack, IoArrowForward } from "react-icons/io5";
 import { FiFilter } from "react-icons/fi";
 import NewPackageForm from "./NewPackageForm";
+import { UserContext } from "../contexts/userContext";
 
 // The main dashboard component
 const PackageDashboard = ({ isListView }) => {
@@ -91,15 +92,12 @@ const ListView = () => {
   const [packIti, setPackIti] = useState([])
   const [packItiDetail, setPackItiDetail] = useState([])
   const [hotelList, setHotelList] = useState([])
-  const [packageTheme, setPackageTheme] = useState([])
-  const [packD, setPackD] = useState([])
   const [siteSeeings, setSiteSeeings] = useState([])
   const [activitiesList, setActivitiesList] = useState([])
   const [activities, setActivities] = useState([])
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [addData, setAddData] = useState([])
-  const [toggleSwitch, setToggleSwitch] = useState(true);
   const [selectedPackage, setSelectedPackage] = useState(null);
 
   const handleStatusToggle = (id) => {
@@ -110,11 +108,23 @@ const ListView = () => {
     );
   };
 
+  const { stateDetails, countryDetails } = useContext(UserContext)
+
+  const ViewState = (stateId) => {
+    let s = stateDetails.filter(item => item.id === stateId)
+    return s.length > 0 ? s[0].stateName : "";
+  }
+
+  const ViewCountry = (stateId) => {
+    let s = countryDetails.filter(item => item.id === stateId)
+    return s.length > 0 ? s[0].countryName : "";
+  }
+
   const columns = [
     { header: 'S. No.', accessor: 'index' },
     { header: "Package Name", accessor: "pkName" },
     { header: "From City", render: ({ row }) => ViewDestination(row.fromCityId) },
-    { header: "To City", render: ({ row }) => ViewDestination(row.toCityId) },
+    { header: "To", render: ({ row }) => row.toCityId ? ViewDestination(row.toCityId) : row.s_id ? ViewState(row.s_id) : ViewCountry(row.c_id) },
     { header: "Category", accessor: "pkCategory" },
     { header: "Type", accessor: "packageType" },
     { header: "Days/Nights", render: ({ row }) => `${row.days}/${row.nights}` },
@@ -149,12 +159,19 @@ const ListView = () => {
     for (let i = 0; i < pack.length; i++) {
       let k = packItiDetail.filter(item => item.packitid.id === pack[i].id)
       // console.log(k)
-      p.push(k[0])
+      p.push(...k)
     }
+    console.log(p)
 
     setActivities([])
     let k = p.filter(item => item !== undefined)
     let site = []
+
+    let roomt = k.map(item => item.roomtypes)
+    let filRoom = new Set(roomt.map(item => item.id))
+
+    console.log(filRoom)
+
     for (let i = 0; i < k.length; i++) {
       site.push(...k[i].sightseeingIds)
     }
@@ -175,6 +192,7 @@ const ListView = () => {
       let newH = hotelList.filter(item => item.id === k[i].roomtypes.hotel.id)
       let filRoom = hotelList.map(item => item.id === k[i].roomtypes.hotel.id ? item : '')
       let newFilRoom = filRoom
+      console.log(newH)
       h.push(newH[0])
     }
     for (let i = 0; i < k.length; i++) {
@@ -263,6 +281,7 @@ const ListView = () => {
     const fetchData = async () => {
       await axios.get(`${api.baseUrl}/packageitinerarydetails/getAll`)
         .then((response) => {
+          // console.log(response.data)
           setPackItiDetail(response.data)
         })
         .catch((error) => {

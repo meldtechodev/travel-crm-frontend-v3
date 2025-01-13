@@ -471,7 +471,6 @@ const Hotel = ({ isOpen, onClose, selectedHotelData }) => {
         });
       });
 
-    setCurrentPage((prev) => prev + 1);
   }
 
   const handleSubmit = async (e) => {

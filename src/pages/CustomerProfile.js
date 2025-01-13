@@ -1,48 +1,38 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { FaTrash } from 'react-icons/fa6';
 import { useLocation } from 'react-router-dom';
 import api from '../apiConfig/config';
+import { UserContext } from '../contexts/userContext';
 
 const CustomerProfile = () => {
-  const [tab, setTab] = React.useState('profile');
   const location = useLocation(); // Unix timestamp in milliseconds
   const option = location.state?.option;
   console.log(option)
 
-  const [destination, setDestination] = useState([])
-  const [itinerariesList, setItinerayList] = useState([])
+
   const [inclusion, setInclusion] = useState([])
-  const [viewInclusion, setViewInclusion] = useState([])
   const [exclusion, setExclusion] = useState([])
-  const [viewExclusion, setViewExclusion] = useState([])
-  const [hotelList, setHotelList] = useState([])
-  const [itinaryList, setItinearyList] = useState([])
   const [siteSeeing, setSiteSeeing] = useState([])
 
-  // console.log(option)
-
-  // let k = option.packItiDetail.map(item => item.roomtypes.hotel.id)
-  // let set = new Set(k)
-  // let newSet = [...set]
-  // console.log(newSet)
-  // setHotelList(newSet)
+  const { destinationDetails, stateDetails, countryDetails } = useContext(UserContext)
 
   const ViewDestination = (view) => {
-    let d = destination.filter(item => item.id === view)
+    let d = destinationDetails.filter(item => item.id === view)
     let k = d[0]
     return d.length === 0 ? '' : k?.destinationName
   }
-  // useEffect(() => {
-  //   console.log(option)
-  // }, [])
 
-  const handleView = (data) => {
-    // let site = siteSeeing.filter(item => item.id === data)
-    // site.length === 0 ? '' : site[0].title
-    // console.log(site)
-    return ''
+  const ViewState = (stateId) => {
+    let s = stateDetails.filter(item => item.id === stateId)
+    return s.length > 0 ? s[0].stateName : "";
   }
+
+  const ViewCountry = (stateId) => {
+    let s = countryDetails.filter(item => item.id === stateId)
+    return s.length > 0 ? s[0].countryName : "";
+  }
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -59,25 +49,15 @@ const CustomerProfile = () => {
   }, []);
 
   useEffect(() => {
-    axios.get(`${api.baseUrl}/destination/getallDestination`)
-      .then((response) => {
-        setDestination(response.data)
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-      });
-  }, []);
-
-  useEffect(() => {
-    axios.get(`${api.baseUrl}/packageitinerary/getAll`)
-      .then((response) => {
-        const list = response.data.content.filter(item => item.packid === option.id)
-        setItinearyList(list)
-        // console.log(option)
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-      });
+    // axios.get(`${api.baseUrl}/packageitinerary/getAll`)
+    //   .then((response) => {
+    //     const list = response.data.content.filter(item => item.packid === option.id)
+    //     setItinearyList(list)
+    //     // console.log(option)
+    //   })
+    //   .catch((error) => {
+    //     console.error('Error fetching data:', error);
+    //   });
   }, []);
 
   const viewInclusions = (ids) => {
@@ -91,13 +71,13 @@ const CustomerProfile = () => {
   }
 
   useEffect(() => {
-    axios.get(`${api.baseUrl}/itinerarys/getAll`)
-      .then((response) => {
-        setItinerayList(response.data)
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-      });
+    // axios.get(`${api.baseUrl}/itinerarys/getAll`)
+    //   .then((response) => {
+    //     setItinerayList(response.data)
+    //   })
+    //   .catch((error) => {
+    //     console.error('Error fetching data:', error);
+    //   });
   }, []);
 
   useEffect(() => {
@@ -110,17 +90,6 @@ const CustomerProfile = () => {
         console.error('Error fetching data:', error);
       });
   }, []);
-
-  // useEffect(() => {
-  //   axios.get(`${api.baseUrl}/inclusion/getall`)
-  //     .then((response) => {
-  //       setInclusion(response.data)
-  //       // handleInclusion(response.data)
-  //     })
-  //     .catch((error) => {
-  //       console.error('Error fetching data:', error);
-  //     });
-  // }, []);
 
   useEffect(() => {
     axios.get(`${api.baseUrl}/exclusion/getall`)
@@ -145,7 +114,7 @@ const CustomerProfile = () => {
           </div>
           <div className="mb-2 md:mb-0">
             <p>From City : {ViewDestination(option.fromCityId)}</p>
-            <p>Destination City : {ViewDestination(option.toCityId)}</p>
+            <p>Destination City : {option.toCityId ? ViewDestination(option.toCityId) : option.s_id ? ViewState(option.s_id) : ViewCountry(option.c_id)}</p>
           </div>
           <div className="mb-2 md:mb-0">
             <p>Fixed Departure Destinations : {option.fixed_departure_destinations}</p>
