@@ -222,7 +222,7 @@ const NewMember = ({ isOpen, onClose }) => {
     try {
       const response = await axios.post(`${api.baseUrl}/signup`, postData, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          // Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });

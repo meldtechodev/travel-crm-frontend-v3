@@ -107,8 +107,9 @@ function Login() {
 
       const { data } = await axios.get(`${api.baseUrl}/username`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          "Authorization": `Bearer ${token}`,
           "Access-Control-Allow-Origin": "*",
+          "Content-Type": "application/json,"
         },
       });
 
