@@ -81,8 +81,6 @@ const PageRoute = () => {
               path="/customer"
               element={<CustomersList />}
             />
-            {/* <Route path='/' /> */}
-            {/* Add other routes as needed */}
           </Routes>
         </div>
       </div>

@@ -674,15 +674,12 @@ const Sidebar = () => {
                 size="30px"
                 color={homeStyle === "Reports" ? "#fff" : "#B4B4B8"}
               />
-              <p
-                className={`menu-name text-[14px] mt-2 ${homeStyle === "Reports" ? "text-white" : "text-[#B4B4B8]"
-                  } `}
-              >
+              <p className={`menu-name text-[14px] mt-2 ${homeStyle === "Reports" ? "text-white" : "text-[#B4B4B8]"} `}>
                 Reports
               </p>
             </div>
             <div
-              className={`submenu fixed left-20 top-10 h-screen pointer-events-none transform opacity-0 scale-95 transition-all duration-500 ease-in-out  ${homeStyle === "Reports" ? "opacity-100 scale-100 pointer-events-auto" : ""} bg-[#f9f9f9] text-black p-4 rounded shadow-lg space-y-2 mt-2 hover:opacity-100 hover:scale-100 hover:pointer-events-auto`}
+              className={`submenu fixed left-16 top-6 h-screen pointer-events-none transform opacity-0 scale-95 transition-all duration-500 ease-in-out  ${homeStyle === "Reports" ? "opacity-100 scale-100 pointer-events-auto" : ""} bg-[#f9f9f9] text-black p-4 rounded shadow-lg space-y-2 mt-2 hover:opacity-100  hover:pointer-events-auto`}
               style={{ width: "340px" }}
             >
               <div className="flex flex-col">
@@ -708,7 +705,7 @@ const Sidebar = () => {
                 Settings
               </p>
             </div>
-            <div className={`submenu fixed left-20 top-10 h-screen pointer-events-none transform opacity-0 scale-95 transition-all duration-500 ease-in-out bg-[#f9f9f9] ${homeStyle === "Settings" ? "opacity-100 scale-100 pointer-events-auto" : ""} hover:opacity-100 hover:scale-100 hover:pointer-events-auto text-black p-4 rounded shadow-lg space-y-2 mt-2`}
+            <div className={`submenu fixed left-16 top-6 h-screen pointer-events-none transform opacity-0 scale-95 transition-all duration-500 ease-in-out bg-[#f9f9f9] ${homeStyle === "Settings" ? "opacity-100 scale-100 pointer-events-auto" : ""} text-black p-4 rounded shadow-lg space-y-2 mt-2 hover:opacity-100 hover:pointer-events-auto`}
               style={{ width: "340px" }}>
               <div className="flex flex-col">
                 <p className={`font-bold text-lg text-left`}>Settings</p>

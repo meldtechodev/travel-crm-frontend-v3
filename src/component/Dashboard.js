@@ -14,6 +14,7 @@ import BodyHeader from "./BodyHeader";
 import axios from "axios";
 import api from "../apiConfig/config";
 import { UserContext } from "../contexts/userContext";
+import TableComponent from "../pages/TableComponent";
 // import Table from '../pages/TableComponent';
 
 // Register necessary Chart.js components
@@ -91,7 +92,10 @@ const Dashboard = () => {
     togglePeriodDropdown(); // Close dropdown after selection
   };
 
+
+
   const columns = [
+    { header: "", accessor: "" },
     { header: "QUERY", accessor: "query" },
     { header: "DATE", accessor: "date" },
     { header: "FLIGHT PICK UP TIME", accessor: "flightPickUpTime" },
@@ -102,6 +106,173 @@ const Dashboard = () => {
     { header: "HOTEL TYPE", accessor: "hotelType" },
     { header: "DRIVER GUIDE", accessor: "driverGuide" },
   ];
+
+  const col = [
+    { header: "TeamMember", accessor: "teamMember" },
+    { header: "Domestic", accessor: "domestic" },
+    { header: "International", accessor: "international" }
+  ]
+
+  const userResport = {
+    "Ritik": {
+      "domestic": {
+        "Goa": 21,
+        "Sikkim": 19,
+        "Himachal Pradesh": 15,
+        "Kerala": 15,
+        "Andaman": 14
+      },
+      "international": {
+        "UAE": 1,
+        "Maldives": 1,
+        "Thailand": 1,
+        "Switzerland": 1,
+        "Singapore": 1
+      }
+    },
+    "Ujwal": {
+      "domestic": {
+        "Andaman": 23,
+        "Kerala": 17,
+        "Goa": 17,
+        "Himachal Pradesh": 15,
+        "Andaman": 5
+      },
+      "international": {
+        "Malaysia": 1,
+        "Vietnam": 1,
+        "Bahrain": 1,
+        "Jamaica": 1,
+        "Qatar": 1
+      }
+    },
+    "Narender": {
+      "domestic": {
+        "Himachal": 16,
+        "Sikkim": 17,
+        "Uttrakhand": 7
+      },
+      "international": {
+        "Macao": 1,
+        "Qatar": 1,
+        "Maldives": 1,
+        "Thailand": 1,
+        "Switzerland": 1
+      }
+    },
+    "Alex": {
+      "domestic": {
+        "Kashmir": 34,
+        "Rajasthan": 12,
+        "Goa": 10,
+        "Andaman": 8,
+        "Himachal Pradesh": 2,
+        "Kerala": 5
+      },
+      "international": {
+        "UAE": 1,
+        "Maldives": 1,
+        "Thailand": 1,
+        "Switzerland": 1,
+        "Singapore": 1
+      }
+    },
+    "Rajat": {
+      "domestic": {
+        "Himachal": 16,
+        "Sikkim": 17,
+        "Uttrakhand": 7,
+        "Andaman": 5
+      },
+      "international": {
+        "Malaysia": 1,
+        "Vietnam": 1,
+        "Bahrain": 1,
+        "Jamaica": 1,
+        "Qatar": 1
+      }
+    },
+    "Nilesh": {
+      "domestic": {
+        "Kashmir": 34,
+        "Rajasthan": 12,
+        "Himachal Pradesh": 15,
+        "Goa": 10,
+        "Andaman": 8,
+        "Kerala": 5
+      },
+      "international": {
+        "Qatar": 1,
+        "Maldives": 1,
+        "Thailand": 1,
+        "Switzerland": 1,
+        "Vietnam": 1
+      }
+    },
+    "Vishal": {
+      "domestic": {
+        "Goa": 21,
+        "Sikkim": 19,
+        "Himachal Pradesh": 15,
+        "Kerala": 15,
+        "Andaman": 14
+      },
+      "international": {
+        "Macao": 1,
+        "Qatar": 1,
+        "Maldives": 1,
+        "Thailand": 1,
+        "Switzerland": 1
+      }
+    },
+    "Shubham": {
+      "domestic": {
+        "Andaman": 23,
+        "Kerala": 17,
+        "Goa": 17,
+        "Himachal Pradesh": 15,
+        "Andaman": 5
+      },
+      "international": {
+        "Rajasthan": 12,
+        "Malaysia": 1,
+        "Vietnam": 1,
+        "Macao": 1,
+        "Qatar": 1,
+        "Qatar": 1
+      }
+    },
+    "Aditi": {
+      "domestic": {
+        "Himachal": 16,
+        "Sikkim": 17,
+        "Uttrakhand": 7
+      },
+      "international": {
+        "Malaysia": 1,
+        "Vietnam": 1,
+        "Bahrain": 1,
+        "Jamaica": 1,
+        "Qatar": 1
+      }
+    },
+    "Karan": {
+      "domestic": {
+        "Kashmir": 34,
+        "Rajasthan": 12,
+        "Goa": 10,
+        "Andaman": 8,
+        "Kerala": 5
+      },
+      "international": {
+        "Qatar": 1,
+        "Maldives": 1,
+        "Thailand": 1,
+        "Switzerland": 1,
+        "Vietnam": 1
+      }
+    }
+  }
 
   useEffect(() => {
     Promise.all([
@@ -210,7 +381,6 @@ const Dashboard = () => {
               </div>
             )}
           </div>
-          {/* Metrics Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
             <div
               className="bg-pink-100 border-l-4 border-pink-500 p-4 rounded-md"
@@ -341,13 +511,38 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-          <div className="table-container mt-8 mb-20 overflow-x-auto">
+          {/* <div className="table-container mt-8 mb-20 overflow-x-auto">
             <h3
-              className="text-white font-bold text-2xl mb-4 text-center py-2"
-              style={{ backgroundColor: "#6c757d" }}
+            className="text-white font-bold text-2xl mb-4 text-center py-2"
+            style={{ backgroundColor: "#6c757d" }}
             >
-              Tour Master Sheet
+            Tour Master Sheet
             </h3>
+            </div> */}
+          <div className="table-container mt-8 mb-20 overflow-x-auto bg-white p-4">
+            <table className="min-w-full bg-white">
+              <thead className='bg-gray-200'>
+                <th className="py-2 px-4 border">Team Member</th>
+                <th className="py-2 px-4 border">Domestic</th>
+                <th className="py-2 px-4 border">International</th>
+              </thead>
+              <tbody>
+                {Object.entries(userResport).map(([row, rowIndex]) => (
+                  <tr key={rowIndex} className="border-collapse text-center">
+                    <td>{rowIndex.domestic}</td>
+                    {Object.entries(rowIndex.domestic).map(([column, colIndex]) => (
+                      // <td key={colIndex} className="py-2 px-4 border">
+                      //   {typeof column.render === 'function'
+                      //     ? column.render({ value: row[column.accessor], row })
+                      //     : row[column.accessor]}
+                      // </td>
+                      <td>{column} 12</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
           </div>
         </div>
       </div>

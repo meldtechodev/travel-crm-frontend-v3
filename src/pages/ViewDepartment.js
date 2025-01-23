@@ -77,11 +77,6 @@ const ViewDepartments = () => {
   }
 
   const columns = [
-    // {
-    //   header: "Select",
-    //   accessor: "select",
-    //   render: () => <input type="checkbox" />,
-    // },
     {
       header: 'S. No.',
       render: ({ row }) => <span>{row.index + 1}</span>,
@@ -90,10 +85,6 @@ const ViewDepartments = () => {
       header: "Department Name",
       accessor: "departmentName",
     },
-    // {
-    //   header: "Ip Address",
-    //   accessor: "ipaddress",
-    // },
     {
       header: "Status",
       render: ({ row }) => (
@@ -133,7 +124,6 @@ const ViewDepartments = () => {
       ),
     },
   ];
-  console.log(selectedCountry)
 
   return (
     <>

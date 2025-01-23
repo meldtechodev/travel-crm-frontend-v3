@@ -1,25 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useLocation, Route, Routes } from 'react-router-dom';
-import Navbar from './navbar';
-import Sidebar from './sidebar';
-import Quickstart from './Quickstart';
-import Dashboard from './Dashboard';
-import HomePage from './Home';
-import { FaHome, FaUserTie } from 'react-icons/fa';
-import { IoIosPeople } from 'react-icons/io';
-import { HiOutlineDocumentReport } from 'react-icons/hi';
-import { FcSalesPerformance } from 'react-icons/fc';
-import AddPopHotel from '../pages/AddPopHotel';
 
 const BodyHeader = () => {
   const location = useLocation();
   const activeTab = location.pathname;
 
-  const [addData, setAddData] = useState([]);
 
   return (
-    // <div className="flex flex-col w-full ml-10 p-0">
-    // <div className="flex-auto">
     <>
       <div className=" bg-gray-100 px-10 py-0 shadow-md">
         <div className="flex space-x-4 justify-between md:space-x-10">
@@ -50,21 +37,10 @@ const BodyHeader = () => {
               </button>
             </Link>
           </div>
-          <p onClick={() => setAddData(["AddCustomerPopup"])}>Add hotel</p>
-          {/* </div> */}
+          <p></p>
         </div>
       </div>
-      <div
-        className="submenu-menu"
-        style={{
-          right: addData[0] === "AddCustomerPopup" ? "0" : "-100%",
-        }}
-      >
-        <AddPopHotel
-          isOpen={addData[0] === "AddCustomerPopup"}
-          onClose={() => setAddData([])}
-        />
-      </div>
+
     </>
   );
 };

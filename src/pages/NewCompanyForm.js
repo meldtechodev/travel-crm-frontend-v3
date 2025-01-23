@@ -1,65 +1,12 @@
 import axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import api from "../apiConfig/config";
 import { toast } from "react-toastify";
+import { UserContext } from "../contexts/userContext";
 
 const NewCompanyForm = ({ isOpen, onClose, companyData, isFormEditEnabled, setIsFormEditEnabled }) => {
   const fileInputRef = useRef(null);
-
-  const [user, setUser] = useState({})
-  const [token, setTokens] = useState(null)
-  async function decryptToken(encryptedToken, key, iv) {
-    const dec = new TextDecoder();
-
-    const decrypted = await crypto.subtle.decrypt(
-      {
-        name: "AES-GCM",
-        iv: iv,
-      },
-      key,
-      encryptedToken
-    );
-
-    return dec.decode(new Uint8Array(decrypted));
-  }
-
-  // Function to retrieve and decrypt the token
-  async function getDecryptedToken() {
-    const keyData = JSON.parse(localStorage.getItem('encryptionKey'));
-    const ivBase64 = localStorage.getItem('iv');
-    const encryptedTokenBase64 = localStorage.getItem('encryptedToken');
-
-
-    if (!keyData || !ivBase64 || !encryptedTokenBase64) {
-      throw new Error('No token found');
-    }
-
-    // Convert back from base64
-    const key = await crypto.subtle.importKey('jwk', keyData, { name: "AES-GCM" }, true, ['encrypt', 'decrypt']);
-    const iv = new Uint8Array(atob(ivBase64).split('').map(char => char.charCodeAt(0)));
-    const encryptedToken = new Uint8Array(atob(encryptedTokenBase64).split('').map(char => char.charCodeAt(0)));
-
-    return await decryptToken(encryptedToken, key, iv);
-  }
-
-  // Example usage to make an authenticated request
-  useEffect(() => {
-    getDecryptedToken()
-      .then(token => {
-        setTokens(token);
-
-        return axios.get(`${api.baseUrl}/username`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Access-Control-Allow-Origin': '*'
-          }
-        });
-      })
-      .then(response => {
-        setUser(response.data);
-      })
-      .catch(error => console.error('Error fetching protected resource:', error))
-  }, [])
+  const { user, ipAddress } = useContext(UserContext);
 
   const [formData, setFormData] = useState({
     companyname: "",
@@ -68,7 +15,7 @@ const NewCompanyForm = ({ isOpen, onClose, companyData, isFormEditEnabled, setIs
     companycountrycode: "",
     companyphone: "",
     companywebsite: "",
-    companylogo: null,
+    image: null,
     status: true,
     ipaddress: ""
   });
@@ -83,7 +30,7 @@ const NewCompanyForm = ({ isOpen, onClose, companyData, isFormEditEnabled, setIs
       companycountrycode: "",
       companyphone: "",
       companywebsite: "",
-      companylogo: null,
+      image: null,
       status: true,
       ipaddress: ""
     });
@@ -103,7 +50,7 @@ const NewCompanyForm = ({ isOpen, onClose, companyData, isFormEditEnabled, setIs
   const handleFileChange = (event) => {
     setFormData(prevState => ({
       ...prevState,
-      companylogo: event.target.files[0],
+      image: event.target.files[0],
     }));
   };
 
@@ -116,9 +63,11 @@ const NewCompanyForm = ({ isOpen, onClose, companyData, isFormEditEnabled, setIs
         formDatasend.append(key, formData[key]);
       }
     });
-    formDatasend.append('createdby', user.username);
-    formDatasend.append('modifiedby', user.username);
+    formDatasend.append('createdby', user.name);
+    formDatasend.append('modifiedby', user.name);
+    formDatasend.append('parent_id', 1);
     formDatasend.append('isdelete', false);
+    formDatasend.append('ipaddress', ipAddress);
 
     // Validation
     const requiredFields = ['companyname', 'companyaddress', 'companyemail', 'companycountrycode'];
@@ -137,7 +86,7 @@ const NewCompanyForm = ({ isOpen, onClose, companyData, isFormEditEnabled, setIs
         // Update existing company
         await axios.put(`${api.baseUrl}/company/updatebyid/${companyData.id}`, formDatasend, {
           headers: {
-            'Authorization': `Bearer ${token}`,
+            // 'Authorization': `Bearer ${token}`,
             'Content-Type': 'multipart/form-data',
             'Access-Control-Allow-Origin': '*'
           }
@@ -147,7 +96,7 @@ const NewCompanyForm = ({ isOpen, onClose, companyData, isFormEditEnabled, setIs
         // Create new company
         await axios.post(`${api.baseUrl}/company/create`, formDatasend, {
           headers: {
-            'Authorization': `Bearer ${token}`,
+            // 'Authorization': `Bearer ${token}`,
             'Content-Type': 'multipart/form-data',
             'Access-Control-Allow-Origin': '*'
           }
@@ -162,20 +111,6 @@ const NewCompanyForm = ({ isOpen, onClose, companyData, isFormEditEnabled, setIs
     }
   };
 
-  // Fetch IP address and set in form data
-  useEffect(() => {
-    axios.get(`${api.baseUrl}/ipAddress`)
-      .then((response) => {
-        setFormData(prevState => ({
-          ...prevState,
-          ipaddress: response.data
-        }));
-      })
-      .catch((error) => {
-        console.error('Error fetching IP address:', error);
-      });
-  }, []);
-
   // Populate form data when editing existing company
   useEffect(() => {
     if (companyData && companyData.id) {
@@ -186,7 +121,7 @@ const NewCompanyForm = ({ isOpen, onClose, companyData, isFormEditEnabled, setIs
         companycountrycode: companyData.companycountrycode || "",
         companyphone: companyData.companyphone || "",
         companywebsite: companyData.companywebsite || "",
-        companylogo: null,
+        image: null,
         status: companyData.status !== undefined ? companyData.status : true,
         ipaddress: companyData.ipaddress || ""
       });
@@ -324,7 +259,7 @@ const NewCompanyForm = ({ isOpen, onClose, companyData, isFormEditEnabled, setIs
               type="file"
               ref={fileInputRef}
               className="w-full text-gray-700 mt-1 p-[4.5px] bg-white rounded border border-gray-200"
-              name="companylogo"
+              name="image"
               onChange={handleFileChange}
             />
           </div>

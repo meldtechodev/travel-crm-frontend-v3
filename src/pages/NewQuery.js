@@ -18,19 +18,55 @@ const NewQuery = ({ isOpen, onClose }) => {
 
   const { user, ipAddress, destinationDetails } = useContext(UserContext);
 
-  // const RoomTypeOptions = [
-  //   { value: "budget", label: "Budget" },
-  //   { value: "deluxe", label: "Deluxe" },
-  //   { value: "luxury", label: "Luxury" },
-  //   { value: "standard", label: "Standard" },
-  // ];
-  // const MealTypeOptions = [
-  //   { value: 1, label: "Thai" },
-  //   { value: 2, label: "Indian" },
-  //   { value: 3, label: "Chineese" },
-  //   { value: 4, label: "Italian" },
-  //   { value: 5, label: "American" },
-  // ];
+  const [destination, setDestination] = useState([])
+  const [country, setCountry] = useState([])
+  const [state, setState] = useState([])
+  const [allDestination, setAllDestination] = useState([])
+
+  useEffect(() => {
+    axios.get(`${api.baseUrl}/destination/getallDestination`)
+      .then(response => {
+        const formatDestination = response.data.map((item) => ({
+          ...item,
+          type: "city",
+          label: item.destinationName + ", (" + item.state.stateName + ") " + item.country.countryName,
+          value: 0
+        }))
+        setDestination(formatDestination)
+        // console.log(formatDestination)
+
+        axios.get(`${api.baseUrl}/state/getAllState`)
+          .then(res => {
+            const formatState = res.data.map((item) => ({
+              ...item,
+              type: "state",
+              label: item.stateName + ", " + item.country.countryName,
+              value: 0
+            }))
+            setState(formatState)
+
+            axios.get(`${api.baseUrl}/country/getallcountry`)
+              .then(r => {
+                const formatCountry = r.data.map((item) => ({
+                  ...item,
+                  type: "country",
+                  label: item.countryName.toUpperCase(),
+                  value: 0
+                }))
+                setCountry(formatCountry)
+
+                let update = [...formatDestination, ...formatState, ...formatCountry]
+                setAllDestination(update.map((item, index) => ({
+                  ...item,
+                  value: index + 1
+                })))
+
+              }).catch(error => console.error(error))
+
+          }).catch(error => console.error(error))
+
+      }).catch(error => console.error(error));
+  }, [])
 
 
   const [formData, setFormData] = useState({
@@ -63,6 +99,8 @@ const NewQuery = ({ isOpen, onClose }) => {
     pkg: null,
     did: null,
     fromcityid: null,
+    s_id: null,
+    c_id: null,
     userId: {
       id: 0
     }
@@ -75,7 +113,6 @@ const NewQuery = ({ isOpen, onClose }) => {
     emailId: "",
     salutation: "",
     id: 0
-
   })
   const handleCustomerChange = (selected) => {
     setFormData((prev) => ({ ...prev, customer: selected }))
@@ -259,7 +296,16 @@ const NewQuery = ({ isOpen, onClose }) => {
   const handleDestinationChange = (selected) => {
     setFormData((prev) => ({ ...prev, pkg: null }))
     setFormData(prev => ({ ...prev, did: selected }))
-    let listPack = packages.filter(item => item.toCityId === selected.value)
+    console.log(packages)
+    console.log(selected)
+    let listPack = []
+    if (selected.type === 'city') {
+      listPack = packages.filter(item => item.toCityId === selected.id)
+    } else if (selected.type === 'state') {
+      listPack = packages.filter(item => item.s_id === selected.id)
+    } else {
+      listPack = packages.filter(item => item.c_id === selected.id)
+    }
     setViewPackage(listPack)
   }
 
@@ -387,45 +433,88 @@ const NewQuery = ({ isOpen, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    let payload = {}
 
-    const payload = {
-      requirementType: selectedPackage.pkName || " ",
-      travelDate: `${formData.travelDate}T00:00:00`,
-      nights: formData.nights,
-      days: formData.days,
-      totalTravellers: formData.totalTravellers,
-      adults: formData.totalTravellers,
-      kids: 0,
-      infants: 0,
-      salutation: customerData.salutation,
-      fname: customerData.fname || ' ',
-      lname: customerData.lName,
-      emailId: customerData.emailId || " ",
-      contactNo: customerData.contactNo,
-      leadSource: formData.leadSource.value,
-      foodPreferences: "Veg",
-      basicCost: viewPrice.basiccost,
-      gst: viewPrice.gst,
-      totalCost: viewPrice.totalcost,
-      queryType: formData.queryType.value || " ",
-      queryCreatedFrom: formData.leadSource.value,
-      emailStatus: 0,
-      leadStatus: 1,
-      ipAddress: ipAddress,
-      packid: selectedPackage.value,
-      destination: {
-        id: formData.did && formData.did.id
-        // id: 1
-      },
-      fromcityid: {
-        id: formData.fromcityid && formData.fromcityid.id
-        // id: 1
-      },
-      userid: {
-        userId: user.userId
-        // id: 1
-      }, customer: {
-        id: customerData.id
+    if (formData.did.type === 'city') {
+      payload = {
+        requirementType: selectedPackage.pkName || " ",
+        travelDate: `${formData.travelDate}T00:00:00`,
+        nights: formData.nights,
+        days: formData.days,
+        totalTravellers: formData.totalTravellers,
+        adults: formData.totalTravellers,
+        kids: 0,
+        infants: 0,
+        salutation: customerData.salutation,
+        fname: customerData.fname || ' ',
+        lname: customerData.lName,
+        emailId: customerData.emailId || " ",
+        contactNo: customerData.contactNo,
+        leadSource: formData.leadSource.value,
+        foodPreferences: "Veg",
+        basicCost: viewPrice.basiccost,
+        gst: viewPrice.gst,
+        totalCost: viewPrice.totalcost,
+        queryType: formData.queryType.value || " ",
+        queryCreatedFrom: formData.leadSource.value,
+        emailStatus: 0,
+        leadStatus: 1,
+        ipAddress: ipAddress,
+        packid: selectedPackage.value,
+        s_id: formData.did && formData.did.type === 'state' ? formData.did.id : null,
+        c_id: formData.did && formData.did.type === 'country' ? formData.did.id : null,
+        destination: {
+          id: formData.did && formData.did.id
+        },
+        fromcityid: {
+          id: formData.fromcityid && formData.fromcityid.id
+        },
+        userid: {
+          userId: user.userId
+          // id: 1
+        }, customer: {
+          id: customerData.id
+        }
+      }
+    } else {
+
+
+      payload = {
+        requirementType: selectedPackage.pkName || " ",
+        travelDate: `${formData.travelDate}T00:00:00`,
+        nights: formData.nights,
+        days: formData.days,
+        totalTravellers: formData.totalTravellers,
+        adults: formData.totalTravellers,
+        kids: 0,
+        infants: 0,
+        salutation: customerData.salutation,
+        fname: customerData.fname || ' ',
+        lname: customerData.lName,
+        emailId: customerData.emailId || " ",
+        contactNo: customerData.contactNo,
+        leadSource: formData.leadSource.value,
+        foodPreferences: "Veg",
+        basicCost: viewPrice.basiccost,
+        gst: viewPrice.gst,
+        totalCost: viewPrice.totalcost,
+        queryType: formData.queryType.value || " ",
+        queryCreatedFrom: formData.leadSource.value,
+        emailStatus: 0,
+        leadStatus: 1,
+        ipAddress: ipAddress,
+        packid: selectedPackage.value,
+        s_id: formData.did && formData.did.type === 'state' ? formData.did.id : null,
+        c_id: formData.did && formData.did.type === 'country' ? formData.did.id : null,
+        fromcityid: {
+          id: formData.fromcityid && formData.fromcityid.id
+        },
+        userid: {
+          userId: user.userId
+          // id: 1
+        }, customer: {
+          id: customerData.id
+        }
       }
     }
     console.log(payload)
@@ -659,7 +748,7 @@ const NewQuery = ({ isOpen, onClose }) => {
                 Destination
               </label>
               <Select
-                options={destinationDetails}
+                options={allDestination}
                 value={formData.did}
                 onChange={handleDestinationChange}
                 placeholder="Select"

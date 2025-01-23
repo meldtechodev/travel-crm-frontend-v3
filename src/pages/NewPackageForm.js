@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
 import { isArray } from "chart.js/helpers";
 import { UserContext } from "../contexts/userContext";
+import AddPopHotel from "./AddPopHotel";
 
 const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
   // console.log(editablePackageData);
@@ -114,6 +115,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
   const [displayItiDesti, setDisplayItiDesti] = useState([]);
   const [listTransport, setListTransport] = useState([]);
   const [policyList, setPolicyList] = useState([]);
+  const [addData, setAddData] = useState([]);
 
   useEffect(() => {
     Promise.all([
@@ -2039,6 +2041,7 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                             <h3 className="bg-gray-600 text-white p-2 rounded rounded-b-none">
                               Select Hotel
                             </h3>
+                            <button onClick={() => setAddData(["AddHotel"])}>Add Hotel</button>
                             <table className="min-w-full bg-white mb-4 border rounded rounded-t-none">
                               <thead>
                                 <tr className="bg-gray-100">
@@ -2057,12 +2060,6 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                                         <label className="block text-sm font-medium">
                                           Hotel Name
                                         </label>
-                                        {/* <input
-                                      type="text"
-                                      placeholder="Type"
-                                      className="mt-1 border w-full h-[36px] rounded p-2 border-gray-300"
-                                    /> */}
-
                                         <Select
                                           options={item.hotelData}
                                           placeholder="Select hotel"
@@ -2198,6 +2195,17 @@ const NewPackageForm = ({ isOpen, onClose, editablePackageData }) => {
                   </div>
                   // </div>
                 ))}
+              <div
+                className="submenu-menu"
+                style={{
+                  right: addData[0] === "AddHotel" ? "0" : "-100%",
+                }}
+              >
+                <AddPopHotel
+                  isOpen={addData[0] === "AddHotel"}
+                  onClose={() => setAddData([])}
+                />
+              </div>
               {/* {days !== 0 &&
               <div className="flex justify-center items-center mt-4">
                 <button className="bg-blue-200 p-2 border rounded-sm border-b-2"

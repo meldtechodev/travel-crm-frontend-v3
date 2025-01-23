@@ -24,6 +24,7 @@ const ProfilePage = () => {
   //     setProfileData(response.data);
   //   });
   // }, []);
+  console.log(user)
 
   useEffect(() => {
     if (user) {
@@ -38,6 +39,10 @@ const ProfilePage = () => {
 
   const handleSave = () => {
     setUser(formData); // Save changes
+
+    axios.post(`${api.baseUrl}/updatebyid/${user.userId}`)
+
+
     setIsEditing(false); // Exit edit mode
   };
 
@@ -65,7 +70,7 @@ const ProfilePage = () => {
           </div>
           {/* User Info */}
           <div>
-            <h1 className="text-lg font-semibold text-gray-800">{`${user && user.name} ${user && user.lname} ${user && user.mname}`}</h1>
+            <h1 className="text-lg font-semibold text-gray-800">{`${user && user.name}  ${user && user.mname !== null ? user.mname : ""} ${user && user.lname !== null ? user.lname : ""}`}</h1>
             <p className="text-gray-600 text-sm">{user && user.email}</p>
             <span className="text-xs bg-orange-100 text-orange-800 font-medium py-1 px-2 rounded inline-block mt-2">
               {user && user.designation && user.designation.designationName}
@@ -132,7 +137,7 @@ const ProfilePage = () => {
           {/* Email */}
           <div>
             <p className="text-sm font-bold">Email</p>
-            {isEditing ? (
+            {/* {isEditing ? (
               <input
                 type="email"
                 name="email"
@@ -140,9 +145,9 @@ const ProfilePage = () => {
                 onChange={handleChange}
                 className="w-full p-2 border rounded-md mt-2"
               />
-            ) : (
-              <p className="text-sm">{user && user.email}</p>
-            )}
+            ) : ( */}
+            <p className="text-sm">{user && user.email}</p>
+            {/* )} */}
           </div>
           {/* Mobile Number */}
           <div>
@@ -162,7 +167,7 @@ const ProfilePage = () => {
           {/* Company Name */}
           <div>
             <p className="text-sm font-bold">Company Name</p>
-            {isEditing ? (
+            {/* {isEditing ? (
               <input
                 type="text"
                 name="companyName"
@@ -170,14 +175,14 @@ const ProfilePage = () => {
                 onChange={handleChange}
                 className="w-full p-2 border rounded-md mt-2"
               />
-            ) : (
-              <p className="text-sm">{user && user.company && user.company.companyname}</p>
-            )}
+            ) : ( */}
+            <p className="text-sm">{user && user.company && user.company.companyname}</p>
+            {/* )} */}
           </div>
           {/* Designation */}
           <div>
             <p className="text-sm font-bold">Designation</p>
-            {isEditing ? (
+            {/* {isEditing ? (
               <input
                 type="text"
                 name="designation"
@@ -185,9 +190,9 @@ const ProfilePage = () => {
                 onChange={handleChange}
                 className="w-full p-2 border rounded-md mt-2"
               />
-            ) : (
-              <p className="text-sm">{user && user.designation && user.designation.designationName}</p>
-            )}
+            ) : ( */}
+            <p className="text-sm">{user && user.designation && user.designation.designationName}</p>
+            {/* )} */}
           </div>
         </div>
 

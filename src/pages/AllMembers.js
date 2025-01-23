@@ -11,6 +11,7 @@ import { FaCaretDown } from "react-icons/fa"; // Import the dropdown icon
 import Settings from "./SettingsPage";
 import axios from "axios";
 import api from "../apiConfig/config";
+import Roles from "./Roles";
 
 const AllMembers = () => {
   const [showDropdown, setShowDropdown] = useState(false); // State for showing the dropdown
@@ -264,13 +265,21 @@ const AllMembers = () => {
               <ul>
                 <li
                   className="p-2 hover:bg-gray-200 cursor-pointer"
-                  onClick={() => handleUserSelect("User 1")}
+                  onClick={() => {
+                    setAddData([]);
+                    setAddData(["NewMember"])
+                    handleUserSelect("User 1");
+                  }}
                 >
                   User
                 </li>
                 <li
                   className="p-2 hover:bg-gray-200 cursor-pointer"
-                  onClick={() => handleUserSelect("User 2")}
+                  onClick={() => {
+                    setAddData([]);
+                    setAddData(["Roles"])
+                    handleUserSelect("User 2");
+                  }}
                 >
                   User role
                 </li>
@@ -433,6 +442,15 @@ const AllMembers = () => {
       >
         <NewVendorForm
           isOpen={addData[0] === "Vendors"}
+          onClose={() => setAddData([])}
+        />
+      </div>
+      <div
+        className="submenu-menu"
+        style={{ right: addData[0] === "Roles" ? "0" : "-100%" }}
+      >
+        <Roles
+          isOpen={addData[0] === "Roles"}
           onClose={() => setAddData([])}
         />
       </div>

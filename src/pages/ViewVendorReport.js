@@ -1,24 +1,44 @@
-import React from 'react'
+import React, { useContext, useEffect } from 'react'
+import TableComponent from '../component/TableComponent';
+import { FaEdit, FaTrashAlt } from 'react-icons/fa';
+import axios from 'axios';
+import api from '../apiConfig/config';
+import { UserContext } from '../contexts/userContext';
 
 const ViewVendorReport = () => {
+  const { user } = useContext(UserContext);
 
-  // const supplier = {
-  //   "Ritik": {
-  //     "Delhi": 4,
-  //     "Mumbai": 6,
-  //     "Goa": 4
-  //   },
-  //   "Nilesh": {
-  //     "Delhi": 5,
-  //     "Mumbai": 3,
-  //     "Goa": 7
-  //   },
-  //   "Vishal": {
-  //     "Delhi": 8,
-  //     "Mumbai": 2,
-  //     "Goa": 3
-  //   }
-  // }
+  useEffect(() => {
+    axios.get(`${api.baseUrl}/supplierreports?userId=${user.userId}`)
+      .then(response => console.log(response.data))
+      .catch(error => console.error(error))
+  }, [])
+
+  const columns = [{
+    header: 'S. No.',
+    render: ({ row }) => <span>{row.sno}</span>,
+  }, {
+    header: "Supplier Name",
+    accessor: "supplierName",
+  },
+  {
+    header: "Total Package",
+    accessor: "totalPackage",
+  },
+  {
+    header: "Package Name",
+    accessor: "packageNames",
+  },
+  {
+    header: "Destinations",
+    accessor: "destinations",
+  },
+  {
+    header: "Package Type",
+    accessor: "packageType",
+  }
+  ];
+
   const data = [
     {
       sno: 1,
@@ -82,11 +102,16 @@ const ViewVendorReport = () => {
         </tbody>
       </table> */}
 
-      <div className="p-6 font-sans">
-        <h1 className="text-center text-2xl font-bold text-[#db272e] mb-6">
+      <div className="p-4">
+        <h1 className=" text-xl font-bold mb-6">
           Supplier Package Details
         </h1>
-        <div className="overflow-x-auto">
+
+        <hr className="my-4" />
+        <div className="w-full overflow-auto">
+          <TableComponent columns={columns} data={data} />
+        </div>
+        {/* <div className="overflow-x-auto">
           <table className="min-w-full border border-gray-300">
             <thead className="bg-[#db272e] text-white">
               <tr>
@@ -134,7 +159,7 @@ const ViewVendorReport = () => {
               ))}
             </tbody>
           </table>
-        </div>
+        </div> */}
       </div>
     </div>
   </>

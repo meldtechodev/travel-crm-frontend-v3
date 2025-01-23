@@ -141,6 +141,7 @@ const ViewDesignations = () => {
   useEffect(() => {
     axios.get(`${api.baseUrl}/designations/getall`)
       .then((response) => {
+        console.log(response.data.content);
         const formatData = response.data.content.map((designation) => ({
           ...designation,
           departmentName: designation.departments.departmentName,
@@ -157,12 +158,6 @@ const ViewDesignations = () => {
         let perms = response.data.map(item => item.moduleName === 'Quickstart' || item.moduleName === 'Dashboard' ? { ...item, parentId: item.id, value: false, selectAll: false } : { ...item, value: false, selectAll: false })
 
         setModule(perms)
-        // let update = []
-        // for (let i = 0; i < designationModules.length; i++) {
-        //   update = perms.map(item => item.id === designationModules[i].id ? { ...item, value: true } : item)
-        // }
-
-        // console.log(perms)
       })
       .catch(error => console.error(error));
 
