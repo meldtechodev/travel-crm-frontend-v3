@@ -85,9 +85,10 @@ const Customer = ({ isOpen, onClose, customerData, isFormEditEnabled, setIsFormE
       !formData.contactNo ||
       !formData.marritalStatus ||
       !formData.customerType ||
-      !formData.leadSource ||
-      !formData.adharNo ||
-      !formData.passportId
+      !formData.leadSource
+      // ||
+      // !formData.adharNo ||
+      // !formData.passportId
     ) {
       toast.error("Please fill all the fields...", {
         position: "top-center",
@@ -134,7 +135,6 @@ const Customer = ({ isOpen, onClose, customerData, isFormEditEnabled, setIsFormE
         }
       })
         .then(response => {
-          console.log(response);
           toast.success("Customer saved successfully.", {
             position: "top-center",
             autoClose: 5000,

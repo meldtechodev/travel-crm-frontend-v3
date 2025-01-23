@@ -335,6 +335,7 @@ const ListView = () => {
     const fetchData = async () => {
       await axios.get(`${api.baseUrl}/packages/getAll?page=${currentPage}&size=10`)
         .then((response) => {
+          console.log(response.data)
           setPackageList(response.data.content.map((item, index) => {
             return {
               ...item,

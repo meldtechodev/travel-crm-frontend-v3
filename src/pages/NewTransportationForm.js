@@ -7,24 +7,15 @@ import { UserContext } from "../contexts/userContext";
 import useDecryptedToken from "../hooks/useDecryptedToken";
 
 const NewTransportationForm = ({ isOpen, onClose, selectedTransportData }) => {
-  const [ip, setIp] = React.useState("");
 
-  const { user } = useContext(UserContext);
+  const { user, ipAddress } = useContext(UserContext);
   const token = useDecryptedToken();
 
   const [formData, setFormData] = useState({
     transportmode: "",
     transportsupplier: "",
     priceperday: 0,
-    status: false,
   });
-
-  useEffect(() => {
-    axios.get(`${api.baseUrl}/ipAddress`)
-      .then((r) => {
-        setIp(r.data);
-      });
-  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -39,7 +30,7 @@ const NewTransportationForm = ({ isOpen, onClose, selectedTransportData }) => {
     try {
       await axios.post(`${api.baseUrl}/transport/create`, {
         ...formData,
-        ipaddress: ip,
+        ipaddress: ipAddress,
         status: 1,
         isdelete: 0,
         createdby: user.name,
@@ -49,6 +40,11 @@ const NewTransportationForm = ({ isOpen, onClose, selectedTransportData }) => {
           'Authorization': `Bearer ${token}`,
           'Access-Control-Allow-Origin': '*'
         }
+      });
+      setFormData({
+        transportmode: "",
+        transportsupplier: "",
+        priceperday: 0,
       });
 
       // Success toast notification

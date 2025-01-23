@@ -197,16 +197,8 @@ const Sidebar = () => {
               style={{ minWidth: "100%" }}
               onMouseEnter={() => setHomeStyle("Home")}
               onMouseLeave={() => setHomeStyle()}>
-              <FaHome
-                size="30px"
-                color={homeStyle === "Home" ? "#fff" : "#B4B4B8"}
-              />
-              <p
-                className={`menu-name text-[14px] mt-2 ${homeStyle === "Home" ? "text-white" : "text-[#B4B4B8]"
-                  } `}
-              >
-                Home
-              </p>
+              <FaHome size="30px" color={homeStyle === "Home" ? "#fff" : "#B4B4B8"} />
+              <p className={`menu-name text-[14px] mt-2 ${homeStyle === "Home" ? "text-white" : "text-[#B4B4B8]"} `}>Home</p>
             </div>
             {/* Animated Submenu */}
             <div
@@ -258,16 +250,6 @@ const Sidebar = () => {
                       </h6>
                     </div>
                     <div className="mt-6 flex flex-col justify-center items-center overflow-y-scroll">
-
-                      {/* {childModule.map(item => (items.id === item.parentId) ? (<button
-                        class="w-[90%] p-4 flex justify-between items-center bg-gradient-to-r from-[#FFF9F9] to-[#F7C6C6]  cursor-pointer border-none text-left shadow-md my-2"
-                        onClick={() => handlePageAndForm(item.moduleName)}>
-                        {item.moduleName}
-                        <span>
-                          <IoMdAdd size="16px" />
-                        </span>
-                      </button>) : <></>)} */}
-
                       {module.map(item => (items.id === item.parentId) ? (<button
                         class="w-[90%] p-4 flex justify-between items-center bg-gradient-to-r from-[#FFF9F9] to-[#F7C6C6]  cursor-pointer border-none text-left shadow-md my-2"
                         onClick={() => handlePageAndForm(item.moduleName)}>
@@ -276,17 +258,6 @@ const Sidebar = () => {
                           <IoMdAdd size="16px" />
                         </span>
                       </button>) : <></>)}
-                      {/* <button class="w-[90%] p-4 flex justify-between items-center bg-gradient-to-r from-[#FFF9F9] to-[#F7C6C6]  cursor-pointer border-none text-left shadow-md my-2">
-                        Ouick Package
-                        <span>
-                          <IoMdAdd size="16px" />
-                        </span>
-                      </button>
-                      <Link to="/home/packageDashboard" className="w-[90%]">
-                        <button class="w-full p-4 flex justify-between items-center bg-gradient-to-r from-[#FFF9F9] to-[#F7C6C6]  cursor-pointer border-none text-left shadow-md my-2">
-                          Packages Dashboard
-                        </button>
-                      </Link> */}
                     </div>
                   </div>
                 </div>
@@ -693,8 +664,9 @@ const Sidebar = () => {
         </div>
         <div className="sidebar-item group relative hover:w-full shadow-sm">
           <div className="w-full h-[1px] bg-transparent my-2 shadow-[0_0_10px_2px_rgba(255,255,255,0.7)]"></div>
+
           <div className="sidebar-item group relative hover:w-full">
-            <div className="sidebar-icons flex flex-col justify-center  items-center  p-2 rounded cursor-pointer"
+            <div className="sidebar-icons flex flex-col justify-center items-center  p-2 rounded cursor-pointer"
               onMouseEnter={() => setHomeStyle("Reports")}
               onMouseLeave={() => setHomeStyle()}
             >
@@ -710,56 +682,50 @@ const Sidebar = () => {
               </p>
             </div>
             <div
-              className="submenu fixed left-20 top-10 h-screen pointer-events-none transform opacity-0 scale-95 transition-all duration-500 ease-in-out group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto bg-[#f9f9f9] text-black p-4 rounded shadow-lg space-y-2 mt-2"
+              className={`submenu fixed left-20 top-10 h-screen pointer-events-none transform opacity-0 scale-95 transition-all duration-500 ease-in-out  ${homeStyle === "Reports" ? "opacity-100 scale-100 pointer-events-auto" : ""} bg-[#f9f9f9] text-black p-4 rounded shadow-lg space-y-2 mt-2 hover:opacity-100 hover:scale-100 hover:pointer-events-auto`}
               style={{ width: "340px" }}
             >
               <div className="flex flex-col">
                 <p className="font-bold text-lg">Reports</p>
+
+                <Link to={`/home/reports`}>
+                  <button class="w-[90%] mt-6 p-4 flex justify-between items-center bg-gradient-to-r from-[#FFF9F9] to-[#F7C6C6]  cursor-pointer border-none text-left shadow-md my-3">
+                    Supplier Reports
+                  </button>
+                </Link>
               </div>
             </div>
           </div>
-          <div className="sidebar-icons flex flex-col justify-center items-center text-center p-2 rounded cursor-pointer"
-          >
+          <div className="sidebar-icons flex flex-col justify-center items-center text-center p-2 rounded cursor-pointer">
             <div className="sidebar-icons flex flex-col justify-center items-center text-center p-2 rounded cursor-pointer"
               onMouseEnter={() => setHomeStyle("Settings")}
               onMouseLeave={() => setHomeStyle()}>
               <CiSettings
                 size="30px"
-                color={homeStyle === "Settings" ? "#fff" : "#B4B4B8"}
-              />
+                color={homeStyle === "Settings" ? "#fff" : "#B4B4B8"} />
               <p className={`menu-name text-[14px] mt-2 text-[#B4B4B8]  ${homeStyle === "Settings" ? "text-white" : "text-[#B4B4B8]"
                 }`}>
                 Settings
               </p>
             </div>
-            <div
-              className="submenu fixed left-20 top-10 h-screen pointer-events-none transform opacity-0 scale-95 transition-all duration-500 ease-in-out group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto bg-[#f9f9f9] text-black p-4 rounded shadow-lg space-y-2 mt-2"
-              style={{ width: "340px" }}
-            >
+            <div className={`submenu fixed left-20 top-10 h-screen pointer-events-none transform opacity-0 scale-95 transition-all duration-500 ease-in-out bg-[#f9f9f9] ${homeStyle === "Settings" ? "opacity-100 scale-100 pointer-events-auto" : ""} hover:opacity-100 hover:scale-100 hover:pointer-events-auto text-black p-4 rounded shadow-lg space-y-2 mt-2`}
+              style={{ width: "340px" }}>
               <div className="flex flex-col">
-                <p className={`font-bold text-lg`}>Settings</p>
-                {/* <Link to='/home' className="block px-4 py-2 hover:bg-gray-600 rounded"> */}
+                <p className={`font-bold text-lg text-left`}>Settings</p>
                 <Link to="/home/app-settings">
-                  <button class="w-[90%] mt-6 p-4 flex justify-between items-center bg-gradient-to-r from-[#FFF9F9] to-[#F7C6C6]  cursor-pointer border-none text-left shadow-md my-3"
-                  //  onClick={() => {
-                  //   setAddData([]);
-                  //   setAddData(["AppSettings"]);
-                  // }}
-                  >
+                  <button class="w-[90%] mt-6 p-4 flex justify-between items-center bg-gradient-to-r from-[#FFF9F9] to-[#F7C6C6]  cursor-pointer border-none text-left shadow-md my-3">
                     App Settings
                   </button>
                 </Link>
-                {/* </Link> */}
-                {/* <Link to='/home/dashboard' className="block px-4 py-2 hover:bg-gray-600 rounded">       */}
                 <Link to={`/home/company-profile`}>
                   <button className="w-[90%] p-4 flex justify-between items-center bg-gradient-to-r from-[#FFF9F9] to-[#F7C6C6]  cursor-pointer border-none text-left shadow-md my-3">
                     Portal Settings
                   </button>
                 </Link>
-                {/* </Link> */}
               </div>
             </div>
           </div>
+
         </div>
       </div>
       <div

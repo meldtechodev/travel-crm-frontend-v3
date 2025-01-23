@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import PhoneInput from "react-phone-input-2";
@@ -13,10 +13,29 @@ const AddCustomerPopup = ({ isOpen, onClose }) => {
 
   const { user, ipAddress } = useContext(UserContext);
   const [errors, setErrors] = React.useState(null);
+  const [contactErrors, setContactErrors] = React.useState(null);
+  const [emailErrors, setEmailErrors] = React.useState(null);
   const [currentCreatedUser, setCurrentCreatedUser] = React.useState(null);
 
-  // console.log(ipAddress);
-  // console.log(user);
+  const checkNumber = (number) => {
+    axios.post(`${api.baseUrl}/customer/findcustomer`, {
+      "contactNo": number
+    })
+      .then(response => setContactErrors(null))
+      .catch(err => {
+        setContactErrors(err.response.data.data);
+      })
+  }
+
+  const checkEmail = (number) => {
+    axios.post(`${api.baseUrl}/customer/findcustomer`, {
+      "emailId": number
+    })
+      .then(response => setEmailErrors(null))
+      .catch(err => {
+        setEmailErrors(err.response.data);
+      })
+  }
 
   const formik = useFormik({
     initialValues: {
@@ -31,7 +50,9 @@ const AddCustomerPopup = ({ isOpen, onClose }) => {
       ipaddress: ipAddress,
       status: 1,
       isdelete: 0,
-      user_id: user.userId,
+      user: {
+        userId: user.userId
+      },
     },
     enableReinitialize: true,
     validationSchema: Yup.object({
@@ -124,10 +145,13 @@ const AddCustomerPopup = ({ isOpen, onClose }) => {
                   placeholder="Email ID"
                   className="w-full border border-gray-300 rounded px-3 py-2"
                   onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
+                  onBlur={() => {
+                    // formik.handleBlur;
+                    checkEmail(formik.values.emailId);
+                  }}
                   value={formik.values.emailId}
                 />
-                {formik.touched.emailId && formik.errors.emailId ? (
+                {errors && formik.touched.emailId && formik.errors.emailId ? (
                   <div className="text-red-500 text-sm">{formik.errors.emailId}</div>
                 ) : null}
               </div>
@@ -138,12 +162,23 @@ const AddCustomerPopup = ({ isOpen, onClose }) => {
                 </p>
               )}
 
+              {emailErrors && emailErrors.message && emailErrors.status && (
+                <p className="text-red-500 text-sm">
+                  {emailErrors.message}
+                </p>
+              )}
+
               <div className="flex space-x-2 w-full h-full flex-col">
                 <PhoneInput
                   country={"in"}
                   enableSearch={true}
                   value={formik.values.contactNo}
-                  onChange={(contactNo) => formik.setFieldValue("contactNo", contactNo)}
+                  onChange={(contactNo) => {
+                    formik.setFieldValue("contactNo", contactNo);
+                    if (contactNo.length > 7) {
+                      checkNumber(contactNo)
+                    }
+                  }}
                   onBlur={formik.handleBlur("contactNo")}
                 />
                 {formik.touched.contactNo && formik.errors.contactNo ? (
@@ -154,6 +189,12 @@ const AddCustomerPopup = ({ isOpen, onClose }) => {
               {errors && errors.message && errors.customer && errors.customer.contactNo === currentCreatedUser.contactNo && (
                 <p className="text-red-500 text-sm">
                   {errors.message} <Link to={`/home/customer-profile-popup/${errors && errors.customer && errors.customer.id}`}>view here</Link>
+                </p>
+              )}
+
+              {contactErrors && contactErrors.message && contactErrors.customer && (
+                <p className="text-red-500 text-sm">
+                  {contactErrors.message} <Link to={`/home/customer-profile-popup/${contactErrors && contactErrors.customer && contactErrors.customer.id}`} onClick={() => onClose()}>view here</Link>
                 </p>
               )}
 
@@ -237,7 +278,8 @@ const AddCustomerPopup = ({ isOpen, onClose }) => {
                 >
                   Cancel
                 </button>
-                <button type="submit" className="bg-red-500 text-white px-4 py-2 rounded">
+                <button type="submit" className="bg-red-500 text-white px-4 py-2 rounded"
+                  disabled={contactErrors || emailErrors ? true : false} >
                   Submit
                 </button>
               </div>

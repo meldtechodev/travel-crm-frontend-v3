@@ -29,97 +29,9 @@ import AllMembers from './pages/AllMembers'
 import HotelView from './pages/HotelView'
 import CustomersList from './pages/CustomersList'
 import ViewCompany from './pages/ViewCompany'
+import ViewVendorReport from './pages/ViewVendorReport'
 
 const PageRoute = () => {
-
-  // const [user, setUser] = useState({});
-
-  // const RoomTypeOptions = [
-  //   { value: "budget", label: "Budget" },
-  //   { value: "deluxe", label: "Deluxe" },
-  //   { value: "luxury", label: "Luxury" },
-  //   { value: "standard", label: "Standard" },
-  // ];
-
-  // const MealTypeOptions = [
-  //   { value: 1, label: "Thai" },
-  //   { value: 2, label: "Indian" },
-  //   { value: 3, label: "Chineese" },
-  //   { value: 4, label: "Italian" },
-  //   { value: 5, label: "American" },
-  // ];
-
-  // async function decryptToken(encryptedToken, key, iv) {
-  //   const dec = new TextDecoder();
-
-  //   const decrypted = await crypto.subtle.decrypt(
-  //     {
-  //       name: "AES-GCM",
-  //       iv: iv,
-  //     },
-  //     key,
-  //     encryptedToken
-  //   );
-
-  //   return dec.decode(new Uint8Array(decrypted));
-  // }
-
-  // // Function to retrieve and decrypt the token
-  // async function getDecryptedToken() {
-  //   const keyData = JSON.parse(localStorage.getItem("encryptionKey"));
-  //   const ivBase64 = localStorage.getItem("iv");
-  //   const encryptedTokenBase64 = localStorage.getItem("encryptedToken");
-
-  //   if (!keyData || !ivBase64 || !encryptedTokenBase64) {
-  //     throw new Error("No token found");
-  //   }
-
-  //   // Convert back from base64
-  //   const key = await crypto.subtle.importKey("jwk", keyData,
-  //     { name: "AES-GCM" },
-  //     true,
-  //     ["encrypt", "decrypt"]
-  //   );
-  //   const iv = new Uint8Array(atob(ivBase64)
-  //     .split("")
-  //     .map((char) => char.charCodeAt(0))
-  //   );
-
-  //   const encryptedToken = new Uint8Array(
-  //     atob(encryptedTokenBase64)
-  //       .split("")
-  //       .map((char) => char.charCodeAt(0))
-  //   );
-
-  //   return await decryptToken(encryptedToken, key, iv);
-  // }
-
-  // // Example usage to make an authenticated request
-  // const [modulePermission, setModulePermission] = useState([])
-  // useEffect(() => {
-  //   getDecryptedToken()
-  //     .then((token) => {
-  //       return axios.get(`${api.baseUrl}/username`, {
-  //         headers: {
-  //           "Authorization": `Bearer ${token}`,
-  //           "Access-Control-Allow-Origin": "*",
-  //         },
-  //       });
-  //     })
-  //     .then((response) => {
-  //       setUser(response.data);
-  //     })
-  //     .catch((error) =>
-  //       console.error("Error fetching protected resource:", error)
-  //     );
-
-
-  //   axios.get(`${api.baseUrl}/permissions/getall`)
-  //     .then(response => setModulePermission(response.data))
-  //     .catch(error => console.error(error))
-  // }, []);
-
-
 
   return (
     <div className='flex flex-col h-[100vh] overflow-hidden'>
@@ -137,18 +49,14 @@ const PageRoute = () => {
             <Route path={'/package-list/:id'} element={<CustomerProfile />} />
             <Route path="/masters" element={<MasterList />} />
             <Route path="/company" element={<ViewCompany />} />
-            {/* <Route path="/master-list/hotel" element={<HotelMaster />} /> */}
-            {/* <Route path='/master-list/hotel/:id' element={<HotelMasterAddRoom />} /> */}
-            {/* <Route path="/package-view" element={<CustomerProfile />} /> */}
             <Route path="/queryDashboard" element={<Bookings />} />
             <Route path="/myteams" element={<AllMembers />} />
             <Route path="/profile-page" element={<ProfilePage />} />
-            {/* <Route path="/department-dashboard" element={<CompanyHierarchy />} /> */}
-            {/* <Route path="/profile-page" element={<ProfilePage />} /> */}
             <Route path="/app-settings" element={<SettingsPage />} />
             <Route path={`/company-profile`} element={<CompanyProfilePage />} />
             <Route path={`/customerBoards`} element={<Navigate to="/home/customer" replace />} />
             <Route path={`/userBoards`} element={<Navigate to="/home/myteams" replace />} />
+            <Route path={`/reports`} element={<ViewVendorReport />} />
             <Route
               path="/hotel-view/:hotelId"
               element={<HotelView />}
